@@ -12,7 +12,7 @@ export default function Page() {
           { n: "81", t: "ile teslimat", d: "Aynı gün kargo, 1–3 iş günü" },
           { n: "1 gün", t: "teklif süresi", d: "Kurumsal fiyat listesi" },
         ].map((s) => (
-          <div key={s.t} className="rounded-3xl bg-white p-6 shadow-card">
+          <div key={s.t} className="rounded-xl border border-ink-200 bg-white p-6">
             <p className="font-display text-4xl font-black text-sky-700">{s.n}</p>
             <p className="mt-1 font-semibold">{s.t}</p>
             <p className="text-sm text-ink-500">{s.d}</p>

@@ -17,7 +17,7 @@ const faq = [
 export default function Page() {
   return (
     <PageShell title="Sık sorulan sorular" crumb="SSS" narrow>
-      <div className="divide-y divide-ink-100 rounded-3xl bg-white px-6 shadow-card">
+      <div className="divide-y divide-ink-100 rounded-xl border border-ink-200 bg-white px-6">
         {faq.map(([q, a]) => (
           <details key={q} className="group py-4">
             <summary className="flex cursor-pointer list-none items-center justify-between font-semibold">

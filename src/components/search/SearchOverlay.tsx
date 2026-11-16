@@ -9,8 +9,8 @@ import { searchProducts } from "@/lib/search";
 import { categoryMap, categories } from "@/lib/categories";
 import type { ProductIndex } from "@/lib/types";
 import indexJson from "@/data/catalog-index.json";
-import { ProductVisual } from "@/components/product/ProductVisual";
 import { formatPrice } from "@/lib/format";
+import { minPriceOf } from "@/lib/index-of";
 
 const index = indexJson as ProductIndex[];
 const popular = ["Mercimek", "Zeytinyağı", "Pul biber", "Fındık", "Salça", "Rize çayı", "Baldo pirinç", "Toz şeker"];
@@ -86,8 +86,8 @@ function SearchPanel({ close }: { close: () => void }) {
 
   return (
     <div className="fixed inset-0 z-[90] flex items-start justify-center px-4 pt-[8vh] sm:pt-[12vh]" role="dialog" aria-label="Ürün ara">
-      <div className="absolute inset-0 bg-navy-950/60 backdrop-blur-sm" onClick={() => setSearchOpen(false)} />
-      <div className="relative w-full max-w-2xl overflow-hidden rounded-2xl bg-white shadow-pop animate-fade-up">
+      <div className="absolute inset-0 bg-navy-950/50 backdrop-blur-sm" onClick={() => setSearchOpen(false)} />
+      <div className="relative w-full max-w-2xl overflow-hidden rounded-xl bg-white shadow-float animate-fade-up">
         <div className="flex items-center gap-3 border-b border-ink-100 px-4">
           <Search className="size-5 text-ink-400" />
           <input
@@ -145,25 +145,23 @@ function SearchPanel({ close }: { close: () => void }) {
                         href={`/urun/${r.slug}`}
                         onClick={() => setSearchOpen(false)}
                         onMouseEnter={() => setActive(i)}
-                        className={`flex items-center gap-3 rounded-xl px-2 py-2 ${i === active ? "bg-paper-100" : ""}`}
+                        className={`flex items-center gap-3 rounded-lg px-2 py-2 ${i === active ? "bg-sky-50" : ""}`}
                       >
-                        <span className="relative size-12 shrink-0 overflow-hidden rounded-lg">
-                          <ProductVisual name={r.name} category={r.category} hue={r.hue} image={r.image} sizes="48px" />
-                        </span>
+                        <span className="w-8 shrink-0 font-display text-base text-orange-500">{String(categoryMap[r.category]?.order ?? 0).padStart(2, "0")}</span>
                         <span className="min-w-0 flex-1">
                           <span className="block truncate text-sm font-semibold">{r.name}</span>
                           <span className="block truncate text-xs text-ink-500">
                             {r.brand} · {categoryMap[r.category]?.name}
                           </span>
                         </span>
-                        <span className="text-sm font-bold tabular-nums">{formatPrice(r.price)}</span>
+                        <span className="font-display text-base font-semibold tabular-nums text-navy-900">{formatPrice(minPriceOf(r))}</span>
                         {i === active && <CornerDownLeft className="size-4 text-ink-400" />}
                       </Link>
                     </li>
                   ))}
                 </ul>
               )}
-              <button onClick={() => go(`/urunler?q=${encodeURIComponent(q.trim())}`)} className="mt-1 flex w-full items-center justify-between rounded-xl bg-sky-50 px-4 py-3 text-sm font-semibold text-navy-900 hover:bg-sky-100">
+              <button onClick={() => go(`/urunler?q=${encodeURIComponent(q.trim())}`)} className="mt-1 flex w-full items-center justify-between rounded-lg bg-navy-900 px-4 py-3 text-sm font-semibold text-white hover:bg-navy-800">
                 “{q}” için tüm sonuçları gör
                 <ArrowRight className="size-4" />
               </button>

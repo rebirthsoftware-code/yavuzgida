@@ -22,12 +22,12 @@ export default async function SubcategoryPage({ params }: PageProps<"/kategori/[
   if (!c || !s) notFound();
   return (
     <CatalogPage
+      index={String(c.order).padStart(2, "0")}
       title={s.name}
-      description={`${c.name} grubunda ${s.name.toLocaleLowerCase("tr-TR")} ürünleri. ${c.description}`}
-      crumbs={[{ label: "Ürünler", href: "/urunler" }, { label: c.name, href: `/kategori/${c.slug}` }, { label: s.name }]}
+      description={`${c.name} grubunda ${s.name.toLocaleLowerCase("tr-TR")} ürünleri.`}
+      crumbs={[{ label: "Tüm ürünler", href: "/urunler" }, { label: c.name, href: `/kategori/${c.slug}` }, { label: s.name }]}
       fixedCategory={c.slug}
       fixedSub={s.slug}
-      accent={{ color: c.color, soft: c.colorSoft }}
     />
   );
 }

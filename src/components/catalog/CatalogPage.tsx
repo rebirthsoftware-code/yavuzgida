@@ -2,58 +2,40 @@ import { Suspense } from "react";
 import { Catalog } from "./Catalog";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 
-/** Listeleme sayfalarının ortak kabuğu: başlık + açıklama + katalog */
+/** Listeleme sayfası kabuğu: büyük serif başlık + açıklama, ardından liste. */
 export function CatalogPage({
+  index,
   title,
   description,
   crumbs,
   fixedCategory,
   fixedSub,
-  accent,
   children,
 }: {
+  index?: string;
   title: string;
   description?: string;
   crumbs: { label: string; href?: string }[];
   fixedCategory?: string;
   fixedSub?: string;
-  accent?: { color: string; soft: string };
   children?: React.ReactNode;
 }) {
   return (
-    <div className="mx-auto max-w-7xl px-4 pb-16 sm:px-6">
-      <div className="py-5">
+    <div>
+      <header className="px-4 pb-6 pt-6 lg:px-6 lg:pt-8">
         <Breadcrumbs items={crumbs} />
-      </div>
-      <header className="relative mb-8 overflow-hidden rounded-4xl bg-white px-6 py-9 shadow-card sm:px-10">
-        {accent && <span className="absolute -right-16 -top-16 size-56 rounded-full" style={{ background: accent.soft }} />}
-        <div className="relative">
-          <h1 className="text-3xl text-navy-900 sm:text-[2.6rem]" style={accent ? { color: accent.color } : undefined}>
-            {title}
-          </h1>
-          {description && <p className="mt-2 max-w-2xl text-[0.98rem] leading-relaxed text-ink-500">{description}</p>}
-          {children}
+        <div className="mt-5 flex flex-wrap items-end gap-x-6 gap-y-3">
+          {index && <span className="font-display text-6xl leading-none text-orange-500/80 sm:text-7xl">{index}</span>}
+          <div className="max-w-2xl">
+            <h1 className="text-4xl leading-[1.05] text-navy-900 sm:text-5xl">{title}</h1>
+            {description && <p className="mt-2 text-[0.95rem] leading-relaxed text-ink-500">{description}</p>}
+          </div>
         </div>
+        {children}
       </header>
-      <Suspense fallback={<CatalogSkeleton />}>
+      <Suspense fallback={<div className="h-64 animate-pulse-soft border-t border-ink-200 bg-paper-100" />}>
         <Catalog fixedCategory={fixedCategory} fixedSub={fixedSub} />
       </Suspense>
-    </div>
-  );
-}
-
-function CatalogSkeleton() {
-  return (
-    <div className="grid gap-8 lg:grid-cols-[250px_1fr]">
-      <div className="hidden h-[520px] rounded-2xl bg-white shadow-card lg:block" />
-      <div>
-        <div className="h-16 rounded-2xl bg-white shadow-card" />
-        <div className="mt-4 grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 xl:grid-cols-4">
-          {Array.from({ length: 12 }).map((_, i) => (
-            <div key={i} className="aspect-[3/4] animate-pulse-soft rounded-2xl bg-white shadow-card" />
-          ))}
-        </div>
-      </div>
     </div>
   );
 }

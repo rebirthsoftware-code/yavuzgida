@@ -2,15 +2,13 @@ import { Breadcrumbs } from "./Breadcrumbs";
 
 export function PageShell({ title, lead, crumb, children, narrow }: { title: string; lead?: string; crumb: string; children: React.ReactNode; narrow?: boolean }) {
   return (
-    <div className={`mx-auto px-4 pb-16 sm:px-6 ${narrow ? "max-w-3xl" : "max-w-7xl"}`}>
-      <div className="py-5">
+    <div className="pb-16">
+      <header className="border-b border-ink-200 px-4 pb-8 pt-6 lg:px-6 lg:pt-8">
         <Breadcrumbs items={[{ label: crumb }]} />
-      </div>
-      <header className="mb-8">
-        <h1 className="text-3xl text-navy-900 sm:text-[2.6rem]">{title}</h1>
+        <h1 className="mt-5 text-4xl text-navy-900 sm:text-5xl">{title}</h1>
         {lead && <p className="mt-3 max-w-2xl text-[1.02rem] leading-relaxed text-ink-500">{lead}</p>}
       </header>
-      {children}
+      <div className={`px-4 pt-8 lg:px-6 ${narrow ? "max-w-3xl" : ""}`}>{children}</div>
     </div>
   );
 }
@@ -25,4 +23,4 @@ export function Field({ label, children, hint }: { label: string; children: Reac
   );
 }
 
-export const inputCls = "h-11 w-full rounded-xl border border-ink-200 bg-white px-3.5 text-sm outline-none transition focus:border-navy-900 focus:ring-2 focus:ring-sky-100";
+export const inputCls = "h-11 w-full rounded-lg border border-ink-200 bg-white px-3.5 text-sm outline-none transition focus:border-navy-900 focus:ring-2 focus:ring-sky-100";

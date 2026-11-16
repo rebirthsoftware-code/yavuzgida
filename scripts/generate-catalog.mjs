@@ -253,28 +253,28 @@ for (const [catSlug, subs] of Object.entries(SOURCE)) {
   }
 }
 
-const unitLabel = (v) => v.label;
-const index = products.map((p) => {
-  const first = p.variants[0];
-  return {
-    slug: p.slug,
-    name: p.name,
-    brand: p.brand,
-    category: p.category,
-    subcategory: p.subcategory,
-    tags: p.tags,
-    price: first.price,
-    ...(first.oldPrice ? { oldPrice: first.oldPrice } : {}),
-    unit: unitLabel(first),
-    variantId: first.id,
-    sku: first.sku,
-    variants: p.variants.length,
-    inStock: p.variants.some((v) => v.inStock),
-    hue: p.hue,
-    popularity: p.popularity,
-    createdAt: p.createdAt,
-  };
-});
+const index = products.map((p) => ({
+  slug: p.slug,
+  name: p.name,
+  brand: p.brand,
+  category: p.category,
+  subcategory: p.subcategory,
+  tags: p.tags,
+  variants: p.variants.map((v) => ({
+    id: v.id,
+    label: v.label,
+    sku: v.sku,
+    price: v.price,
+    ...(v.oldPrice ? { oldPrice: v.oldPrice } : {}),
+    amount: v.amount,
+    amountUnit: v.amountUnit,
+    inStock: v.inStock,
+    ...(v.caseQty ? { caseQty: v.caseQty } : {}),
+  })),
+  hue: p.hue,
+  popularity: p.popularity,
+  createdAt: p.createdAt,
+}));
 
 mkdirSync(join(root, "src/data"), { recursive: true });
 writeFileSync(join(root, "src/data/catalog.json"), JSON.stringify(products));

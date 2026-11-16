@@ -19,19 +19,19 @@ export default function Page() {
               { icon: Truck, t: "Araçla teslimat", d: "Bölgesel rotalarda kendi araçlarımızla teslim." },
               { icon: CheckCircle2, t: "Numune", d: "Yeni ürünlerde ücretsiz numune." },
             ].map(({ icon: I, t, d }) => (
-              <li key={t} className="rounded-2xl bg-white p-5 shadow-card">
+              <li key={t} className="rounded-xl border border-ink-200 bg-white p-5">
                 <I className="size-5 text-orange-600" />
                 <p className="mt-3 font-semibold">{t}</p>
                 <p className="mt-1 text-sm text-ink-500">{d}</p>
               </li>
             ))}
           </ul>
-          <div className="rounded-2xl bg-navy-900 p-6 text-white">
+          <div className="rounded-xl bg-navy-900 p-6 text-white">
             <p className="text-xs font-bold uppercase tracking-[0.2em] text-orange-400">Kimler için?</p>
             <p className="mt-2 text-lg font-semibold">Restoran, kafe, otel, yemekhane, market, bakkal, pastane ve e-ticaret satıcıları.</p>
           </div>
         </div>
-        <form className="rounded-3xl bg-white p-6 shadow-card sm:p-8">
+        <form className="rounded-xl border border-ink-200 bg-white p-6 sm:p-8">
           <h2 className="text-xl font-bold">Teklif formu</h2>
           <div className="mt-5 grid gap-4 sm:grid-cols-2">
             <Field label="Firma adı"><input className={inputCls} /></Field>

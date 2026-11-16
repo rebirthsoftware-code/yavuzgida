@@ -1,8 +1,7 @@
 import type { Product, ProductIndex } from "./types";
 
-/** Tam üründen hafif liste kaydı üretir (sunucu bileşenlerinden kartlara geçerken) */
+/** Tam üründen hafif liste kaydı üretir (sunucu bileşenlerinden satırlara geçerken) */
 export function toIndex(p: Product): ProductIndex {
-  const first = p.variants[0];
   return {
     slug: p.slug,
     name: p.name,
@@ -10,16 +9,13 @@ export function toIndex(p: Product): ProductIndex {
     category: p.category,
     subcategory: p.subcategory,
     tags: p.tags,
-    price: first.price,
-    ...(first.oldPrice ? { oldPrice: first.oldPrice } : {}),
-    unit: first.label,
-    variantId: first.id,
-    sku: first.sku,
-    variants: p.variants.length,
-    inStock: p.variants.some((v) => v.inStock),
+    variants: p.variants,
     hue: p.hue,
     popularity: p.popularity,
     createdAt: p.createdAt,
     ...(p.image ? { image: p.image } : {}),
   };
 }
+
+export const minPriceOf = (p: ProductIndex) => Math.min(...p.variants.map((v) => v.price));
+export const inStockOf = (p: ProductIndex) => p.variants.some((v) => v.inStock);

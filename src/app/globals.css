@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @theme {
-  /* ---- Yavuz Gıda paleti: gece mavisi + açık mavi + bakır turuncusu + kağıt beyazı ---- */
+  /* ---- Palet: gece mavisi + açık mavi + turuncu + kağıt ---- */
   --color-navy-950: #071423;
   --color-navy-900: #0c2138;
   --color-navy-800: #12304d;
@@ -31,39 +31,35 @@
   --color-ink-200: #d3dde6;
   --color-ink-100: #e6edf3;
 
-  --color-paper-50: #f7fafc;
-  --color-paper-100: #eef4f8;
-  --color-paper-200: #e0eaf1;
+  --color-paper-50: #fbfbfa;
+  --color-paper-100: #f3f4f2;
+  --color-paper-200: #e7e9e5;
 
-  --color-cream-100: #fdf6ee;
-  --color-cream-200: #f8e9d8;
+  --font-display: var(--font-cormorant), "Cormorant Garamond", Georgia, serif;
+  --font-sans: var(--font-figtree), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
 
-  --font-display: var(--font-playfair), "Georgia", "Times New Roman", serif;
-  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --shadow-card: 0 1px 2px rgb(14 27 42 / 0.05);
+  --shadow-float: 0 20px 50px -24px rgb(12 33 56 / 0.35);
+  --shadow-glow: 0 12px 30px -12px rgb(234 122 36 / 0.6);
 
-  --shadow-card: 0 1px 2px rgb(14 27 42 / 0.04), 0 0 0 1px rgb(14 27 42 / 0.06);
-  --shadow-lift: 0 24px 50px -28px rgb(12 33 56 / 0.35), 0 0 0 1px rgb(14 27 42 / 0.06);
-  --shadow-pop: 0 30px 70px -30px rgb(12 33 56 / 0.5);
-  --shadow-glow: 0 14px 34px -14px rgb(234 122 36 / 0.65);
-
-  --radius-4xl: 2rem;
   --breakpoint-xs: 30rem;
+  --breakpoint-3xl: 110rem;
 
-  --animate-fade-up: fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
-  --animate-marquee: marquee 50s linear infinite;
+  --animate-fade-up: fade-up 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
   --animate-pulse-soft: pulse-soft 2.4s ease-in-out infinite;
+  --animate-pop: pop 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
 
   @keyframes fade-up {
-    from { opacity: 0; transform: translateY(14px); }
+    from { opacity: 0; transform: translateY(12px); }
     to { opacity: 1; transform: translateY(0); }
-  }
-  @keyframes marquee {
-    from { transform: translateX(0); }
-    to { transform: translateX(-50%); }
   }
   @keyframes pulse-soft {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.55; }
+  }
+  @keyframes pop {
+    0% { background-color: var(--color-orange-100); }
+    100% { background-color: transparent; }
   }
 }
 
@@ -82,13 +78,12 @@ body {
   font-family: var(--font-sans);
 }
 
-h1, h2, h3, h4,
-.font-display {
+h1, h2, h3, .font-display {
   font-family: var(--font-display);
-  letter-spacing: -0.005em;
   font-variant-numeric: lining-nums tabular-nums;
+  letter-spacing: -0.01em;
 }
-h1, h2, h3, h4 {
+h1, h2, h3 {
   font-weight: 600;
 }
 
@@ -97,20 +92,16 @@ h1, h2, h3, h4 {
   color: var(--color-orange-700);
 }
 
-/* Bakır turuncusu degrade (ana aksiyon) */
+/* İnce çizgili ayraç */
+.rule {
+  border-color: var(--color-ink-200);
+}
+
+/* Turuncu degrade (ana aksiyon) */
 .bg-copper {
   background-image: linear-gradient(135deg, #f08a2e 0%, #e2701f 55%, #cf6118 100%);
 }
 
-/* Açık mavi ışık degradesi (hero, bantlar) */
-.bg-sky-glow {
-  background-image:
-    radial-gradient(900px 500px at 85% -10%, rgb(169 211 239 / 0.55), transparent 60%),
-    radial-gradient(700px 400px at 0% 100%, rgb(251 228 208 / 0.7), transparent 60%),
-    linear-gradient(180deg, #eaf3fa 0%, #f7fafc 100%);
-}
-
-/* Kaydırma çubuğu gizli yatay raylar */
 .no-scrollbar {
   scrollbar-width: none;
 }
@@ -118,12 +109,9 @@ h1, h2, h3, h4 {
   display: none;
 }
 
-/* İnce ızgara dokusu (koyu bantlar) */
-.bg-grid {
-  background-image:
-    linear-gradient(to right, rgb(255 255 255 / 0.05) 1px, transparent 1px),
-    linear-gradient(to bottom, rgb(255 255 255 / 0.05) 1px, transparent 1px);
-  background-size: 36px 36px;
+/* Satır vurgusu (sepete eklenince) */
+.row-pop {
+  animation: var(--animate-pop);
 }
 
 @media (prefers-reduced-motion: reduce) {

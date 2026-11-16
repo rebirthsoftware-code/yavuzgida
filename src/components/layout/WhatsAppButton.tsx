@@ -1,6 +1,7 @@
 import { MessageCircle } from "lucide-react";
 import { site } from "@/lib/site";
 
+/** Masaüstünde sol altta sabit; mobilde alt sekme çubuğu olduğu için gizli. */
 export function WhatsAppButton() {
   return (
     <a
@@ -8,10 +9,9 @@ export function WhatsAppButton() {
       target="_blank"
       rel="noopener"
       aria-label="WhatsApp ile yazın"
-      className="group fixed bottom-5 right-5 z-[60] flex h-13 items-center gap-2 rounded-full bg-[#25d366] pl-3.5 pr-4 text-sm font-semibold text-white shadow-pop transition hover:scale-[1.03]"
+      className="fixed bottom-5 left-[calc(248px+1.25rem)] z-[35] hidden size-12 place-items-center rounded-full bg-[#25d366] text-white shadow-float transition hover:scale-105 lg:grid xl:left-[calc(232px+1.25rem)] 2xl:left-[calc(256px+1.25rem)] 3xl:left-[calc(280px+1.25rem)]"
     >
       <MessageCircle className="size-6" />
-      <span className="hidden sm:inline">Hızlı sipariş</span>
     </a>
   );
 }

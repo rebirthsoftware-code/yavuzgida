@@ -40,7 +40,7 @@ export type Product = {
   createdAt: string;
 };
 
-/** Listeleme ve aramada istemciye gönderilen hafif kayıt */
+/** Listeleme ve aramada istemciye gönderilen hafif kayıt (açıklama/özellik yok, varyantlar var) */
 export type ProductIndex = {
   slug: string;
   name: string;
@@ -48,13 +48,7 @@ export type ProductIndex = {
   category: string;
   subcategory: string;
   tags: ProductTag[];
-  price: number;
-  oldPrice?: number;
-  unit: string;
-  variantId: string;
-  sku: string;
-  variants: number;
-  inStock: boolean;
+  variants: Variant[];
   hue: number;
   popularity: number;
   createdAt: string;
