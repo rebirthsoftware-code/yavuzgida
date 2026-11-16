@@ -1,0 +1,216 @@
+import type { Category } from "./types";
+
+/**
+ * Ana kategoriler ve alt kategoriler. Gerçek katalog geldiğinde bu listeye göre
+ * eşlenir; `icon` alanı lucide-react ikon adıdır (bkz. components/ui/CategoryIcon).
+ */
+export const categories: Category[] = [
+  {
+    slug: "bakliyat-tahil",
+    name: "Bakliyat & Tahıl",
+    short: "Mercimek, nohut, pirinç, bulgur",
+    description: "Anadolu'nun dört bir yanından seçilmiş bakliyat ve tahıllar; 1 kg paketten 25 kg çuvala.",
+    icon: "wheat",
+    color: "#b8761b",
+    colorSoft: "#fbefd9",
+    order: 1,
+    subcategories: [
+      { slug: "mercimek", name: "Mercimek" },
+      { slug: "nohut-fasulye", name: "Nohut & Fasulye" },
+      { slug: "pirinc", name: "Pirinç" },
+      { slug: "bulgur", name: "Bulgur" },
+      { slug: "un-irmik", name: "Un & İrmik" },
+      { slug: "diger-tahil", name: "Diğer Tahıllar" },
+    ],
+  },
+  {
+    slug: "baharat-cesni",
+    name: "Baharat & Çeşni",
+    short: "Toz, tane ve karışım baharatlar",
+    description: "Tazeliğini koruyan öğütülmüş ve tane baharatlar, karışımlar, tuz ve çeşniler.",
+    icon: "flame",
+    color: "#c2410c",
+    colorSoft: "#feebe0",
+    order: 2,
+    subcategories: [
+      { slug: "toz-baharat", name: "Toz Baharat" },
+      { slug: "tane-baharat", name: "Tane Baharat" },
+      { slug: "karisim", name: "Karışımlar" },
+      { slug: "tuz", name: "Tuz" },
+      { slug: "kurutulmus-bitki", name: "Kurutulmuş Bitkiler" },
+    ],
+  },
+  {
+    slug: "kuruyemis-kuru-meyve",
+    name: "Kuruyemiş & Kuru Meyve",
+    short: "Fındık, badem, ceviz, kayısı",
+    description: "Çiğ, kavrulmuş ve tuzlu kuruyemişler; güneşte kurutulmuş meyveler.",
+    icon: "nut",
+    color: "#7c4a1e",
+    colorSoft: "#f3e6da",
+    order: 3,
+    subcategories: [
+      { slug: "findik", name: "Fındık" },
+      { slug: "badem-ceviz", name: "Badem & Ceviz" },
+      { slug: "fistik", name: "Fıstık" },
+      { slug: "cekirdek", name: "Çekirdek" },
+      { slug: "kuru-meyve", name: "Kuru Meyve" },
+      { slug: "karisik", name: "Karışık & Çerez" },
+    ],
+  },
+  {
+    slug: "yag-sirke",
+    name: "Yağ & Sirke",
+    short: "Zeytinyağı, ayçiçek, sirke",
+    description: "Soğuk sıkım zeytinyağından ekonomik ayçiçek yağına; doğal fermente sirkeler.",
+    icon: "droplets",
+    color: "#65a30d",
+    colorSoft: "#eaf5d6",
+    order: 4,
+    subcategories: [
+      { slug: "zeytinyagi", name: "Zeytinyağı" },
+      { slug: "aycicek-misir", name: "Ayçiçek & Mısır Yağı" },
+      { slug: "ozel-yaglar", name: "Özel Yağlar" },
+      { slug: "sirke", name: "Sirke" },
+      { slug: "nar-eksisi", name: "Nar Ekşisi & Limon Sosu" },
+    ],
+  },
+  {
+    slug: "konserve-salca",
+    name: "Konserve & Salça",
+    short: "Salça, turşu, konserve sebze",
+    description: "Güneşte kurutulmuş domates salçasından ev usulü turşuya; mutfağın hazır dostları.",
+    icon: "cylinder",
+    color: "#b91c1c",
+    colorSoft: "#fde3e3",
+    order: 5,
+    subcategories: [
+      { slug: "salca", name: "Salça" },
+      { slug: "tursu", name: "Turşu" },
+      { slug: "konserve-sebze", name: "Konserve Sebze" },
+      { slug: "konserve-bakliyat", name: "Haşlanmış Bakliyat" },
+      { slug: "zeytin", name: "Zeytin" },
+    ],
+  },
+  {
+    slug: "makarna-hamur",
+    name: "Makarna & Hamur İşi",
+    short: "Makarna, erişte, mantı, yufka",
+    description: "Durum buğdayından makarnalar, el açması erişte ve hazır hamur ürünleri.",
+    icon: "utensils",
+    color: "#ca8a04",
+    colorSoft: "#fdf3cd",
+    order: 6,
+    subcategories: [
+      { slug: "makarna", name: "Makarna" },
+      { slug: "eriste", name: "Erişte & Kuskus" },
+      { slug: "hamur", name: "Yufka & Mantı" },
+      { slug: "ekmek-cesitleri", name: "Galeta & Ekmek Çeşitleri" },
+    ],
+  },
+  {
+    slug: "kahvaltilik",
+    name: "Kahvaltılık",
+    short: "Bal, reçel, tahin, pekmez",
+    description: "Sofranın ilk öğünü için bal, reçel, tahin-pekmez ve kahvaltı çeşitleri.",
+    icon: "egg",
+    color: "#d97706",
+    colorSoft: "#fdeed6",
+    order: 7,
+    subcategories: [
+      { slug: "bal", name: "Bal" },
+      { slug: "recel-marmelat", name: "Reçel & Marmelat" },
+      { slug: "tahin-pekmez", name: "Tahin & Pekmez" },
+      { slug: "surulebilir", name: "Sürülebilir Ürünler" },
+    ],
+  },
+  {
+    slug: "icecek",
+    name: "İçecek",
+    short: "Çay, kahve, meyve suyu",
+    description: "Rize çayından Türk kahvesine, meyve sularından bitki çaylarına.",
+    icon: "coffee",
+    color: "#0e7490",
+    colorSoft: "#dcf2f7",
+    order: 8,
+    subcategories: [
+      { slug: "cay", name: "Çay" },
+      { slug: "kahve", name: "Kahve" },
+      { slug: "bitki-cayi", name: "Bitki Çayı" },
+      { slug: "meyve-suyu", name: "Meyve Suyu" },
+      { slug: "su-gazli", name: "Su & Gazlı İçecek" },
+    ],
+  },
+  {
+    slug: "atistirmalik",
+    name: "Atıştırmalık",
+    short: "Bisküvi, kraker, cips, lokum",
+    description: "Bisküvi, kraker, cips ve geleneksel tatlılar; bakkal rafının en hızlı dönen ürünleri.",
+    icon: "cookie",
+    color: "#9333ea",
+    colorSoft: "#f1e4fb",
+    order: 9,
+    subcategories: [
+      { slug: "biskuvi", name: "Bisküvi" },
+      { slug: "kraker-cips", name: "Kraker & Cips" },
+      { slug: "cikolata-sekerleme", name: "Çikolata & Şekerleme" },
+      { slug: "lokum-helva", name: "Lokum & Helva" },
+    ],
+  },
+  {
+    slug: "sos-hazir",
+    name: "Sos & Hazır Gıda",
+    short: "Ketçap, mayonez, çorba, bulyon",
+    description: "Soslar, hazır çorbalar, bulyonlar ve pratik mutfak çözümleri.",
+    icon: "soup",
+    color: "#dc2626",
+    colorSoft: "#fde4e4",
+    order: 10,
+    subcategories: [
+      { slug: "sos", name: "Sos" },
+      { slug: "corba-bulyon", name: "Çorba & Bulyon" },
+      { slug: "hazir-yemek", name: "Hazır Yemek" },
+      { slug: "pasta-malzeme", name: "Pasta & Tatlı Malzemeleri" },
+    ],
+  },
+  {
+    slug: "seker-tatlandirici",
+    name: "Şeker & Tatlandırıcı",
+    short: "Toz şeker, küp şeker, pudra",
+    description: "Toz, küp ve kahverengi şekerler; pudra şekeri ve tatlandırıcılar.",
+    icon: "candy",
+    color: "#db2777",
+    colorSoft: "#fce4ef",
+    order: 11,
+    subcategories: [
+      { slug: "toz-seker", name: "Toz Şeker" },
+      { slug: "kup-seker", name: "Küp Şeker" },
+      { slug: "ozel-seker", name: "Özel Şekerler" },
+    ],
+  },
+  {
+    slug: "ambalaj-sarf",
+    name: "Ambalaj & Sarf",
+    short: "Poşet, kağıt, servis malzemesi",
+    description: "Kafe, restoran ve market için ambalaj, kağıt ve servis sarf malzemeleri.",
+    icon: "package",
+    color: "#475569",
+    colorSoft: "#e6eaf0",
+    order: 12,
+    subcategories: [
+      { slug: "poset-torba", name: "Poşet & Torba" },
+      { slug: "kagit-urun", name: "Kağıt Ürünleri" },
+      { slug: "servis", name: "Servis Malzemeleri" },
+    ],
+  },
+];
+
+export const categoryMap: Record<string, Category> = Object.fromEntries(categories.map((c) => [c.slug, c]));
+
+export function getCategory(slug: string): Category | undefined {
+  return categoryMap[slug];
+}
+
+export function getSubcategory(categorySlug: string, subSlug: string) {
+  return categoryMap[categorySlug]?.subcategories.find((s) => s.slug === subSlug);
+}
