@@ -78,7 +78,7 @@ export default async function ProductPage({ params }: PageProps<"/urun/[slug]">)
               { icon: Building2, t: "Kurumsal fatura", d: "E-fatura" },
             ].map(({ icon: I, t, d }) => (
               <li key={t} className="flex items-center gap-2 rounded-xl bg-white px-3 py-2.5 shadow-card">
-                <I className="size-4 shrink-0 text-green-700" />
+                <I className="size-4 shrink-0 text-sky-600" />
                 <span>
                   <span className="block font-semibold text-ink-800">{t}</span>
                   <span className="text-ink-400">{d}</span>
@@ -91,15 +91,15 @@ export default async function ProductPage({ params }: PageProps<"/urun/[slug]">)
         {/* Bilgi + satın alma */}
         <div>
           <p className="text-xs font-bold uppercase tracking-[0.18em] text-ink-400">
-            <Link href={`/urunler?marka=${encodeURIComponent(p.brand)}`} className="hover:text-green-800">
+            <Link href={`/urunler?marka=${encodeURIComponent(p.brand)}`} className="hover:text-sky-700">
               {p.brand}
             </Link>
             <span className="mx-1.5 text-ink-300">·</span>
-            <Link href={`/kategori/${cat.slug}`} className="hover:text-green-800">
+            <Link href={`/kategori/${cat.slug}`} className="hover:text-sky-700">
               {cat.name}
             </Link>
           </p>
-          <h1 className="mt-2 text-3xl font-bold leading-tight sm:text-4xl">{p.name}</h1>
+          <h1 className="mt-2 text-3xl leading-tight text-navy-900 sm:text-[2.6rem]">{p.name}</h1>
           <p className="mt-3 text-[0.98rem] leading-relaxed text-ink-600">{p.short}</p>
 
           <div className="mt-6">
@@ -108,7 +108,7 @@ export default async function ProductPage({ params }: PageProps<"/urun/[slug]">)
 
           <p className="mt-4 text-xs text-ink-500">
             {formatCompact(site.commerce.freeShippingThreshold)} ve üzeri siparişlerde kargo bedava. Toptan alım için{" "}
-            <Link href="/kurumsal" className="font-semibold text-green-800 underline-offset-2 hover:underline">
+            <Link href="/kurumsal" className="font-semibold text-sky-700 underline-offset-2 hover:underline">
               kurumsal fiyat listesi
             </Link>{" "}
             isteyin.

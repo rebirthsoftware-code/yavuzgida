@@ -32,7 +32,7 @@ export function CartDrawer() {
       <div aria-live="polite" className={`pointer-events-none fixed inset-x-0 bottom-6 z-[70] flex justify-center px-4 transition-all duration-300 ${toast ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"}`}>
         {toast && (
           <button onClick={() => setOpen(true)} className="pointer-events-auto flex items-center gap-3 rounded-full bg-ink-900 py-2.5 pl-4 pr-5 text-sm font-medium text-white shadow-pop">
-            <ShoppingBasket className="size-4 text-tangerine-400" />
+            <ShoppingBasket className="size-4 text-orange-400" />
             {toast}
             <span className="rounded-full bg-white/15 px-2 py-0.5 text-xs">Sepeti aç</span>
           </button>
@@ -40,7 +40,7 @@ export function CartDrawer() {
       </div>
 
       <div className={`fixed inset-0 z-[80] ${open ? "" : "pointer-events-none"}`} aria-hidden={!open}>
-        <div onClick={() => setOpen(false)} className={`absolute inset-0 bg-green-950/50 backdrop-blur-[2px] transition-opacity duration-300 ${open ? "opacity-100" : "opacity-0"}`} />
+        <div onClick={() => setOpen(false)} className={`absolute inset-0 bg-navy-950/55 backdrop-blur-[3px] transition-opacity duration-300 ${open ? "opacity-100" : "opacity-0"}`} />
         <aside
           role="dialog"
           aria-label="Sepet"
@@ -48,7 +48,7 @@ export function CartDrawer() {
         >
           <header className="flex items-center justify-between border-b border-ink-100 px-5 py-4">
             <h2 className="text-lg font-bold">
-              Sepetim <span className="ml-1 rounded-full bg-green-100 px-2 py-0.5 text-xs font-bold text-green-900">{count} ürün</span>
+              Sepetim <span className="ml-1 rounded-full bg-sky-100 px-2 py-0.5 text-xs font-bold text-navy-900">{count} ürün</span>
             </h2>
             <button onClick={() => setOpen(false)} aria-label="Kapat" className="grid size-9 place-items-center rounded-lg hover:bg-ink-100">
               <X className="size-5" />
@@ -57,17 +57,17 @@ export function CartDrawer() {
 
           <div className="border-b border-ink-100 bg-paper-50 px-5 py-3">
             <div className="flex items-center gap-2 text-xs font-medium text-ink-700">
-              <Truck className="size-4 text-green-700" />
+              <Truck className="size-4 text-sky-600" />
               {remaining > 0 ? (
                 <span>
-                  Ücretsiz kargo için <b className="text-green-800">{formatPrice(remaining)}</b> daha ekleyin
+                  Ücretsiz kargo için <b className="text-sky-700">{formatPrice(remaining)}</b> daha ekleyin
                 </span>
               ) : (
-                <span className="text-green-800">Kargonuz ücretsiz 🎉</span>
+                <span className="text-sky-700">Kargonuz ücretsiz 🎉</span>
               )}
             </div>
             <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-ink-100">
-              <div className="h-full rounded-full bg-gradient-to-r from-green-600 to-tangerine-500 transition-all duration-500" style={{ width: `${pct}%` }} />
+              <div className="h-full rounded-full bg-gradient-to-r from-sky-500 via-sky-300 to-orange-500 transition-all duration-500" style={{ width: `${pct}%` }} />
             </div>
           </div>
 
@@ -92,7 +92,7 @@ export function CartDrawer() {
                     </Link>
                     <div className="min-w-0 flex-1">
                       <p className="text-[0.7rem] font-semibold uppercase tracking-wider text-ink-400">{it.brand}</p>
-                      <Link href={`/urun/${it.slug}`} onClick={() => setOpen(false)} className="line-clamp-2 text-sm font-semibold leading-snug hover:text-green-800">
+                      <Link href={`/urun/${it.slug}`} onClick={() => setOpen(false)} className="line-clamp-2 text-sm font-semibold leading-snug hover:text-sky-700">
                         {it.name}
                       </Link>
                       <p className="text-xs text-ink-500">{it.variantLabel}</p>

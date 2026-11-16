@@ -16,8 +16,8 @@ Bu sürüm **ön tasarımdır**: tüm sayfalar ve akışlar görsel olarak hazı
 
 ## Tasarım sistemi
 
-- **Renkler:** koyu yeşil (`green-900` başlık/altbilgi), mandalina turuncusu (`tangerine-500` aksiyon), kağıt beyazı zemin (`paper-50`). Tanımlar `src/app/globals.css` içindeki `@theme` bloğunda.
-- **Yazı tipleri:** Outfit (başlık) + DM Sans (metin), `next/font/google`.
+- **Renkler:** gece mavisi (`navy-900` üst şerit, altbilgi, birincil düğmeler), açık mavi (`sky-50…300` zemin ve vurgular), bakır turuncusu (`orange-500`, `.bg-copper` degrade aksiyon), kağıt beyazı (`paper-50`). Tanımlar `src/app/globals.css` içindeki `@theme` bloğunda.
+- **Yazı tipleri:** Playfair Display (serif başlık ve fiyatlar) + Plus Jakarta Sans (metin), `next/font/google`.
 - **Yapı:** üç katmanlı başlık (bilgi şeridi · logo + büyük arama + sepet · kategori çubuğu + mega menü), sol kenar çubuklu listeleme, kompakt kartlar (+ hızlı ekleme ve adet sayacı), ambalaj boyu seçimli ürün sayfası.
 
 ## Katalog veri modeli

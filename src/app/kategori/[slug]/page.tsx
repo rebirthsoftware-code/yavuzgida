@@ -24,7 +24,7 @@ export default async function CategoryPage({ params }: PageProps<"/kategori/[slu
     <CatalogPage title={c.name} description={c.description} crumbs={[{ label: "Ürünler", href: "/urunler" }, { label: c.name }]} fixedCategory={c.slug} accent={{ color: c.color, soft: c.colorSoft }}>
       <div className="mt-5 flex flex-wrap gap-2">
         {c.subcategories.map((s) => (
-          <Link key={s.slug} href={`/kategori/${c.slug}/${s.slug}`} className="rounded-full border border-ink-200 bg-white px-3.5 py-1.5 text-sm font-medium text-ink-800 transition hover:border-green-700 hover:text-green-900">
+          <Link key={s.slug} href={`/kategori/${c.slug}/${s.slug}`} className="rounded-full border border-ink-200 bg-white px-3.5 py-1.5 text-sm font-medium text-ink-800 transition hover:border-sky-600 hover:text-navy-900">
             {s.name} <span className="text-ink-400">{countIn(c.slug, s.slug)}</span>
           </Link>
         ))}

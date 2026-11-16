@@ -34,12 +34,12 @@ export function AddToCartPanel({ product }: { product: Product }) {
               key={x.id}
               disabled={!x.inStock}
               onClick={() => setVid(x.id)}
-              className={`flex items-center justify-between rounded-2xl border-2 px-4 py-3 text-left transition disabled:opacity-50 ${on ? "border-green-800 bg-green-50" : "border-ink-100 hover:border-ink-300"}`}
+              className={`flex items-center justify-between rounded-2xl border-2 px-4 py-3 text-left transition disabled:opacity-50 ${on ? "border-navy-900 bg-sky-50" : "border-ink-100 hover:border-ink-300"}`}
             >
               <span>
                 <span className="flex items-center gap-2 font-semibold">
                   {x.label}
-                  {best && <span className="rounded-md bg-tangerine-100 px-1.5 py-0.5 text-[0.65rem] font-bold uppercase text-tangerine-700">En avantajlı</span>}
+                  {best && <span className="rounded-md bg-orange-100 px-1.5 py-0.5 text-[0.65rem] font-bold uppercase text-orange-700">En avantajlı</span>}
                   {!x.inStock && <span className="text-xs font-medium text-ink-400">Stokta yok</span>}
                 </span>
                 <span className="block text-xs text-ink-500">
@@ -73,18 +73,18 @@ export function AddToCartPanel({ product }: { product: Product }) {
       </div>
 
       <div className="mt-4 grid grid-cols-[1fr_auto] gap-2">
-        <button onClick={submit} disabled={!v.inStock} className={`inline-flex h-13 items-center justify-center gap-2 rounded-xl text-base font-semibold text-white transition active:scale-[0.98] disabled:opacity-50 ${done ? "bg-green-600" : "bg-tangerine-500 hover:bg-tangerine-600"}`}>
+        <button onClick={submit} disabled={!v.inStock} className={`inline-flex h-13 items-center justify-center gap-2 rounded-full text-base font-semibold text-white transition active:scale-[0.98] disabled:opacity-50 ${done ? "bg-navy-900" : "bg-copper shadow-glow hover:brightness-105"}`}>
           {done ? <Check className="size-5" /> : <ShoppingBasket className="size-5" />}
           {done ? "Sepete eklendi" : "Sepete ekle"}
         </button>
-        <button onClick={() => setOpen(true)} className="inline-flex h-13 items-center justify-center rounded-xl border-2 border-ink-100 px-4 text-sm font-semibold hover:border-green-700">
+        <button onClick={() => setOpen(true)} className="inline-flex h-13 items-center justify-center rounded-full border border-ink-200 px-5 text-sm font-semibold hover:border-navy-900">
           Sepet
         </button>
       </div>
 
       {v.caseQty && (
         <p className="mt-4 flex items-center gap-2 rounded-xl bg-paper-50 px-3 py-2.5 text-xs text-ink-600">
-          <Package className="size-4 shrink-0 text-green-700" />
+          <Package className="size-4 shrink-0 text-orange-600" />
           Koli alımı için {v.caseQty} adet seçin; toplu alımda kademeli indirim sepette otomatik uygulanır.
         </p>
       )}

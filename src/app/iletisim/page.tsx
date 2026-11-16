@@ -19,13 +19,13 @@ export default function Page() {
             { icon: Clock, t: "Çalışma saatleri", v: site.contact.workingHours },
           ].map(({ icon: I, t, v, href }) => (
             <div key={t} className="flex items-center gap-4 rounded-2xl bg-white p-5 shadow-card">
-              <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-green-50 text-green-800">
+              <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-sky-50 text-sky-700">
                 <I className="size-5" />
               </span>
               <div>
                 <p className="text-xs font-bold uppercase tracking-wider text-ink-400">{t}</p>
                 {href ? (
-                  <a href={href} className="font-semibold hover:text-green-800">
+                  <a href={href} className="font-semibold hover:text-sky-700">
                     {v}
                   </a>
                 ) : (

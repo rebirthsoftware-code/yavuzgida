@@ -143,7 +143,7 @@ export function Catalog({ fixedCategory, fixedSub }: Props) {
           <ul className="space-y-0.5">
             {catOptions.map((c) => (
               <li key={c.slug}>
-                <button onClick={() => setParams({ kategori: c.slug === cat ? null : c.slug, alt: null })} className={`flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-left text-sm transition ${c.slug === cat ? "bg-green-50 font-semibold text-green-900" : "text-ink-700 hover:bg-paper-100"}`}>
+                <button onClick={() => setParams({ kategori: c.slug === cat ? null : c.slug, alt: null })} className={`flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-left text-sm transition ${c.slug === cat ? "bg-orange-50 font-semibold text-orange-700" : "text-ink-700 hover:bg-paper-100"}`}>
                   {c.name}
                   <span className="text-xs tabular-nums text-ink-400">{c.count}</span>
                 </button>
@@ -157,7 +157,7 @@ export function Catalog({ fixedCategory, fixedSub }: Props) {
           <ul className="space-y-0.5">
             {subOptions.map((s) => {
               const href = fixedCategory ? `/kategori/${cat}/${s.slug}` : undefined;
-              const cls = `flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-left text-sm transition ${s.slug === sub ? "bg-green-50 font-semibold text-green-900" : "text-ink-700 hover:bg-paper-100"}`;
+              const cls = `flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-left text-sm transition ${s.slug === sub ? "bg-orange-50 font-semibold text-orange-700" : "text-ink-700 hover:bg-paper-100"}`;
               return (
                 <li key={s.slug}>
                   {href ? (
@@ -183,7 +183,7 @@ export function Catalog({ fixedCategory, fixedSub }: Props) {
           {TAGS.map((t) => {
             const on = tags.includes(t);
             return (
-              <button key={t} onClick={() => setParams({ etiket: on ? tags.filter((x) => x !== t) : [...tags, t] })} className={`rounded-full border px-3 py-1 text-xs font-semibold transition ${on ? "border-green-800 bg-green-800 text-white" : "border-ink-200 text-ink-700 hover:border-green-700"}`}>
+              <button key={t} onClick={() => setParams({ etiket: on ? tags.filter((x) => x !== t) : [...tags, t] })} className={`rounded-full border px-3 py-1 text-xs font-semibold transition ${on ? "border-navy-900 bg-navy-900 text-white" : "border-ink-200 text-ink-700 hover:border-orange-400"}`}>
                 {tagLabel(t)}
               </button>
             );
@@ -198,7 +198,7 @@ export function Catalog({ fixedCategory, fixedSub }: Props) {
             return (
               <li key={b}>
                 <label className="flex cursor-pointer items-center gap-2.5 rounded-lg px-1 py-1 text-sm hover:bg-paper-100">
-                  <input type="checkbox" checked={on} onChange={() => setParams({ marka: on ? brands.filter((x) => x !== b) : [...brands, b] })} className="size-4 rounded border-ink-300 accent-green-800" />
+                  <input type="checkbox" checked={on} onChange={() => setParams({ marka: on ? brands.filter((x) => x !== b) : [...brands, b] })} className="size-4 rounded border-ink-300 accent-navy-900" />
                   <span className="flex-1 text-ink-800">{b}</span>
                   <span className="text-xs tabular-nums text-ink-400">{n}</span>
                 </label>
@@ -213,7 +213,7 @@ export function Catalog({ fixedCategory, fixedSub }: Props) {
       </FilterGroup>
 
       <label className="flex cursor-pointer items-center gap-2.5 text-sm">
-        <input type="checkbox" checked={stock} onChange={() => setParams({ stok: stock ? null : "1" })} className="size-4 accent-green-800" />
+        <input type="checkbox" checked={stock} onChange={() => setParams({ stok: stock ? null : "1" })} className="size-4 accent-navy-900" />
         Yalnızca stoktakiler
       </label>
     </div>
@@ -228,7 +228,7 @@ export function Catalog({ fixedCategory, fixedSub }: Props) {
 
       {/* Mobil filtre çekmecesi */}
       <div className={`fixed inset-0 z-[75] lg:hidden ${drawer ? "" : "pointer-events-none"}`}>
-        <div onClick={() => setDrawer(false)} className={`absolute inset-0 bg-green-950/50 transition-opacity ${drawer ? "opacity-100" : "opacity-0"}`} />
+        <div onClick={() => setDrawer(false)} className={`absolute inset-0 bg-navy-950/50 transition-opacity ${drawer ? "opacity-100" : "opacity-0"}`} />
         <div className={`absolute inset-y-0 left-0 w-[86%] max-w-sm overflow-y-auto bg-white p-5 transition-transform duration-300 ${drawer ? "translate-x-0" : "-translate-x-full"}`}>
           <div className="mb-5 flex items-center justify-between">
             <h2 className="text-lg font-bold">Filtreler</h2>
@@ -237,7 +237,7 @@ export function Catalog({ fixedCategory, fixedSub }: Props) {
             </button>
           </div>
           {sidebar}
-          <button onClick={() => setDrawer(false)} className="mt-6 h-11 w-full rounded-xl bg-green-800 font-semibold text-white">
+          <button onClick={() => setDrawer(false)} className="mt-6 h-11 w-full rounded-full bg-navy-900 font-semibold text-white">
             {filtered.length} ürünü göster
           </button>
         </div>
@@ -248,7 +248,7 @@ export function Catalog({ fixedCategory, fixedSub }: Props) {
         <div className="flex flex-wrap items-center gap-3 rounded-2xl bg-white px-4 py-3 shadow-card">
           <button onClick={() => setDrawer(true)} className="inline-flex h-10 items-center gap-2 rounded-xl border border-ink-200 px-3 text-sm font-semibold lg:hidden">
             <SlidersHorizontal className="size-4" /> Filtrele
-            {activeChips.length > 0 && <span className="rounded-full bg-tangerine-500 px-1.5 text-[0.65rem] text-white">{activeChips.length}</span>}
+            {activeChips.length > 0 && <span className="rounded-full bg-orange-500 px-1.5 text-[0.65rem] text-white">{activeChips.length}</span>}
           </button>
           <p className="text-sm text-ink-500">
             <b className="text-ink-900">{filtered.length}</b> ürün
@@ -257,7 +257,7 @@ export function Catalog({ fixedCategory, fixedSub }: Props) {
             <label htmlFor="sirala" className="hidden text-sm text-ink-500 sm:block">
               Sırala
             </label>
-            <select id="sirala" value={sort} onChange={(e) => setParams({ sirala: e.target.value === "populer" ? null : e.target.value })} className="h-10 rounded-xl border border-ink-200 bg-white px-3 text-sm font-medium outline-none focus:border-green-700">
+            <select id="sirala" value={sort} onChange={(e) => setParams({ sirala: e.target.value === "populer" ? null : e.target.value })} className="h-10 rounded-xl border border-ink-200 bg-white px-3 text-sm font-medium outline-none focus:border-navy-900">
               {SORTS.map(([v, l]) => (
                 <option key={v} value={v}>
                   {l}
@@ -270,7 +270,7 @@ export function Catalog({ fixedCategory, fixedSub }: Props) {
         {activeChips.length > 0 && (
           <div className="mt-3 flex flex-wrap items-center gap-2">
             {activeChips.map((c, i) => (
-              <button key={i} onClick={c.onClear} className="inline-flex items-center gap-1 rounded-full bg-green-100 py-1 pl-3 pr-2 text-xs font-semibold text-green-900 hover:bg-green-200">
+              <button key={i} onClick={c.onClear} className="inline-flex items-center gap-1 rounded-full bg-sky-100 py-1 pl-3 pr-2 text-xs font-semibold text-navy-900 hover:bg-sky-200">
                 {c.label} <X className="size-3" />
               </button>
             ))}
@@ -287,7 +287,7 @@ export function Catalog({ fixedCategory, fixedSub }: Props) {
             </span>
             <p className="mt-4 font-semibold">Bu kriterlere uyan ürün bulunamadı</p>
             <p className="mt-1 text-sm text-ink-500">Filtreleri gevşetmeyi veya farklı bir arama terimi denemeyi deneyin.</p>
-            <button onClick={() => router.push(pathname)} className="mt-5 h-10 rounded-xl bg-green-800 px-4 text-sm font-semibold text-white">
+            <button onClick={() => router.push(pathname)} className="mt-5 h-10 rounded-full bg-navy-900 px-4 text-sm font-semibold text-white">
               Filtreleri temizle
             </button>
           </div>
@@ -315,7 +315,7 @@ export function Catalog({ fixedCategory, fixedSub }: Props) {
                     …
                   </span>
                 ) : (
-                  <button key={n} onClick={() => { setParams({ sayfa: n === 1 ? null : String(n) }, false); window.scrollTo({ top: 0, behavior: "smooth" }); }} aria-current={n === current ? "page" : undefined} className={`grid size-10 place-items-center rounded-xl text-sm font-semibold transition ${n === current ? "bg-green-800 text-white" : "bg-white text-ink-700 shadow-card hover:bg-paper-100"}`}>
+                  <button key={n} onClick={() => { setParams({ sayfa: n === 1 ? null : String(n) }, false); window.scrollTo({ top: 0, behavior: "smooth" }); }} aria-current={n === current ? "page" : undefined} className={`grid size-10 place-items-center rounded-full text-sm font-semibold transition ${n === current ? "bg-navy-900 text-white" : "bg-white text-ink-700 shadow-card hover:bg-paper-100"}`}>
                     {n}
                   </button>
                 ),
@@ -352,10 +352,10 @@ function PriceRange({ min, max, onApply }: { min: number; max: number; onApply: 
       }}
       className="flex items-center gap-2"
     >
-      <input inputMode="numeric" value={a} onChange={(e) => setA(e.target.value)} placeholder="Min" className="h-9 w-full rounded-lg border border-ink-200 px-2.5 text-sm outline-none focus:border-green-700" />
+      <input inputMode="numeric" value={a} onChange={(e) => setA(e.target.value)} placeholder="Min" className="h-9 w-full rounded-lg border border-ink-200 px-2.5 text-sm outline-none focus:border-navy-900" />
       <span className="text-ink-300">–</span>
-      <input inputMode="numeric" value={b} onChange={(e) => setB(e.target.value)} placeholder="Max" className="h-9 w-full rounded-lg border border-ink-200 px-2.5 text-sm outline-none focus:border-green-700" />
-      <button type="submit" className="h-9 shrink-0 rounded-lg bg-green-800 px-3 text-xs font-semibold text-white">
+      <input inputMode="numeric" value={b} onChange={(e) => setB(e.target.value)} placeholder="Max" className="h-9 w-full rounded-lg border border-ink-200 px-2.5 text-sm outline-none focus:border-navy-900" />
+      <button type="submit" className="h-9 shrink-0 rounded-lg bg-navy-900 px-3 text-xs font-semibold text-white">
         Uygula
       </button>
     </form>

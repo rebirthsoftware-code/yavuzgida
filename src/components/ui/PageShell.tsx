@@ -7,7 +7,7 @@ export function PageShell({ title, lead, crumb, children, narrow }: { title: str
         <Breadcrumbs items={[{ label: crumb }]} />
       </div>
       <header className="mb-8">
-        <h1 className="text-3xl font-bold sm:text-4xl">{title}</h1>
+        <h1 className="text-3xl text-navy-900 sm:text-[2.6rem]">{title}</h1>
         {lead && <p className="mt-3 max-w-2xl text-[1.02rem] leading-relaxed text-ink-500">{lead}</p>}
       </header>
       {children}
@@ -25,4 +25,4 @@ export function Field({ label, children, hint }: { label: string; children: Reac
   );
 }
 
-export const inputCls = "h-11 w-full rounded-xl border border-ink-200 bg-white px-3.5 text-sm outline-none transition focus:border-green-700 focus:ring-2 focus:ring-green-100";
+export const inputCls = "h-11 w-full rounded-xl border border-ink-200 bg-white px-3.5 text-sm outline-none transition focus:border-navy-900 focus:ring-2 focus:ring-sky-100";

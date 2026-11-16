@@ -8,11 +8,11 @@ export function HeroSearch() {
   return (
     <button
       onClick={() => setSearchOpen(true)}
-      className="group flex h-14 w-full items-center gap-3 rounded-2xl bg-white pl-5 pr-2 text-left text-ink-500 shadow-pop transition hover:shadow-[0_24px_60px_-24px_rgb(242_118_46/0.6)]"
+      className="group flex h-14 w-full items-center gap-3 rounded-full border border-white bg-white pl-6 pr-2 text-left text-ink-500 shadow-pop transition hover:shadow-glow"
     >
       <Search className="size-5 text-ink-400" />
       <span className="flex-1 truncate text-base">600+ ürün arasında ara…</span>
-      <span className="grid h-10 place-items-center rounded-xl bg-tangerine-500 px-4 text-sm font-semibold text-white group-hover:bg-tangerine-600">Ara</span>
+      <span className="bg-copper grid h-10 place-items-center rounded-full px-5 text-sm font-semibold text-white">Ara</span>
     </button>
   );
 }

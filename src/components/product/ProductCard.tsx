@@ -15,8 +15,8 @@ export function ProductCard({ p, priority }: { p: ProductIndex; priority?: boole
   const discountPct = p.oldPrice ? Math.round((1 - p.price / p.oldPrice) * 100) : 0;
 
   return (
-    <article className="group relative flex h-full flex-col rounded-2xl bg-white p-2.5 shadow-card transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lift">
-      <Link href={`/urun/${p.slug}`} className="relative block aspect-square overflow-hidden rounded-xl" aria-label={p.name}>
+    <article className="group relative flex h-full flex-col rounded-3xl bg-white p-2.5 shadow-card transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lift">
+      <Link href={`/urun/${p.slug}`} className="relative block aspect-square overflow-hidden rounded-[1.1rem]" aria-label={p.name}>
         <ProductVisual name={p.name} category={p.category} hue={p.hue} image={p.image} label={p.unit} priority={priority} className="transition-transform duration-500 group-hover:scale-[1.04]" />
         {badge && (
           <span className="absolute left-2 top-2">
@@ -34,8 +34,8 @@ export function ProductCard({ p, priority }: { p: ProductIndex; priority?: boole
         <p className="truncate text-[0.68rem] font-bold uppercase tracking-[0.14em] text-ink-400">
           {p.brand} <span className="text-ink-300">·</span> {sub?.name ?? cat?.name}
         </p>
-        <h3 className="mt-1 line-clamp-2 text-[0.95rem] font-semibold leading-snug text-ink-900">
-          <Link href={`/urun/${p.slug}`} className="hover:text-green-800">
+        <h3 className="mt-1 line-clamp-2 font-display text-[1.05rem] font-semibold leading-snug text-navy-900">
+          <Link href={`/urun/${p.slug}`} className="hover:text-orange-700">
             {p.name}
           </Link>
         </h3>

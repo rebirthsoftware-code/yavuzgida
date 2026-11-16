@@ -24,11 +24,11 @@ export function MobileMenu() {
     <>
       <MenuButton onClick={() => setOpen(true)} />
       <div className={`fixed inset-0 z-[85] lg:hidden ${open ? "" : "pointer-events-none"}`} aria-hidden={!open}>
-        <div onClick={() => setOpen(false)} className={`absolute inset-0 bg-green-950/60 transition-opacity ${open ? "opacity-100" : "opacity-0"}`} />
+        <div onClick={() => setOpen(false)} className={`absolute inset-0 bg-navy-950/60 transition-opacity ${open ? "opacity-100" : "opacity-0"}`} />
         <aside className={`absolute left-0 top-0 flex h-full w-[86%] max-w-sm flex-col bg-white transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] ${open ? "translate-x-0" : "-translate-x-full"}`}>
-          <div className="flex items-center justify-between bg-green-900 px-4 py-3">
-            <Logo tone="light" />
-            <button onClick={() => setOpen(false)} aria-label="Kapat" className="grid size-10 place-items-center rounded-lg text-white hover:bg-white/10">
+          <div className="flex items-center justify-between border-b border-ink-100 px-4 py-3">
+            <Logo tone="dark" />
+            <button onClick={() => setOpen(false)} aria-label="Kapat" className="grid size-10 place-items-center rounded-lg text-navy-900 hover:bg-sky-50">
               <X className="size-5" />
             </button>
           </div>
@@ -90,10 +90,10 @@ export function MobileMenu() {
             </ul>
           </div>
           <div className="grid grid-cols-2 gap-2 border-t border-ink-100 p-4">
-            <a href={site.contact.phoneHref} className="flex items-center justify-center gap-2 rounded-xl bg-green-800 py-2.5 text-sm font-semibold text-white">
+            <a href={site.contact.phoneHref} className="flex items-center justify-center gap-2 rounded-full bg-navy-900 py-2.5 text-sm font-semibold text-white">
               <Phone className="size-4" /> Ara
             </a>
-            <a href={site.contact.whatsappHref} target="_blank" rel="noopener" className="flex items-center justify-center gap-2 rounded-xl bg-[#25d366] py-2.5 text-sm font-semibold text-white">
+            <a href={site.contact.whatsappHref} target="_blank" rel="noopener" className="flex items-center justify-center gap-2 rounded-full bg-[#25d366] py-2.5 text-sm font-semibold text-white">
               <MessageCircle className="size-4" /> WhatsApp
             </a>
           </div>

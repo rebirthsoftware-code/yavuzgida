@@ -47,7 +47,7 @@ export function CartPage() {
               </Link>
               <div className="min-w-0">
                 <p className="text-[0.68rem] font-bold uppercase tracking-wider text-ink-400">{it.brand}</p>
-                <Link href={`/urun/${it.slug}`} className="font-semibold hover:text-green-800">
+                <Link href={`/urun/${it.slug}`} className="font-semibold hover:text-sky-700">
                   {it.name}
                 </Link>
                 <p className="text-sm text-ink-500">
@@ -84,7 +84,7 @@ export function CartPage() {
           </div>
           <div className="flex justify-between">
             <dt className="text-ink-500">Kargo</dt>
-            <dd className="tabular-nums">{shipping === 0 ? <span className="font-semibold text-green-700">Ücretsiz</span> : formatPrice(shipping)}</dd>
+            <dd className="tabular-nums">{shipping === 0 ? <span className="font-semibold text-sky-600">Ücretsiz</span> : formatPrice(shipping)}</dd>
           </div>
           <div className="flex justify-between border-t border-ink-100 pt-3 text-base">
             <dt className="font-semibold">Toplam</dt>
@@ -92,7 +92,7 @@ export function CartPage() {
           </div>
         </dl>
         {shipping > 0 && (
-          <p className="mt-3 flex items-start gap-2 rounded-xl bg-green-50 px-3 py-2.5 text-xs text-green-900">
+          <p className="mt-3 flex items-start gap-2 rounded-xl bg-sky-50 px-3 py-2.5 text-xs text-navy-900">
             <Truck className="mt-0.5 size-4 shrink-0" />
             {formatPrice(site.commerce.freeShippingThreshold - subtotal)} daha ekleyin, kargo bedava olsun.
           </p>

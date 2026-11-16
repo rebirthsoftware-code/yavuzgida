@@ -86,7 +86,7 @@ function SearchPanel({ close }: { close: () => void }) {
 
   return (
     <div className="fixed inset-0 z-[90] flex items-start justify-center px-4 pt-[8vh] sm:pt-[12vh]" role="dialog" aria-label="Ürün ara">
-      <div className="absolute inset-0 bg-green-950/60 backdrop-blur-sm" onClick={() => setSearchOpen(false)} />
+      <div className="absolute inset-0 bg-navy-950/60 backdrop-blur-sm" onClick={() => setSearchOpen(false)} />
       <div className="relative w-full max-w-2xl overflow-hidden rounded-2xl bg-white shadow-pop animate-fade-up">
         <div className="flex items-center gap-3 border-b border-ink-100 px-4">
           <Search className="size-5 text-ink-400" />
@@ -110,7 +110,7 @@ function SearchPanel({ close }: { close: () => void }) {
               <p className="text-xs font-bold uppercase tracking-wider text-ink-400">Popüler aramalar</p>
               <div className="mt-3 flex flex-wrap gap-2">
                 {popular.map((p) => (
-                  <button key={p} onClick={() => setQ(p)} className="rounded-full border border-ink-200 px-3 py-1.5 text-sm hover:border-green-700 hover:text-green-800">
+                  <button key={p} onClick={() => setQ(p)} className="rounded-full border border-ink-200 px-3 py-1.5 text-sm hover:border-sky-600 hover:text-sky-700">
                     {p}
                   </button>
                 ))}
@@ -129,7 +129,7 @@ function SearchPanel({ close }: { close: () => void }) {
               {catHits.length > 0 && (
                 <div className="mb-1 flex flex-wrap gap-2 px-2 py-2">
                   {catHits.map((c) => (
-                    <Link key={c.slug} href={`/kategori/${c.slug}`} onClick={() => setSearchOpen(false)} className="inline-flex items-center gap-1 rounded-full bg-green-50 px-3 py-1 text-xs font-semibold text-green-900 hover:bg-green-100">
+                    <Link key={c.slug} href={`/kategori/${c.slug}`} onClick={() => setSearchOpen(false)} className="inline-flex items-center gap-1 rounded-full bg-sky-50 px-3 py-1 text-xs font-semibold text-navy-900 hover:bg-sky-100">
                       {c.name} <ArrowRight className="size-3" />
                     </Link>
                   ))}
@@ -163,7 +163,7 @@ function SearchPanel({ close }: { close: () => void }) {
                   ))}
                 </ul>
               )}
-              <button onClick={() => go(`/urunler?q=${encodeURIComponent(q.trim())}`)} className="mt-1 flex w-full items-center justify-between rounded-xl bg-green-50 px-4 py-3 text-sm font-semibold text-green-900 hover:bg-green-100">
+              <button onClick={() => go(`/urunler?q=${encodeURIComponent(q.trim())}`)} className="mt-1 flex w-full items-center justify-between rounded-xl bg-sky-50 px-4 py-3 text-sm font-semibold text-navy-900 hover:bg-sky-100">
                 “{q}” için tüm sonuçları gör
                 <ArrowRight className="size-4" />
               </button>

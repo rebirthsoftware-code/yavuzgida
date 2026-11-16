@@ -13,7 +13,7 @@ export function Price({ value, old, size = "md", className = "" }: { value: numb
 /** Çentikli etiket biçimli fiyat (pazar tezgâhı etiketi) */
 export function PriceTag({ value, className = "" }: { value: number; className?: string }) {
   return (
-    <span className={`price-tag inline-flex items-center bg-tangerine-500 py-1 pl-2.5 pr-4 font-display text-sm font-bold tabular-nums text-white ${className}`}>
+    <span className={`price-tag inline-flex items-center bg-orange-500 py-1 pl-2.5 pr-4 font-display text-sm font-bold tabular-nums text-white ${className}`}>
       {formatPrice(value)}
     </span>
   );

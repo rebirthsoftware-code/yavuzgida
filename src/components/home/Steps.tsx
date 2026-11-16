@@ -14,12 +14,12 @@ export function Steps() {
       <SectionHeading eyebrow="Nasıl çalışır?" title="Dört adımda tedarik" align="center" />
       <ol className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {steps.map(({ icon: I, t, d }, i) => (
-          <li key={t} className="relative rounded-2xl bg-white p-6 shadow-card">
-            <span className="absolute right-5 top-4 font-display text-4xl font-black text-paper-200">0{i + 1}</span>
-            <span className="grid size-11 place-items-center rounded-xl bg-green-50 text-green-800">
+          <li key={t} className="relative rounded-3xl bg-white p-6 shadow-card">
+            <span className="absolute right-5 top-4 font-display text-4xl italic text-sky-200">0{i + 1}</span>
+            <span className="grid size-11 place-items-center rounded-full bg-orange-50 text-orange-600">
               <I className="size-5" />
             </span>
-            <p className="mt-4 font-display text-lg font-bold">{t}</p>
+            <p className="mt-4 font-display text-lg font-semibold text-navy-900">{t}</p>
             <p className="mt-1.5 text-sm leading-relaxed text-ink-500">{d}</p>
           </li>
         ))}

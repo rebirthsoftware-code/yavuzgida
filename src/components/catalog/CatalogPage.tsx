@@ -25,10 +25,10 @@ export function CatalogPage({
       <div className="py-5">
         <Breadcrumbs items={crumbs} />
       </div>
-      <header className="relative mb-8 overflow-hidden rounded-3xl bg-white px-6 py-8 shadow-card sm:px-10">
+      <header className="relative mb-8 overflow-hidden rounded-4xl bg-white px-6 py-9 shadow-card sm:px-10">
         {accent && <span className="absolute -right-16 -top-16 size-56 rounded-full" style={{ background: accent.soft }} />}
         <div className="relative">
-          <h1 className="text-3xl font-bold sm:text-4xl" style={accent ? { color: accent.color } : undefined}>
+          <h1 className="text-3xl text-navy-900 sm:text-[2.6rem]" style={accent ? { color: accent.color } : undefined}>
             {title}
           </h1>
           {description && <p className="mt-2 max-w-2xl text-[0.98rem] leading-relaxed text-ink-500">{description}</p>}

@@ -18,17 +18,17 @@ export function QuickAdd({ item, disabled, compact }: { item: Omit<CartItem, "qt
   };
 
   if (disabled) {
-    return <span className="inline-flex h-10 items-center rounded-xl bg-paper-100 px-3 text-xs font-semibold text-ink-400">Stokta yok</span>;
+    return <span className="inline-flex h-10 items-center rounded-full bg-paper-100 px-3 text-xs font-semibold text-ink-400">Stokta yok</span>;
   }
 
   if (inCart) {
     return (
-      <span className="inline-flex h-10 items-center rounded-xl bg-green-800 text-white shadow-[0_8px_20px_-10px_rgb(11_59_44/0.6)]">
-        <button aria-label="Azalt" onClick={() => (inCart.qty <= 1 ? remove(item.slug, item.variantId) : setQty(item.slug, item.variantId, inCart.qty - 1))} className="grid size-10 place-items-center rounded-l-xl hover:bg-green-700">
+      <span className="inline-flex h-10 items-center rounded-full bg-navy-900 text-white shadow-[0_8px_20px_-10px_rgb(12_33_56/0.6)]">
+        <button aria-label="Azalt" onClick={() => (inCart.qty <= 1 ? remove(item.slug, item.variantId) : setQty(item.slug, item.variantId, inCart.qty - 1))} className="grid size-10 place-items-center rounded-l-full hover:bg-navy-800">
           <Minus className="size-4" />
         </button>
         <span className="min-w-7 text-center text-sm font-bold tabular-nums">{inCart.qty}</span>
-        <button aria-label="Artır" onClick={() => setQty(item.slug, item.variantId, inCart.qty + 1)} className="grid size-10 place-items-center rounded-r-xl hover:bg-green-700">
+        <button aria-label="Artır" onClick={() => setQty(item.slug, item.variantId, inCart.qty + 1)} className="grid size-10 place-items-center rounded-r-full hover:bg-navy-800">
           <Plus className="size-4" />
         </button>
       </span>
@@ -39,8 +39,8 @@ export function QuickAdd({ item, disabled, compact }: { item: Omit<CartItem, "qt
     <button
       onClick={onAdd}
       aria-label={`${item.name} sepete ekle`}
-      className={`inline-flex h-10 items-center justify-center gap-1.5 rounded-xl font-semibold transition active:scale-95 ${
-        flash ? "bg-green-600 text-white" : "bg-tangerine-500 text-white hover:bg-tangerine-600"
+      className={`inline-flex h-10 items-center justify-center gap-1.5 rounded-full font-semibold text-white transition active:scale-95 ${
+        flash ? "bg-navy-900" : "bg-copper shadow-glow hover:brightness-105"
       } ${compact ? "w-10" : "px-3.5 text-sm"}`}
     >
       {flash ? <Check className="size-4" /> : <Plus className="size-4" />}
