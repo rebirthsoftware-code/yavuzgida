@@ -8,7 +8,7 @@ export const metadata: Metadata = { title: "Sipariş Takip" };
 export default function Page() {
   return (
     <PageShell title="Sipariş takip" crumb="Sipariş takip" lead="Sipariş numaranız ve telefon numaranızla kargo durumunu üyeliksiz sorgulayın." narrow>
-      <form className="rounded-xl border border-ink-200 bg-white p-6 sm:p-8">
+      <form className="rounded-lg border border-ink-200 bg-white p-6 sm:p-8">
         <div className="grid gap-4 sm:grid-cols-2">
           <Field label="Sipariş numarası"><input className={inputCls} placeholder="YVZ-2026-000123" /></Field>
           <Field label="Telefon"><input className={inputCls} inputMode="tel" placeholder="05xx xxx xx xx" /></Field>

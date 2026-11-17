@@ -15,7 +15,7 @@ export default function CheckoutPage() {
       </div>
       <form className="grid gap-6 lg:grid-cols-[1fr_360px] lg:items-start">
         <div className="space-y-6">
-          <section className="rounded-xl border border-ink-200 bg-white p-6">
+          <section className="rounded-lg border border-ink-200 bg-white p-6">
             <h2 className="text-lg font-bold">Teslimat bilgileri</h2>
             <div className="mt-4 grid gap-4 sm:grid-cols-2">
               <Field label="Ad Soyad"><input className={inputCls} /></Field>
@@ -27,7 +27,7 @@ export default function CheckoutPage() {
               </div>
             </div>
           </section>
-          <section className="rounded-xl border border-ink-200 bg-white p-6">
+          <section className="rounded-lg border border-ink-200 bg-white p-6">
             <h2 className="text-lg font-bold">Fatura</h2>
             <div className="mt-4 flex gap-2">
               {["Bireysel", "Kurumsal"].map((t, i) => (
@@ -42,7 +42,7 @@ export default function CheckoutPage() {
               <Field label="Vergi dairesi / No"><input className={inputCls} /></Field>
             </div>
           </section>
-          <section className="rounded-xl border border-ink-200 bg-white p-6">
+          <section className="rounded-lg border border-ink-200 bg-white p-6">
             <h2 className="text-lg font-bold">Ödeme yöntemi</h2>
             <div className="mt-4 grid gap-2 sm:grid-cols-3">
               {[
@@ -52,7 +52,7 @@ export default function CheckoutPage() {
               ].map(({ icon: I, t, d, on }) => (
                 <label key={t} className={`cursor-pointer rounded-xl border p-4 ${on ? "border-sky-700 bg-sky-50" : "border-ink-100"}`}>
                   <input type="radio" name="odeme" defaultChecked={on} className="sr-only" />
-                  <I className="size-5 text-sky-700" />
+                  <I className="size-5 text-orange-500" />
                   <p className="mt-2 text-sm font-semibold">{t}</p>
                   <p className="text-xs text-ink-500">{d}</p>
                 </label>
@@ -60,10 +60,10 @@ export default function CheckoutPage() {
             </div>
           </section>
         </div>
-        <aside className="rounded-xl border border-ink-200 bg-white p-6">
+        <aside className="rounded-lg border border-ink-200 bg-white p-6">
           <h2 className="text-lg font-bold">Özet</h2>
           <p className="mt-2 text-sm text-ink-500">Sepet tutarı ödeme adımında sunucuda yeniden hesaplanacaktır.</p>
-          <Button type="button" variant="accent" size="lg" className="mt-5 w-full">
+          <Button type="button" variant="primary" size="lg" className="mt-5 w-full">
             Siparişi tamamla
           </Button>
           <p className="mt-3 text-center text-xs text-ink-400">Devam ederek mesafeli satış sözleşmesini kabul etmiş olursunuz.</p>

@@ -8,5 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function ProductsPage() {
-  return <CatalogPage title="Fiyat listesi" description={`${products.length} ürün, katalog sırasında. Ambalaj boyunu satırda seçin, adet girin; sipariş listeniz sağda anında oluşur.`} crumbs={[{ label: "Tüm ürünler" }]} />;
+  return <CatalogPage title="Tüm Ürünler" count={products.length} crumbs={[{ label: "Tüm Ürünler" }]} />;
 }

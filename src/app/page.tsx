@@ -1,22 +1,60 @@
-import { Masthead } from "@/components/home/Masthead";
-import { CategoryIndex } from "@/components/home/CategoryIndex";
-import { PriceListPreview } from "@/components/home/PriceListPreview";
-import { Tickets } from "@/components/home/Tickets";
-import { CorporateNote } from "@/components/home/CorporateNote";
-import { bestSellers, newArrivals, categoryCounts, products, categories } from "@/lib/catalog";
+import { HeroBanners } from "@/components/home/HeroBanners";
+import { SideBanners } from "@/components/home/SideBanners";
+import { CategoryCircles } from "@/components/home/CategoryCircles";
+import { FlashDeals } from "@/components/home/FlashDeals";
+import { CampaignTiles } from "@/components/home/CampaignTiles";
+import { BestSellerTabs } from "@/components/home/BestSellerTabs";
+import { PopularCategories } from "@/components/home/PopularCategories";
+import { BrandStrip } from "@/components/home/BrandStrip";
+import { ProductRail } from "@/components/product/ProductRail";
+import { SectionHeading } from "@/components/ui/SectionHeading";
+import { bestSellers, newArrivals, discounted, categoryCounts, products, categories, brands } from "@/lib/catalog";
 import { toIndex } from "@/lib/index-of";
 
 export default function HomePage() {
   const counts = categoryCounts();
-  const discountCount = products.filter((p) => p.tags.includes("indirim")).length;
+  const best = bestSellers(60);
+  const groups = [
+    { key: "all", label: "Tümü", items: best.slice(0, 12).map(toIndex) },
+    ...categories.slice(0, 6).map((c) => ({ key: c.slug, label: c.name, items: best.filter((p) => p.category === c.slug).slice(0, 12).map(toIndex) })).filter((g) => g.items.length >= 4),
+  ];
+  const samples: Record<string, ReturnType<typeof toIndex>[]> = {};
+  for (const c of categories) samples[c.slug] = products.filter((p) => p.category === c.slug).slice(0, 3).map(toIndex);
+  const picks = discounted(9).map(toIndex);
+
   return (
-    <>
-      <Masthead productCount={Math.floor(products.length / 10) * 10} categoryCount={categories.length} />
-      <CategoryIndex counts={counts} />
-      <PriceListPreview eyebrow="Bu haftanın listesi" title="En çok sipariş edilenler" items={bestSellers(10).map(toIndex)} href="/urunler?etiket=cok-satan&sirala=populer" linkLabel="Tüm çok satanlar" />
-      <Tickets discountCount={discountCount} />
-      <PriceListPreview eyebrow="Rafa yeni girenler" title="Yeni eklenenler" items={newArrivals(6).map(toIndex)} href="/urunler?etiket=yeni&sirala=yeni" linkLabel="Tüm yeniler" />
-      <CorporateNote />
-    </>
+    <div className="mx-auto max-w-[1320px] space-y-10 px-4 pb-10 pt-4">
+      <section className="grid gap-3 lg:grid-cols-[1fr_300px]">
+        <HeroBanners picks={picks} />
+        <SideBanners />
+      </section>
+
+      <section>
+        <CategoryCircles />
+      </section>
+
+      <FlashDeals items={discounted(12).map(toIndex)} />
+
+      <CampaignTiles />
+
+      <BestSellerTabs groups={groups} />
+
+      <section>
+        <SectionHeading title="Popüler Kategoriler" href="/urunler" />
+        <PopularCategories samples={samples} counts={counts} />
+      </section>
+
+      <section>
+        <SectionHeading title="Yeni Gelenler" sub="Rafa bu ay eklenen ürünler" href="/urunler?etiket=yeni&sirala=yeni" />
+        <ProductRail items={newArrivals(12).map(toIndex)} />
+      </section>
+
+      <section>
+        <SectionHeading title="Sizin İçin Seçtiklerimiz" href="/urunler?sirala=populer" />
+        <ProductRail items={best.slice(12, 24).map(toIndex)} />
+      </section>
+
+      <BrandStrip brands={brands} />
+    </div>
   );
 }

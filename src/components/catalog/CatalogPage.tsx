@@ -1,41 +1,47 @@
 import { Suspense } from "react";
+import Link from "next/link";
 import { Catalog } from "./Catalog";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
+import type { Category } from "@/lib/types";
 
-/** Listeleme sayfası kabuğu: büyük serif başlık + açıklama, ardından liste. */
 export function CatalogPage({
-  index,
   title,
-  description,
+  count,
   crumbs,
   fixedCategory,
   fixedSub,
-  children,
+  category,
+  subCounts,
 }: {
-  index?: string;
   title: string;
-  description?: string;
+  count: number;
   crumbs: { label: string; href?: string }[];
   fixedCategory?: string;
   fixedSub?: string;
-  children?: React.ReactNode;
+  category?: Category;
+  subCounts?: Record<string, number>;
 }) {
   return (
-    <div>
-      <header className="px-4 pb-6 pt-6 lg:px-6 lg:pt-8">
-        <Breadcrumbs items={crumbs} />
-        <div className="mt-5 flex flex-wrap items-end gap-x-6 gap-y-3">
-          {index && <span className="font-display text-6xl leading-none text-orange-500/80 sm:text-7xl">{index}</span>}
-          <div className="max-w-2xl">
-            <h1 className="text-4xl leading-[1.05] text-navy-900 sm:text-5xl">{title}</h1>
-            {description && <p className="mt-2 text-[0.95rem] leading-relaxed text-ink-500">{description}</p>}
-          </div>
+    <div className="mx-auto max-w-[1320px] px-4 pb-12 pt-3">
+      <Breadcrumbs items={crumbs} />
+      <div className="mt-3 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+        <h1 className="text-xl text-ink-900 sm:text-2xl">{title}</h1>
+        <span className="text-sm text-ink-500">{count} ürün</span>
+      </div>
+      {category && !fixedSub && (
+        <div className="mt-3 flex gap-2 overflow-x-auto pb-1 no-scrollbar">
+          {category.subcategories.map((s) => (
+            <Link key={s.slug} href={`/kategori/${category.slug}/${s.slug}`} className="shrink-0 rounded-full border border-ink-200 bg-white px-3.5 py-1.5 text-sm font-medium text-ink-700 transition hover:border-orange-500 hover:text-orange-600">
+              {s.name} <span className="text-ink-400">({subCounts?.[s.slug] ?? 0})</span>
+            </Link>
+          ))}
         </div>
-        {children}
-      </header>
-      <Suspense fallback={<div className="h-64 animate-pulse-soft border-t border-ink-200 bg-paper-100" />}>
-        <Catalog fixedCategory={fixedCategory} fixedSub={fixedSub} />
-      </Suspense>
+      )}
+      <div className="mt-4">
+        <Suspense fallback={<div className="h-96 animate-pulse rounded-lg bg-white" />}>
+          <Catalog fixedCategory={fixedCategory} fixedSub={fixedSub} />
+        </Suspense>
+      </div>
     </div>
   );
 }

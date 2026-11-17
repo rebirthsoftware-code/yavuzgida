@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { categories, getCategory, getSubcategory } from "@/lib/categories";
+import { countIn } from "@/lib/catalog";
 import { CatalogPage } from "@/components/catalog/CatalogPage";
 
 export function generateStaticParams() {
@@ -12,7 +13,7 @@ export async function generateMetadata({ params }: PageProps<"/kategori/[slug]/[
   const c = getCategory(slug);
   const s = getSubcategory(slug, sub);
   if (!c || !s) return {};
-  return { title: `${s.name} — ${c.name}`, description: `${c.name} › ${s.name}: toptan fiyatlarla, farklı ambalaj boylarında.` };
+  return { title: `${s.name} Fiyatları — ${c.name}`, description: `${c.name} › ${s.name}: toptan fiyatlarla, farklı ambalaj boylarında.` };
 }
 
 export default async function SubcategoryPage({ params }: PageProps<"/kategori/[slug]/[sub]">) {
@@ -20,14 +21,5 @@ export default async function SubcategoryPage({ params }: PageProps<"/kategori/[
   const c = getCategory(slug);
   const s = getSubcategory(slug, sub);
   if (!c || !s) notFound();
-  return (
-    <CatalogPage
-      index={String(c.order).padStart(2, "0")}
-      title={s.name}
-      description={`${c.name} grubunda ${s.name.toLocaleLowerCase("tr-TR")} ürünleri.`}
-      crumbs={[{ label: "Tüm ürünler", href: "/urunler" }, { label: c.name, href: `/kategori/${c.slug}` }, { label: s.name }]}
-      fixedCategory={c.slug}
-      fixedSub={s.slug}
-    />
-  );
+  return <CatalogPage title={s.name} count={countIn(c.slug, s.slug)} crumbs={[{ label: "Tüm Ürünler", href: "/urunler" }, { label: c.name, href: `/kategori/${c.slug}` }, { label: s.name }]} fixedCategory={c.slug} fixedSub={s.slug} category={c} />;
 }

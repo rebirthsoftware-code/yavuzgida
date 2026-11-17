@@ -20,10 +20,17 @@ export type Variant = {
   caseQty?: number;
 };
 
+export type PackArt = "sack" | "pouch" | "bottle" | "jar" | "can" | "box" | "carton";
+
 export type Product = {
   slug: string;
   name: string;
   brand: string;
+  /** Ambalaj görseli tipi (fotoğraf yoksa üretilen görsel) */
+  art: PackArt;
+  rating: number;
+  reviews: number;
+  sold: number;
   category: string;
   subcategory: string;
   short: string;
@@ -45,6 +52,10 @@ export type ProductIndex = {
   slug: string;
   name: string;
   brand: string;
+  art: PackArt;
+  rating: number;
+  reviews: number;
+  sold: number;
   category: string;
   subcategory: string;
   tags: ProductTag[];

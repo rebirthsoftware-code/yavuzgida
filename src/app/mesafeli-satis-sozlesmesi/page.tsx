@@ -7,7 +7,7 @@ export const metadata: Metadata = { title: "Mesafeli Satış Sözleşmesi" };
 export default function Page() {
   return (
     <PageShell title="Mesafeli Satış Sözleşmesi" crumb="Mesafeli Satış Sözleşmesi" narrow>
-      <div className="rounded-xl border border-ink-200 bg-white p-6 sm:p-8">
+      <div className="rounded-lg border border-ink-200 bg-white p-6 sm:p-8">
         <p className="text-sm leading-relaxed text-ink-600">
           Bu sayfa yer tutucudur. {site.legal.companyName} için hazırlanacak “Mesafeli Satış Sözleşmesi” metni hukuk danışmanı onayından sonra buraya eklenecektir.
         </p>

@@ -10,16 +10,16 @@ Bu sürüm **ön tasarımdır**: tüm sayfalar ve akışlar görsel olarak hazı
 
 | Hazır | Sonraki aşama |
 |---|---|
-| Ana sayfa (katalog dizini), kategori / alt kategori, fiyat listesi görünümü (filtre, sıralama, sayfalama), ürün sayfası (fiyat tablosu), sipariş listesi paneli + sayfası, arama (Ctrl K), sol ray, mobil sekme çubuğu | Gerçek ürün listesi içe aktarma (Excel/CSV → `src/data/catalog.json`) |
+| Ana sayfa, kategori / alt kategori, filtreli listeleme (sıralama, sayfalama), ürün sayfası (galeri, satın alma kutusu, sekmeler), sepet sayfası + mini sepet, arama (öneri paneli), kategori menüleri, mobil alt gezinme, üretilen ürün görselleri | Gerçek ürün listesi içe aktarma (Excel/CSV → `src/data/catalog.json`) |
 | Kurumsal, Hakkımızda, İletişim, SSS, Sipariş takip, yasal sayfa iskeletleri, sitemap, robots | Ürün fotoğrafları (jsDelivr CDN, umba ile aynı yöntem) |
 | Ödeme sayfası arayüzü (form) | Sipariş kaydı + PayTR + Turso + yönetim paneli (umba'dan taşınacak) |
 
 ## Tasarım sistemi
 
-- **Yapı:** üç sütunlu uygulama kabuğu. Solda sabit **kategori rayı** (numaralı 01–12, aktif kategorinin alt başlıkları açılır), ortada içerik, sağda (xl+) her zaman açık **sipariş listesi paneli**. Çekmece sepet yok; satırdaki + anında sağdaki fişe yazar. Mobilde alt sekme çubuğu (Ana sayfa · Kategoriler · Ara · Liste) ve tam ekran sayfalar.
-- **Ürünler kart değil satır:** fiyat listesi mantığı. Her satırda ad, marka, birim fiyat; ambalaj boyları fiyatlı "pill"ler olarak yan yana; adet sayacı satırda. Katalog sırasında alt kategori başlıklarıyla gruplanır.
-- **Renkler:** gece mavisi (`navy-900`), açık mavi (`sky-50…300`, sol ray zemini), turuncu (`orange-500`, `.bg-copper`), kağıt (`paper-50`). Tanımlar `src/app/globals.css` içindeki `@theme` bloğunda.
-- **Yazı tipleri:** Cormorant Garamond (serif başlık, fiyat ve numaralar) + Figtree (metin), `next/font/google`.
+- **Kurgu:** pazar yeri (Trendyol / Hepsiburada) düzeni. Üst bağlantı şeridi, büyük arama çubuğu (öneri paneli), Giriş / Favoriler / Sepetim (üzerine gelince mini sepet), üzerine gelince açılan kategori çubuğu. Ana sayfa: banner karuseli + yan bannerlar, kategori daireleri, geri sayımlı flaş ürünler, kampanya kutuları, sekmeli çok satanlar, popüler kategoriler, raylar, markalar. Listeleme: sol filtre paneli (kategori, marka arama, fiyat aralığı, özellikler, puan, kargo), hızlı filtre çipleri, sıralama, sayfalama. Ürün sayfası: galeri, puan ve satış rozeti, fiyat kutusu, boy seçimi, adet, Sepete Ekle / Şimdi Al, teslimat bilgileri, sekmeler. Sepet: satıcı kutusu, adet, özet ve kupon. Mobilde alt gezinme (Anasayfa · Kategoriler · Sepetim · Hesabım).
+- **Ürün görselleri:** fotoğraf gelene kadar `PackArt` her ürün için ambalaj tipine (çuval, poşet, şişe, kavanoz, teneke, kutu, karton) göre SVG "packshot" üretir; marka ve ürün adı etiketin üzerinde yazar. Fotoğraf eklenince `ProductImage` otomatik fotoğrafı gösterir.
+- **Renkler:** turuncu aksiyon (`orange-500`), açık mavi yüzey ve rozetler (`sky-50…200`), lacivert (`navy-900`), açık gri sayfa zemini (`paper-50`). Tanımlar `src/app/globals.css` içindeki `@theme` bloğunda.
+- **Yazı tipi:** Inter, `next/font/google`.
 
 ## Katalog veri modeli
 
@@ -27,7 +27,7 @@ Bu sürüm **ön tasarımdır**: tüm sayfalar ve akışlar görsel olarak hazı
 
 - Kategoriler ve alt kategoriler: `src/lib/categories.ts` (12 ana, 55 alt kategori)
 - Ürünler: `src/data/catalog.json` (tam) ve `src/data/catalog-index.json` (listeleme/arama için hafif kopya, varyantlar dâhil ~35 KB gzip)
-- Örnek katalog üretici: `node scripts/generate-catalog.mjs` (640 yer tutucu ürün, deterministik)
+- Örnek katalog üretici: `node scripts/generate-catalog.mjs` (620 yer tutucu ürün, deterministik; puan, satış adedi ve ambalaj tipi dâhil)
 
 Gerçek liste geldiğinde aynı JSON biçimini üreten bir içe aktarma scripti yazılacak; bileşenler değişmeyecek.
 
@@ -45,7 +45,7 @@ npm run lint && npx tsc --noEmit
 ```
 src/
   app/            sayfalar (urunler, kategori/[slug]/[sub], urun/[slug], sepet, odeme, kurumsal …)
-  components/     shell (ray, üst çubuk, mobil sekmeler), order (sipariş listesi), catalog (satırlar), home, product, search, ui
+  components/     layout (başlık, kategori çubuğu, mini sepet, altbilgi), home, catalog, product (kart, galeri, satın alma, PackArt), cart, search, ui
   lib/            site ayarları, katalog erişimi, arama, sepet deposu, biçimlendirme
   data/           katalog JSON dosyaları
 scripts/          katalog üretici

@@ -1,47 +1,57 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { SlidersHorizontal, X, ChevronLeft, ChevronRight, Search } from "lucide-react";
+import { SlidersHorizontal, X, ChevronDown, Search, Star } from "lucide-react";
 import indexJson from "@/data/catalog-index.json";
 import type { ProductIndex, ProductTag } from "@/lib/types";
 import { categories, categoryMap } from "@/lib/categories";
 import { searchProducts } from "@/lib/search";
 import { minPriceOf, inStockOf } from "@/lib/index-of";
-import { ProductRow } from "./ProductRow";
+import { ProductCard } from "@/components/product/ProductCard";
 import { tagLabel } from "@/components/ui/Badge";
 import { formatCompact } from "@/lib/format";
+import { site } from "@/lib/site";
 
 const all = indexJson as ProductIndex[];
-const PAGE = 40;
+const PAGE = 24;
 const TAGS: ProductTag[] = ["indirim", "cok-satan", "yeni", "yerli", "organik", "glutensiz"];
 const SORTS = [
-  ["katalog", "Katalog sırası"],
-  ["populer", "Popülerlik"],
-  ["fiyat-artan", "Fiyat (artan)"],
-  ["fiyat-azalan", "Fiyat (azalan)"],
-  ["yeni", "Yeni eklenenler"],
-  ["ad", "Ada göre (A–Z)"],
+  ["populer", "Önerilen"],
+  ["cok-satan", "Çok Satanlar"],
+  ["fiyat-artan", "En Düşük Fiyat"],
+  ["fiyat-azalan", "En Yüksek Fiyat"],
+  ["yeni", "En Yeniler"],
+  ["puan", "En Çok Değerlendirilen"],
 ] as const;
+const PRICE_RANGES: [number, number][] = [
+  [0, 50],
+  [50, 150],
+  [150, 500],
+  [500, 1500],
+  [1500, 0],
+];
 
-type Props = { fixedCategory?: string; fixedSub?: string };
-
-export function Catalog({ fixedCategory, fixedSub }: Props) {
+export function Catalog({ fixedCategory, fixedSub }: { fixedCategory?: string; fixedSub?: string }) {
   const sp = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
-  const [panel, setPanel] = useState(false);
+  const [drawer, setDrawer] = useState(false);
+  const [brandQ, setBrandQ] = useState("");
 
   const q = sp.get("q") ?? "";
   const cat = fixedCategory ?? sp.get("kategori") ?? "";
   const sub = fixedSub ?? sp.get("alt") ?? "";
   const brands = sp.getAll("marka");
   const tags = sp.getAll("etiket") as ProductTag[];
-  const sort = sp.get("sirala") ?? (q ? "populer" : "katalog");
+  const sort = sp.get("sirala") ?? "populer";
   const page = Math.max(1, Number(sp.get("sayfa") ?? 1));
   const min = Number(sp.get("min") ?? 0) || 0;
   const max = Number(sp.get("max") ?? 0) || 0;
   const stock = sp.get("stok") === "1";
+  const rated = sp.get("puan") === "4";
+  const freeShip = sp.get("kargo") === "1";
 
   const setParams = useCallback(
     (patch: Record<string, string | string[] | null>, resetPage = true) => {
@@ -71,6 +81,17 @@ export function Catalog({ fixedCategory, fixedSub }: Props) {
     for (const p of base) m.set(p.brand, (m.get(p.brand) ?? 0) + 1);
     return [...m.entries()].sort((a, b) => b[1] - a[1]);
   }, [base]);
+  const catOptions = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const p of base) m.set(p.category, (m.get(p.category) ?? 0) + 1);
+    return categories.map((c) => ({ ...c, count: m.get(c.slug) ?? 0 })).filter((c) => c.count > 0);
+  }, [base]);
+  const subOptions = useMemo(() => {
+    if (!cat) return [];
+    const m = new Map<string, number>();
+    for (const p of base) m.set(p.subcategory, (m.get(p.subcategory) ?? 0) + 1);
+    return (categoryMap[cat]?.subcategories ?? []).map((s) => ({ ...s, count: m.get(s.slug) ?? 0 }));
+  }, [base, cat]);
 
   const filtered = useMemo(() => {
     let list = base;
@@ -79,9 +100,9 @@ export function Catalog({ fixedCategory, fixedSub }: Props) {
     if (min) list = list.filter((p) => minPriceOf(p) >= min);
     if (max) list = list.filter((p) => minPriceOf(p) <= max);
     if (stock) list = list.filter(inStockOf);
+    if (rated) list = list.filter((p) => p.rating >= 4);
+    if (freeShip) list = list.filter((p) => minPriceOf(p) >= site.commerce.freeShippingThreshold);
     const sorted = [...list];
-    const catOrder = (p: ProductIndex) => categoryMap[p.category]?.order ?? 99;
-    const subOrder = (p: ProductIndex) => categoryMap[p.category]?.subcategories.findIndex((s) => s.slug === p.subcategory) ?? 99;
     switch (sort) {
       case "fiyat-artan":
         sorted.sort((a, b) => minPriceOf(a) - minPriceOf(b));
@@ -92,42 +113,28 @@ export function Catalog({ fixedCategory, fixedSub }: Props) {
       case "yeni":
         sorted.sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
         break;
-      case "ad":
-        sorted.sort((a, b) => a.name.localeCompare(b.name, "tr"));
+      case "puan":
+        sorted.sort((a, b) => b.rating - a.rating || b.reviews - a.reviews);
         break;
-      case "populer":
-        if (!q) sorted.sort((a, b) => b.popularity - a.popularity);
+      case "cok-satan":
+        sorted.sort((a, b) => b.sold - a.sold);
         break;
       default:
-        sorted.sort((a, b) => catOrder(a) - catOrder(b) || subOrder(a) - subOrder(b) || a.name.localeCompare(b.name, "tr"));
+        if (!q) sorted.sort((a, b) => b.popularity - a.popularity);
     }
     return sorted;
-  }, [base, brands, tags, min, max, stock, sort, q]);
+  }, [base, brands, tags, min, max, stock, rated, freeShip, sort, q]);
 
   const pages = Math.max(1, Math.ceil(filtered.length / PAGE));
   const current = Math.min(page, pages);
   const slice = filtered.slice((current - 1) * PAGE, current * PAGE);
 
-  /* Katalog sırasında alt kategori başlıklarıyla grupla */
-  const grouped = useMemo(() => {
-    if (sort !== "katalog") return [{ key: "", title: "", items: slice }];
-    const out: { key: string; title: string; items: ProductIndex[] }[] = [];
-    for (const p of slice) {
-      const c = categoryMap[p.category];
-      const s = c?.subcategories.find((x) => x.slug === p.subcategory);
-      const key = `${p.category}/${p.subcategory}`;
-      const title = fixedCategory ? (s?.name ?? "") : `${c?.name ?? ""} — ${s?.name ?? ""}`;
-      const last = out[out.length - 1];
-      if (last && last.key === key) last.items.push(p);
-      else out.push({ key, title, items: [p] });
-    }
-    return out;
-  }, [slice, sort, fixedCategory]);
-
-  const goPage = (n: number) => {
-    setParams({ sayfa: n === 1 ? null : String(n) }, false);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
+  useEffect(() => {
+    document.body.style.overflow = drawer ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [drawer]);
 
   const chips: { label: string; onClear: () => void }[] = [];
   if (q) chips.push({ label: `“${q}”`, onClear: () => setParams({ q: null }) });
@@ -137,134 +144,250 @@ export function Catalog({ fixedCategory, fixedSub }: Props) {
   tags.forEach((t) => chips.push({ label: tagLabel(t), onClear: () => setParams({ etiket: tags.filter((x) => x !== t) }) }));
   if (min || max) chips.push({ label: `${min ? formatCompact(min) : "0 ₺"} – ${max ? formatCompact(max) : "∞"}`, onClear: () => setParams({ min: null, max: null }) });
   if (stock) chips.push({ label: "Stoktakiler", onClear: () => setParams({ stok: null }) });
+  if (rated) chips.push({ label: "4 yıldız ve üzeri", onClear: () => setParams({ puan: null }) });
+  if (freeShip) chips.push({ label: "Kargo bedava", onClear: () => setParams({ kargo: null }) });
+
+  const check = "size-4 rounded border-ink-300 accent-orange-500";
+
+  const sidebar = (
+    <div className="divide-y divide-ink-100 text-sm">
+      {/* Kategoriler */}
+      <Group title={fixedCategory ? "İlgili Kategoriler" : "Kategori"} open>
+        {!fixedCategory ? (
+          <ul className="space-y-1">
+            {catOptions.map((c) => (
+              <li key={c.slug}>
+                <button onClick={() => setParams({ kategori: c.slug === cat ? null : c.slug, alt: null })} className={`flex w-full items-center justify-between rounded px-1 py-1 text-left hover:text-orange-600 ${c.slug === cat ? "font-bold text-orange-600" : "text-ink-700"}`}>
+                  {c.name}
+                  <span className="text-xs text-ink-400">({c.count})</span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <ul className="space-y-1">
+            <li>
+              <Link href={`/kategori/${cat}`} className={`block rounded px-1 py-1 ${!sub ? "font-bold text-orange-600" : "text-ink-700 hover:text-orange-600"}`}>
+                Tüm {categoryMap[cat]?.name}
+              </Link>
+            </li>
+            {subOptions.map((s) => (
+              <li key={s.slug}>
+                <Link href={`/kategori/${cat}/${s.slug}`} className={`flex items-center justify-between rounded px-1 py-1 ${s.slug === sub ? "font-bold text-orange-600" : "text-ink-700 hover:text-orange-600"}`}>
+                  {s.name}
+                  <span className="text-xs text-ink-400">({s.count})</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
+      </Group>
+
+      <Group title="Marka" open>
+        <div className="relative mb-2">
+          <Search className="absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-ink-400" />
+          <input value={brandQ} onChange={(e) => setBrandQ(e.target.value)} placeholder="Marka ara" className="h-9 w-full rounded-md border border-ink-200 pl-8 pr-2 text-sm outline-none focus:border-orange-500" />
+        </div>
+        <ul className="max-h-52 space-y-1 overflow-y-auto pr-1">
+          {brandOptions
+            .filter(([b]) => b.toLocaleLowerCase("tr-TR").includes(brandQ.toLocaleLowerCase("tr-TR")))
+            .map(([b, n]) => {
+              const on = brands.includes(b);
+              return (
+                <li key={b}>
+                  <label className="flex cursor-pointer items-center gap-2 py-0.5">
+                    <input type="checkbox" checked={on} onChange={() => setParams({ marka: on ? brands.filter((x) => x !== b) : [...brands, b] })} className={check} />
+                    <span className="flex-1 text-ink-700">{b}</span>
+                    <span className="text-xs text-ink-400">({n})</span>
+                  </label>
+                </li>
+              );
+            })}
+        </ul>
+      </Group>
+
+      <Group title="Fiyat" open>
+        <ul className="space-y-1">
+          {PRICE_RANGES.map(([a, b]) => {
+            const on = min === a && max === b;
+            return (
+              <li key={`${a}-${b}`}>
+                <label className="flex cursor-pointer items-center gap-2 py-0.5">
+                  <input type="radio" name="fiyat" checked={on} onChange={() => setParams({ min: a ? String(a) : null, max: b ? String(b) : null })} className={check} />
+                  <span className="text-ink-700">{b ? `${formatCompact(a)} – ${formatCompact(b)}` : `${formatCompact(a)} ve üzeri`}</span>
+                </label>
+              </li>
+            );
+          })}
+        </ul>
+        <PriceRange key={`${min}-${max}`} min={min} max={max} onApply={(a, b) => setParams({ min: a ? String(a) : null, max: b ? String(b) : null })} />
+      </Group>
+
+      <Group title="Özellikler" open>
+        <ul className="space-y-1">
+          {TAGS.map((t) => {
+            const on = tags.includes(t);
+            return (
+              <li key={t}>
+                <label className="flex cursor-pointer items-center gap-2 py-0.5">
+                  <input type="checkbox" checked={on} onChange={() => setParams({ etiket: on ? tags.filter((x) => x !== t) : [...tags, t] })} className={check} />
+                  <span className="text-ink-700">{tagLabel(t)}</span>
+                </label>
+              </li>
+            );
+          })}
+        </ul>
+      </Group>
+
+      <Group title="Diğer" open>
+        <label className="flex cursor-pointer items-center gap-2 py-0.5">
+          <input type="checkbox" checked={rated} onChange={() => setParams({ puan: rated ? null : "4" })} className={check} />
+          <span className="inline-flex items-center gap-1 text-ink-700">
+            <Star className="size-3.5 text-star" fill="currentColor" strokeWidth={0} /> 4 yıldız ve üzeri
+          </span>
+        </label>
+        <label className="flex cursor-pointer items-center gap-2 py-0.5">
+          <input type="checkbox" checked={freeShip} onChange={() => setParams({ kargo: freeShip ? null : "1" })} className={check} />
+          <span className="text-ink-700">Kargo bedava</span>
+        </label>
+        <label className="flex cursor-pointer items-center gap-2 py-0.5">
+          <input type="checkbox" checked={stock} onChange={() => setParams({ stok: stock ? null : "1" })} className={check} />
+          <span className="text-ink-700">Yalnızca stoktakiler</span>
+        </label>
+      </Group>
+    </div>
+  );
 
   return (
-    <div>
-      {/* Araç çubuğu */}
-      <div className="sticky top-16 z-20 border-y border-ink-200 bg-paper-50/95 backdrop-blur">
-        <div className="flex flex-wrap items-center gap-2 px-4 py-2 lg:px-6">
-          <p className="mr-2 text-sm text-ink-600">
-            <b className="font-display text-xl text-navy-900">{filtered.length}</b> ürün
-          </p>
+    <div className="grid gap-5 lg:grid-cols-[240px_1fr]">
+      <aside className="hidden lg:block">
+        <div className="sticky top-[7.5rem] rounded-lg border border-ink-200 bg-white px-4">{sidebar}</div>
+      </aside>
 
-          {!fixedCategory && (
-            <select value={cat} onChange={(e) => setParams({ kategori: e.target.value || null, alt: null })} className="h-9 max-w-[11rem] rounded-md border border-ink-200 bg-white px-2.5 text-sm outline-none focus:border-navy-900">
-              <option value="">Tüm kategoriler</option>
-              {categories.map((c) => (
-                <option key={c.slug} value={c.slug}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
-          )}
+      {/* Mobil filtre çekmecesi */}
+      <div className={`fixed inset-0 z-[70] lg:hidden ${drawer ? "" : "pointer-events-none"}`}>
+        <div onClick={() => setDrawer(false)} className={`absolute inset-0 bg-ink-900/50 transition-opacity ${drawer ? "opacity-100" : "opacity-0"}`} />
+        <div className={`absolute inset-y-0 left-0 flex w-[86%] max-w-sm flex-col bg-white transition-transform duration-300 ${drawer ? "translate-x-0" : "-translate-x-full"}`}>
+          <div className="flex items-center justify-between border-b border-ink-100 px-4 py-3">
+            <h2 className="text-lg">Filtrele</h2>
+            <button onClick={() => setDrawer(false)} aria-label="Kapat" className="grid size-9 place-items-center rounded-lg hover:bg-paper-100">
+              <X className="size-5" />
+            </button>
+          </div>
+          <div className="flex-1 overflow-y-auto px-4">{sidebar}</div>
+          <div className="border-t border-ink-100 p-3">
+            <button onClick={() => setDrawer(false)} className="h-11 w-full rounded-lg bg-orange-500 font-semibold text-white">
+              {filtered.length} ürünü göster
+            </button>
+          </div>
+        </div>
+      </div>
 
-          <button onClick={() => setPanel((v) => !v)} className={`inline-flex h-9 items-center gap-2 rounded-md border px-3 text-sm font-semibold ${panel ? "border-navy-900 bg-navy-900 text-white" : "border-ink-200 bg-white text-ink-700 hover:border-navy-900"}`}>
-            <SlidersHorizontal className="size-4" /> Filtreler
+      <div className="min-w-0">
+        {/* Üst çubuk */}
+        <div className="flex flex-wrap items-center gap-2 rounded-lg border border-ink-200 bg-white px-3 py-2">
+          <button onClick={() => setDrawer(true)} className="inline-flex h-9 items-center gap-1.5 rounded-md border border-ink-200 px-3 text-sm font-semibold lg:hidden">
+            <SlidersHorizontal className="size-4" /> Filtrele
             {chips.length > 0 && <span className="rounded-full bg-orange-500 px-1.5 text-[0.65rem] text-white">{chips.length}</span>}
           </button>
-
-          <div className="ml-auto flex items-center gap-2">
-            <select value={sort} onChange={(e) => setParams({ sirala: e.target.value })} className="h-9 rounded-md border border-ink-200 bg-white px-2.5 text-sm outline-none focus:border-navy-900">
+          <div className="hidden items-center gap-1.5 lg:flex">
+            {[
+              { k: "etiket", v: "indirim", l: "İndirimli" },
+              { k: "etiket", v: "cok-satan", l: "Çok Satan" },
+              { k: "kargo", v: "1", l: "Kargo Bedava" },
+              { k: "puan", v: "4", l: "4★ ve üzeri" },
+            ].map(({ k, v, l }) => {
+              const on = k === "etiket" ? tags.includes(v as ProductTag) : sp.get(k) === v;
+              const toggle = () => (k === "etiket" ? setParams({ etiket: on ? tags.filter((x) => x !== v) : [...tags, v] }) : setParams({ [k]: on ? null : v }));
+              return (
+                <button key={l} onClick={toggle} className={`rounded-full border px-3 py-1 text-xs font-semibold transition ${on ? "border-orange-500 bg-orange-50 text-orange-600" : "border-ink-200 text-ink-700 hover:border-orange-400"}`}>
+                  {l}
+                </button>
+              );
+            })}
+          </div>
+          <p className="ml-auto text-xs text-ink-500">
+            <b className="text-ink-900">{filtered.length}</b> ürün
+          </p>
+          <div className="relative">
+            <select value={sort} onChange={(e) => setParams({ sirala: e.target.value === "populer" ? null : e.target.value })} className="h-9 appearance-none rounded-md border border-ink-200 bg-white pl-3 pr-8 text-sm font-medium outline-none focus:border-orange-500">
               {SORTS.map(([v, l]) => (
                 <option key={v} value={v}>
                   {l}
                 </option>
               ))}
             </select>
+            <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 size-4 -translate-y-1/2 text-ink-400" />
           </div>
         </div>
 
         {chips.length > 0 && (
-          <div className="flex flex-wrap items-center gap-1.5 px-4 pb-2 lg:px-6">
+          <div className="mt-2 flex flex-wrap items-center gap-1.5">
             {chips.map((c, i) => (
-              <button key={i} onClick={c.onClear} className="inline-flex items-center gap-1 rounded-full bg-sky-100 py-0.5 pl-2.5 pr-1.5 text-xs font-semibold text-navy-900 hover:bg-sky-200">
+              <button key={i} onClick={c.onClear} className="inline-flex items-center gap-1 rounded-full border border-orange-200 bg-orange-50 py-0.5 pl-2.5 pr-1.5 text-xs font-semibold text-orange-700 hover:bg-orange-100">
                 {c.label} <X className="size-3" />
               </button>
             ))}
-            <button onClick={() => router.push(pathname)} className="text-xs text-ink-500 underline-offset-2 hover:underline">
+            <button onClick={() => router.push(pathname)} className="text-xs font-semibold text-ink-500 hover:underline">
               Temizle
             </button>
           </div>
         )}
 
-        {panel && (
-          <div className="grid gap-6 border-t border-ink-200 bg-white px-4 py-5 md:grid-cols-[1fr_1fr_auto] lg:px-6">
-            <div>
-              <p className="mb-2 text-[0.65rem] font-bold uppercase tracking-[0.24em] text-ink-400">Marka</p>
-              <div className="flex flex-wrap gap-1.5">
-                {brandOptions.map(([b, n]) => {
-                  const on = brands.includes(b);
-                  return (
-                    <button key={b} onClick={() => setParams({ marka: on ? brands.filter((x) => x !== b) : [...brands, b] })} className={`rounded-md border px-2.5 py-1 text-xs ${on ? "border-navy-900 bg-navy-900 text-white" : "border-ink-200 text-ink-700 hover:border-navy-900"}`}>
-                      {b} <span className={on ? "text-sky-300" : "text-ink-400"}>{n}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-            <div>
-              <p className="mb-2 text-[0.65rem] font-bold uppercase tracking-[0.24em] text-ink-400">Etiket</p>
-              <div className="flex flex-wrap gap-1.5">
-                {TAGS.map((t) => {
-                  const on = tags.includes(t);
-                  return (
-                    <button key={t} onClick={() => setParams({ etiket: on ? tags.filter((x) => x !== t) : [...tags, t] })} className={`rounded-md border px-2.5 py-1 text-xs ${on ? "border-orange-600 bg-orange-600 text-white" : "border-ink-200 text-ink-700 hover:border-orange-600"}`}>
-                      {tagLabel(t)}
-                    </button>
-                  );
-                })}
-              </div>
-              <label className="mt-4 flex cursor-pointer items-center gap-2 text-sm text-ink-700">
-                <input type="checkbox" checked={stock} onChange={() => setParams({ stok: stock ? null : "1" })} className="size-4 accent-navy-900" />
-                Yalnızca stoktakiler
-              </label>
-            </div>
-            <PriceRange key={`${min}-${max}`} min={min} max={max} onApply={(a, b) => setParams({ min: a ? String(a) : null, max: b ? String(b) : null })} />
+        {slice.length === 0 ? (
+          <div className="mt-4 flex flex-col items-center rounded-lg border border-ink-200 bg-white px-6 py-16 text-center">
+            <Search className="size-8 text-ink-300" />
+            <p className="mt-3 text-lg font-bold text-ink-900">Aradığınız kriterlere uygun ürün bulunamadı</p>
+            <p className="mt-1 text-sm text-ink-500">Filtreleri gevşetmeyi veya farklı bir arama denemeyi deneyin.</p>
+            <button onClick={() => router.push(pathname)} className="mt-4 h-10 rounded-lg bg-orange-500 px-4 text-sm font-semibold text-white">
+              Filtreleri Temizle
+            </button>
+          </div>
+        ) : (
+          <div className="mt-3 grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3 xl:grid-cols-4">
+            {slice.map((p, i) => (
+              <ProductCard key={p.slug} p={p} priority={i < 4} />
+            ))}
           </div>
         )}
+
+        {pages > 1 && (
+          <nav aria-label="Sayfalar" className="mt-6 flex flex-wrap items-center justify-center gap-1">
+            {Array.from({ length: pages }, (_, i) => i + 1)
+              .filter((n) => n === 1 || n === pages || Math.abs(n - current) <= 2)
+              .reduce<(number | "…")[]>((acc, n) => {
+                const last = acc[acc.length - 1];
+                if (typeof last === "number" && n - last > 1) acc.push("…");
+                acc.push(n);
+                return acc;
+              }, [])
+              .map((n, i) =>
+                n === "…" ? (
+                  <span key={`e${i}`} className="px-1 text-ink-400">
+                    …
+                  </span>
+                ) : (
+                  <button key={n} onClick={() => { setParams({ sayfa: n === 1 ? null : String(n) }, false); window.scrollTo({ top: 0, behavior: "smooth" }); }} aria-current={n === current ? "page" : undefined} className={`grid size-9 place-items-center rounded-md border text-sm font-semibold ${n === current ? "border-orange-500 bg-orange-500 text-white" : "border-ink-200 bg-white text-ink-700 hover:border-orange-400"}`}>
+                    {n}
+                  </button>
+                ),
+              )}
+          </nav>
+        )}
       </div>
-
-      {/* Liste */}
-      {slice.length === 0 ? (
-        <div className="flex flex-col items-center px-6 py-24 text-center">
-          <Search className="size-8 text-ink-300" strokeWidth={1.5} />
-          <p className="mt-4 font-display text-2xl text-navy-900">Sonuç bulunamadı</p>
-          <p className="mt-1 text-sm text-ink-500">Filtreleri gevşetmeyi veya farklı bir arama denemeyi deneyin.</p>
-          <button onClick={() => router.push(pathname)} className="mt-5 h-10 rounded-md bg-navy-900 px-4 text-sm font-semibold text-white">
-            Filtreleri temizle
-          </button>
-        </div>
-      ) : (
-        grouped.map((g) => (
-          <section key={g.key || "flat"}>
-            {g.title && (
-              <h2 className="sticky top-[6.6rem] z-10 border-b border-ink-200 bg-paper-100 px-4 py-1.5 text-[0.7rem] font-sans font-bold uppercase tracking-[0.22em] text-ink-500 lg:px-6">
-                {g.title}
-              </h2>
-            )}
-            <ul className="divide-y divide-ink-100">
-              {g.items.map((p) => (
-                <ProductRow key={p.slug} p={p} showCategory={!fixedCategory && sort !== "katalog"} />
-              ))}
-            </ul>
-          </section>
-        ))
-      )}
-
-      {pages > 1 && (
-        <nav aria-label="Sayfalar" className="flex items-center justify-between border-t border-ink-200 px-4 py-4 text-sm lg:px-6">
-          <button disabled={current <= 1} onClick={() => goPage(current - 1)} className="inline-flex h-9 items-center gap-1 rounded-md border border-ink-200 px-3 font-semibold disabled:opacity-40">
-            <ChevronLeft className="size-4" /> Önceki
-          </button>
-          <p className="text-ink-600">
-            Sayfa <b className="text-navy-900">{current}</b> / {pages}
-          </p>
-          <button disabled={current >= pages} onClick={() => goPage(current + 1)} className="inline-flex h-9 items-center gap-1 rounded-md border border-ink-200 px-3 font-semibold disabled:opacity-40">
-            Sonraki <ChevronRight className="size-4" />
-          </button>
-        </nav>
-      )}
     </div>
+  );
+}
+
+function Group({ title, open, children }: { title: string; open?: boolean; children: React.ReactNode }) {
+  return (
+    <details open={open} className="group py-3">
+      <summary className="flex cursor-pointer list-none items-center justify-between py-1 text-sm font-bold text-ink-900">
+        {title}
+        <ChevronDown className="size-4 text-ink-400 transition group-open:rotate-180" />
+      </summary>
+      <div className="pt-2">{children}</div>
+    </details>
   );
 }
 
@@ -277,16 +400,14 @@ function PriceRange({ min, max, onApply }: { min: number; max: number; onApply: 
         e.preventDefault();
         onApply(Number(a) || 0, Number(b) || 0);
       }}
+      className="mt-2 flex items-center gap-1.5"
     >
-      <p className="mb-2 text-[0.65rem] font-bold uppercase tracking-[0.24em] text-ink-400">Fiyat (₺)</p>
-      <div className="flex items-center gap-2">
-        <input inputMode="numeric" value={a} onChange={(e) => setA(e.target.value)} placeholder="Min" className="h-9 w-20 rounded-md border border-ink-200 px-2.5 text-sm outline-none focus:border-navy-900" />
-        <span className="text-ink-300">–</span>
-        <input inputMode="numeric" value={b} onChange={(e) => setB(e.target.value)} placeholder="Max" className="h-9 w-20 rounded-md border border-ink-200 px-2.5 text-sm outline-none focus:border-navy-900" />
-        <button type="submit" className="h-9 rounded-md bg-navy-900 px-3 text-xs font-semibold text-white">
-          Uygula
-        </button>
-      </div>
+      <input inputMode="numeric" value={a} onChange={(e) => setA(e.target.value)} placeholder="En az" className="h-8 w-full rounded-md border border-ink-200 px-2 text-xs outline-none focus:border-orange-500" />
+      <span className="text-ink-300">-</span>
+      <input inputMode="numeric" value={b} onChange={(e) => setB(e.target.value)} placeholder="En çok" className="h-8 w-full rounded-md border border-ink-200 px-2 text-xs outline-none focus:border-orange-500" />
+      <button type="submit" aria-label="Uygula" className="grid size-8 shrink-0 place-items-center rounded-md bg-orange-500 text-white">
+        <Search className="size-3.5" />
+      </button>
     </form>
   );
 }

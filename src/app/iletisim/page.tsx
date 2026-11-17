@@ -18,8 +18,8 @@ export default function Page() {
             { icon: MapPin, t: "Adres", v: site.contact.address },
             { icon: Clock, t: "Çalışma saatleri", v: site.contact.workingHours },
           ].map(({ icon: I, t, v, href }) => (
-            <div key={t} className="flex items-center gap-4 rounded-xl border border-ink-200 bg-white p-5">
-              <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-sky-50 text-sky-700">
+            <div key={t} className="flex items-center gap-4 rounded-lg border border-ink-200 bg-white p-5">
+              <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-orange-50 text-orange-600">
                 <I className="size-5" />
               </span>
               <div>
@@ -35,7 +35,7 @@ export default function Page() {
             </div>
           ))}
         </div>
-        <form className="rounded-xl border border-ink-200 bg-white p-6 sm:p-8">
+        <form className="rounded-lg border border-ink-200 bg-white p-6 sm:p-8">
           <h2 className="text-xl font-bold">Mesaj gönderin</h2>
           <div className="mt-5 grid gap-4 sm:grid-cols-2">
             <Field label="Ad Soyad"><input className={inputCls} /></Field>

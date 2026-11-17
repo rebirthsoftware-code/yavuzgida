@@ -1,4 +1,4 @@
-import type { Product, Variant } from "./types";
+import type { PackArt, Product, Variant } from "./types";
 
 export type CartItem = {
   slug: string;
@@ -10,6 +10,7 @@ export type CartItem = {
   price: number;
   qty: number;
   hue: number;
+  art: PackArt;
   image?: string;
   category: string;
 };
@@ -27,6 +28,7 @@ export function toCartItem(p: Product, v: Variant, qty = 1): CartItem {
     price: v.price,
     qty,
     hue: p.hue,
+    art: p.art,
     image: p.image,
     category: p.category,
   };

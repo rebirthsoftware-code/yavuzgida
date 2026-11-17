@@ -161,6 +161,9 @@ const SOURCE = {
   },
 };
 
+/* Şablon → ambalaj görseli tipi */
+const ART = { bulk: "sack", bulkSmall: "pouch", spice: "pouch", nuts: "pouch", oil: "bottle", bottle: "bottle", jar: "jar", jarSmall: "jar", can: "can", pack: "box", pack350: "box", snack: "box", tea: "box", teaBag: "box", drink: "carton", water: "bottle", sarf: "box", sarfBig: "box" };
+
 const SPEC_ORIGIN = ["Türkiye", "Türkiye", "Türkiye", "İthal"];
 const SHELF = ["12 ay", "18 ay", "24 ay", "36 ay"];
 const STORAGE = ["Serin ve kuru yerde saklayınız", "Doğrudan güneş ışığından uzak tutunuz", "Açıldıktan sonra ağzı kapalı saklayınız"];
@@ -228,10 +231,18 @@ for (const [catSlug, subs] of Object.entries(SOURCE)) {
         if (rnd() < 0.08 && ["bulk", "nuts", "oil", "breakfast"].includes(brandKey)) tags.push("organik");
         if (["bulk", "nuts", "oil"].includes(brandKey) && rnd() < 0.25) tags.push("glutensiz");
 
+        const rating = Math.round((3.9 + (popularity / 100) * 1.0 + between(-0.15, 0.15)) * 10) / 10;
+        const reviews = Math.round(popularity * between(0.4, 3.5));
+        const sold = Math.round(popularity * between(3, 30));
+
         products.push({
           slug,
           name: baseName,
           brand,
+          art: ART[tplKey] ?? "box",
+          rating: Math.min(5, rating),
+          reviews,
+          sold,
           category: catSlug,
           subcategory: subSlug,
           short: pick(SHORTS),
@@ -260,6 +271,10 @@ const index = products.map((p) => ({
   category: p.category,
   subcategory: p.subcategory,
   tags: p.tags,
+  art: p.art,
+  rating: p.rating,
+  reviews: p.reviews,
+  sold: p.sold,
   variants: p.variants.map((v) => ({
     id: v.id,
     label: v.label,
