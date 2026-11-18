@@ -3,12 +3,13 @@
  * ile uyumlu olması için route handler yerine düz dosya kullanılır.
  * Çalıştır: node scripts/generate-seo.mjs  (npm run build öncesi otomatik)
  */
-import { readFileSync, writeFileSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const base = (process.env.NEXT_PUBLIC_SITE_URL || "https://yavuzgida.com").replace(/\/$/, "");
+mkdirSync(join(root, "public"), { recursive: true });
 const products = JSON.parse(readFileSync(join(root, "src/data/catalog.json"), "utf8"));
 const catSrc = readFileSync(join(root, "src/lib/categories.ts"), "utf8");
 const catSlugs = [...catSrc.matchAll(/^\s{4}slug: "([^"]+)"/gm)].map((m) => m[1]);
