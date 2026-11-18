@@ -1,17 +1,14 @@
 import Link from "next/link";
 
-export function Logo({ className = "", compact = false }: { className?: string; compact?: boolean }) {
+const base = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+
+/** Marka logosu (altın/siyah). Koyu zeminler için tasarlandı; başlık ve altbilgide kullanılır. */
+export function Logo({ className = "", size = "md" }: { className?: string; size?: "sm" | "md" | "lg" }) {
+  const h = size === "lg" ? "h-24" : size === "sm" ? "h-12" : "h-16";
   return (
-    <Link href="/" aria-label="Yavuz Gıda ana sayfa" className={`inline-flex items-center gap-2 ${className}`}>
-      <span className="grid size-9 place-items-center rounded-lg bg-orange-500 text-lg font-black text-white">Y</span>
-      {!compact && (
-        <span className="leading-none">
-          <span className="block text-[1.35rem] font-extrabold tracking-tight text-navy-900">
-            yavuz<span className="text-orange-500">gıda</span>
-          </span>
-          <span className="block text-[0.6rem] font-semibold uppercase tracking-[0.22em] text-ink-500">toptan & perakende</span>
-        </span>
-      )}
+    <Link href="/" aria-label="Yavuz Gıda ana sayfa" className={`block shrink-0 ${className}`}>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={`${base}/brand/logo-sm.png`} alt="Yavuz Gıda" width={560} height={418} className={`${h} w-auto`} />
     </Link>
   );
 }

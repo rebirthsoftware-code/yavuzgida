@@ -22,11 +22,11 @@ export const metadata: Metadata = {
     template: `%s | ${site.name}`,
   },
   description: site.description,
-  openGraph: { type: "website", locale: site.locale, siteName: site.name, title: `${site.name} — ${site.tagline}`, description: site.description },
+  openGraph: { type: "website", locale: site.locale, siteName: site.name, title: `${site.name} — ${site.tagline}`, description: site.description, images: [{ url: "/brand/logo-dark.jpg", width: 1080, height: 807 }] },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#f27a1a",
+  themeColor: "#141414",
   width: "device-width",
   initialScale: 1,
 };

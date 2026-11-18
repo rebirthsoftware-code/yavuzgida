@@ -261,7 +261,7 @@ export function Catalog({ fixedCategory, fixedSub }: { fixedCategory?: string; f
   return (
     <div className="grid gap-5 lg:grid-cols-[240px_1fr]">
       <aside className="hidden lg:block">
-        <div className="sticky top-[7.5rem] rounded-lg border border-ink-200 bg-white px-4">{sidebar}</div>
+        <div className="sticky top-[8.6rem] rounded-lg border border-ink-200 bg-white px-4">{sidebar}</div>
       </aside>
 
       {/* Mobil filtre çekmecesi */}

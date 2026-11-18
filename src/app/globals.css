@@ -16,6 +16,15 @@
   --color-sky-100: #e1f0fb;
   --color-sky-50: #eef6fc;
 
+  --color-gold-600: #b8862b;
+  --color-gold-500: #d4a24c;
+  --color-gold-400: #e6bd6b;
+  --color-gold-100: #f6e9cf;
+  --color-coal-950: #0b0b0b;
+  --color-coal-900: #141414;
+  --color-coal-800: #1f1f1f;
+  --color-coal-700: #2a2a2a;
+
   --color-navy-900: #0f2440;
   --color-navy-800: #163459;
 
@@ -98,6 +107,7 @@ h1, h2, h3 {
 .banner-b { background: linear-gradient(120deg, #f27a1a 0%, #f79a4f 55%, #ffd2a8 100%); }
 .banner-c { background: linear-gradient(120deg, #e1f0fb 0%, #ffffff 60%, #fff4ea 100%); }
 .banner-d { background: linear-gradient(120deg, #0a9f6c 0%, #38c18f 100%); }
+.bg-gold { background: linear-gradient(135deg, #e6bd6b 0%, #d4a24c 50%, #b8862b 100%); }
 
 @media (prefers-reduced-motion: reduce) {
   *, ::before, ::after {

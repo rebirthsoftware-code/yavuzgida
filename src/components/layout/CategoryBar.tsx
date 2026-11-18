@@ -10,7 +10,7 @@ import { CategoryIcon } from "@/components/ui/CategoryIcon";
 export function CategoryBar({ counts }: { counts: Record<string, number> }) {
   const [hover, setHover] = useState<string | null>(null);
   return (
-    <div className="relative border-t border-ink-100 bg-white" onMouseLeave={() => setHover(null)}>
+    <div className="relative border-t border-white/5 bg-white" onMouseLeave={() => setHover(null)}>
       <nav className="mx-auto flex max-w-[1320px] items-center gap-0 overflow-x-auto px-2 no-scrollbar sm:px-4">
         <Link href="/urunler?etiket=indirim" className="flex shrink-0 items-center gap-1.5 whitespace-nowrap px-3 py-2.5 text-[0.85rem] font-bold text-orange-600 hover:bg-orange-50">
           <Percent className="size-3.5" /> Fırsatlar

@@ -8,7 +8,7 @@ import { useCart } from "@/components/cart/CartProvider";
 export function MobileSearchButton() {
   const { setSearchOpen } = useCart();
   return (
-    <button onClick={() => setSearchOpen(true)} aria-label="Ara" className="grid size-11 place-items-center rounded-lg text-ink-800 hover:bg-paper-100 md:hidden">
+    <button onClick={() => setSearchOpen(true)} aria-label="Ara" className="grid size-11 place-items-center rounded-lg text-white hover:bg-white/10 md:hidden">
       <Search className="size-5" />
     </button>
   );

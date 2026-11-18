@@ -11,9 +11,9 @@ export function CategorySheet({ categories, counts }: { categories: Category[]; 
   if (!catsOpen) return null;
   return (
     <div className="fixed inset-0 z-[45] flex flex-col bg-paper-50 pb-16 md:hidden" role="dialog" aria-label="Kategoriler">
-      <div className="flex items-center justify-between bg-white px-4 py-3 shadow-card">
+      <div className="flex items-center justify-between bg-coal-900 px-4 py-3 text-white">
         <h2 className="text-lg">Tüm Kategoriler</h2>
-        <button onClick={() => setCatsOpen(false)} aria-label="Kapat" className="grid size-9 place-items-center rounded-lg hover:bg-paper-100">
+        <button onClick={() => setCatsOpen(false)} aria-label="Kapat" className="grid size-9 place-items-center rounded-lg hover:bg-white/10">
           <X className="size-5" />
         </button>
       </div>

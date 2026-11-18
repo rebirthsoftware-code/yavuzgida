@@ -47,7 +47,7 @@ export function SearchBox({ className = "" }: { className?: string }) {
           e.preventDefault();
           if (q.trim()) go(`/urunler?q=${encodeURIComponent(q.trim())}`);
         }}
-        className="flex h-11 overflow-hidden rounded-lg border-2 border-orange-500 bg-white"
+        className="flex h-11 overflow-hidden rounded-lg border-2 border-gold-500 bg-white"
       >
         <input
           value={q}
@@ -60,7 +60,7 @@ export function SearchBox({ className = "" }: { className?: string }) {
           className="h-full flex-1 bg-transparent px-4 text-sm outline-none placeholder:text-ink-400"
           aria-label="Ara"
         />
-        <button type="submit" aria-label="Ara" className="grid w-14 place-items-center bg-orange-500 text-white hover:bg-orange-600">
+        <button type="submit" aria-label="Ara" className="bg-gold grid w-14 place-items-center text-coal-950 hover:brightness-105">
           <Search className="size-5" />
         </button>
       </form>

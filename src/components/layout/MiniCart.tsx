@@ -36,9 +36,9 @@ export function MiniCart() {
 
   return (
     <div className="relative" onMouseEnter={show} onMouseLeave={hide}>
-      <Link href="/sepet" className={`flex h-11 items-center gap-2 rounded-lg border px-3 text-sm font-semibold transition ${open ? "border-orange-500 bg-orange-50 text-orange-600" : "border-transparent text-ink-800 hover:border-ink-200"}`}>
+      <Link href="/sepet" className={`flex h-11 items-center gap-2 rounded-lg border px-3 text-sm font-semibold transition ${open ? "border-gold-500 bg-white/10 text-gold-400" : "border-transparent text-white hover:border-white/15"}`}>
         <span className="relative">
-          <ShoppingCart className="size-5" />
+          <ShoppingCart className="size-5 text-gold-400" />
           {ready && count > 0 && <span className="absolute -right-2 -top-2 grid min-w-[1.1rem] place-items-center rounded-full bg-orange-500 px-1 text-[0.65rem] font-bold leading-[1.1rem] text-white">{count}</span>}
         </span>
         <span className="hidden lg:block">Sepetim</span>

@@ -98,7 +98,7 @@ export function CartPage() {
         </div>
       </div>
 
-      <aside className="space-y-3 lg:sticky lg:top-[7.5rem]">
+      <aside className="space-y-3 lg:sticky lg:top-[8.6rem]">
         <div className="rounded-lg border border-ink-200 bg-white p-4">
           <h2 className="text-base font-bold text-ink-900">Sipariş Özeti</h2>
           <dl className="mt-3 space-y-2 text-sm">
