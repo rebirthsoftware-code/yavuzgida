@@ -8,7 +8,7 @@ export function SideBanners() {
         <Building2 className="size-6 text-orange-400" />
         <div>
           <p className="text-xs font-semibold uppercase tracking-wider text-white/70">Kurumsal</p>
-          <p className="mt-1 text-base font-bold leading-tight">Restoran & market için özel fiyat listesi</p>
+          <p className="mt-1 text-base font-bold leading-tight">Kafe & otel zincirlerine özel fiyat listesi</p>
           <p className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-orange-400">
             Teklif al <ArrowRight className="size-3 transition group-hover:translate-x-0.5" />
           </p>

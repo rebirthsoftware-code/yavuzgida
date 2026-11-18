@@ -9,7 +9,8 @@ const faq = [
   ["Minimum sipariş tutarı var mı?", "Bireysel siparişlerde minimum tutar yoktur. Kurumsal fiyat listesi aylık alım hacmine göre düzenlenir."],
   ["Kargo ücreti ne kadar?", `${formatCompact(site.commerce.freeShippingThreshold)} ve üzeri siparişlerde kargo ücretsizdir; altında ${formatCompact(site.commerce.shippingFee)} kargo ücreti uygulanır.`],
   ["Siparişim ne zaman kargoya verilir?", "Hafta içi 14:00'a kadar verilen siparişler aynı gün kargoya teslim edilir; teslimat 1–3 iş günüdür."],
-  ["Koli veya çuval alımında fiyat düşer mi?", "Evet. Her ürünün ambalaj boylarında birim fiyat büyüdükçe düşer; ayrıca sepet tutarına göre kademeli indirim uygulanır."],
+  ["Koli alımında fiyat düşer mi?", "Evet. Her ürünün ambalaj boylarında birim fiyat büyüdükçe düşer; ayrıca sepet tutarına göre kademeli indirim uygulanır."],
+  ["Numune alabilir miyim?", "Kurumsal müşterilerimize şurup, kahve ve toz içeceklerde ücretsiz numune gönderiyoruz; teklif formundan talep edebilirsiniz."],
   ["Kurumsal fatura kesiyor musunuz?", "Evet, e-fatura mükellefiyiz. Ödeme adımında kurumsal fatura bilgilerinizi girebilirsiniz."],
   ["İade koşulları nedir?", "Açılmamış ve ambalajı bozulmamış ürünler 14 gün içinde iade edilebilir."],
 ];

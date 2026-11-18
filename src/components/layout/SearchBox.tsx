@@ -13,7 +13,7 @@ import { formatPrice } from "@/lib/format";
 import { PackArt } from "@/components/product/PackArt";
 
 const index = indexJson as ProductIndex[];
-const popular = ["Kırmızı mercimek", "Baldo pirinç", "Sızma zeytinyağı", "Pul biber", "Fındık içi", "Domates salçası", "Rize çayı", "Toz şeker"];
+const popular = ["Espresso çekirdek", "Karamel şurubu", "Yulaf sütü", "Karton bardak 12 oz", "Sıcak çikolata", "Matcha", "V60 filtre kağıdı", "Stick şeker"];
 
 /** Masaüstü arama kutusu: yazarken açılır öneri paneli, Enter ile listeye gider. */
 export function SearchBox({ className = "" }: { className?: string }) {
@@ -56,7 +56,7 @@ export function SearchBox({ className = "" }: { className?: string }) {
             setOpen(true);
           }}
           onFocus={() => setOpen(true)}
-          placeholder="Aradığınız ürün, kategori veya markayı yazınız"
+          placeholder="Kahve, şurup, bardak, ekipman… ne arıyorsunuz?"
           className="h-full flex-1 bg-transparent px-4 text-sm outline-none placeholder:text-ink-400"
           aria-label="Ara"
         />

@@ -10,7 +10,7 @@ export function BestSellerTabs({ groups }: { groups: { key: string; label: strin
   const g = groups.find((x) => x.key === active) ?? groups[0];
   return (
     <section>
-      <SectionHeading title="Çok Satanlar" sub="Restoran ve marketlerin her hafta yeniden sipariş verdiği ürünler" href={`/urunler?etiket=cok-satan&sirala=populer${g.key !== "all" ? `&kategori=${g.key}` : ""}`} />
+      <SectionHeading title="Çok Satanlar" sub="Kafelerin her hafta yeniden sipariş verdiği ürünler" href={`/urunler?etiket=cok-satan&sirala=populer${g.key !== "all" ? `&kategori=${g.key}` : ""}`} />
       <div className="-mx-4 mb-4 flex gap-2 overflow-x-auto px-4 no-scrollbar sm:mx-0 sm:px-0">
         {groups.map((x) => (
           <button key={x.key} onClick={() => setActive(x.key)} className={`shrink-0 rounded-full border px-4 py-1.5 text-sm font-semibold transition ${x.key === g.key ? "border-orange-500 bg-orange-500 text-white" : "border-ink-200 bg-white text-ink-700 hover:border-orange-400"}`}>

@@ -5,7 +5,7 @@ export function CampaignTiles() {
   const tiles = [
     { icon: Truck, t: "2.500 ₺ üzeri kargo bedava", d: "Türkiye geneli 81 il", cls: "banner-d text-white", href: "/teslimat-ve-kargo" },
     { icon: BadgePercent, t: "Sepette ek indirim", d: "5.000 ₺ üzeri alışverişte %4", cls: "banner-b text-white", href: "/urunler" },
-    { icon: Boxes, t: "Koli & çuval fiyatı", d: "Büyük boyda birim fiyat düşer", cls: "banner-a text-white", href: "/urunler" },
+    { icon: Boxes, t: "Koli fiyatı avantajı", d: "6'lı ve 12'li kolide birim fiyat düşer", cls: "banner-a text-white", href: "/urunler" },
     { icon: Building2, t: "Kurumsal vade", d: "Onaylı hesaplara 30 gün", cls: "bg-white border border-ink-200 text-ink-900", href: "/kurumsal" },
   ];
   return (

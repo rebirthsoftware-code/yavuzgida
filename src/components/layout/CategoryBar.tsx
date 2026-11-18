@@ -65,7 +65,7 @@ export function CategoryBar({ counts }: { counts: Record<string, number> }) {
                   </div>
                   <Link href={`/kategori/${c.slug}`} className="flex flex-col justify-end rounded-lg p-5 text-white" style={{ background: `linear-gradient(135deg, ${c.color}, ${c.color}cc)` }}>
                     <p className="text-xs font-semibold uppercase tracking-wider opacity-80">Toptan avantajı</p>
-                    <p className="mt-1 text-lg font-bold leading-tight">Koli ve çuvalda birim fiyat %6–14 düşer</p>
+                    <p className="mt-1 text-lg font-bold leading-tight">Koli alımında birim fiyat %6–14 düşer</p>
                     <p className="mt-2 text-xs opacity-80">{c.name} kategorisinde tüm boylar →</p>
                   </Link>
                 </>

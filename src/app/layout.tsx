@@ -18,7 +18,7 @@ const inter = Inter({ variable: "--font-inter", subsets: ["latin", "latin-ext"],
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: {
-    default: `${site.name} | Toptan Gıda — Bakliyat, Baharat, Kuruyemiş, Yağ, Konserve`,
+    default: `${site.name} | Kafe & Barista Ürünleri Toptan — Kahve, Şurup, Çay, Bardak`,
     template: `%s | ${site.name}`,
   },
   description: site.description,

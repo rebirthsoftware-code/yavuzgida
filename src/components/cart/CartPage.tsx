@@ -26,7 +26,7 @@ export function CartPage() {
           <ShoppingCart className="size-9" />
         </span>
         <h2 className="mt-5 text-xl font-bold text-ink-900">Sepetinizde ürün bulunmamaktadır</h2>
-        <p className="mt-1 text-sm text-ink-500">600&apos;den fazla ürün arasından seçim yapın.</p>
+        <p className="mt-1 text-sm text-ink-500">600&apos;den fazla kafe ürünü arasından seçim yapın.</p>
         <ButtonLink href="/urunler" className="mt-6">
           Alışverişe Başla <ArrowRight className="size-4" />
         </ButtonLink>

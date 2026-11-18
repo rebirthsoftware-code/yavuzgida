@@ -12,9 +12,9 @@ type Slide = { cls: string; kicker: string; title: string; text: string; cta: st
 
 export function HeroBanners({ picks }: { picks: ProductIndex[] }) {
   const slides: Slide[] = [
-    { cls: "banner-a", kicker: "Haftanın fırsatları", title: "Seçili ürünlerde %25'e varan indirim", text: "Bakliyat, baharat ve kuruyemişte stok yenileme indirimleri. Fırsatlar stoklarla sınırlıdır.", cta: "Fırsatları Gör", href: "/urunler?etiket=indirim", dark: true, items: picks.slice(0, 3) },
-    { cls: "banner-b", kicker: "Toptan avantajı", title: "Koli ve çuval alımında birim fiyat düşer", text: "Her üründe 1 kg'dan 25 kg çuvala kadar boy seçin; büyüdükçe daha ucuza alın.", cta: "Toptan Fiyatlar", href: "/kurumsal", dark: true, items: picks.slice(3, 6) },
-    { cls: "banner-c", kicker: "Yeni üyelere özel", title: "İlk siparişte kargo bedava", text: "2.500 ₺ sınırı olmadan ilk siparişinizi ücretsiz kargoyla gönderiyoruz.", cta: "Alışverişe Başla", href: "/urunler", items: picks.slice(6, 9) },
+    { cls: "banner-a", kicker: "Haftanın fırsatları", title: "Şurup, çay ve sıcak çikolatada %25'e varan indirim", text: "Kış barı için stok yenileme indirimleri. Fırsatlar stoklarla sınırlıdır.", cta: "Fırsatları Gör", href: "/urunler?etiket=indirim", dark: true, items: picks.slice(0, 3) },
+    { cls: "banner-b", kicker: "Kafeler için", title: "Koli alımında birim fiyat düşer", text: "Espresso çekirdekten karton bardağa; koli seçin, birim fiyatınız %6–14 azalsın. Zincir kafelere özel liste.", cta: "Kurumsal Fiyat Al", href: "/kurumsal", dark: true, items: picks.slice(3, 6) },
+    { cls: "banner-c", kicker: "Yeni açılan kafelere", title: "İlk siparişte kargo bedava + ücretsiz numune", text: "Barınızı tek siparişle kurun: kahve, şurup, bardak ve ekipman aynı koliden çıksın.", cta: "Alışverişe Başla", href: "/urunler", items: picks.slice(6, 9) },
   ];
   const [i, setI] = useState(0);
   const [paused, setPaused] = useState(false);

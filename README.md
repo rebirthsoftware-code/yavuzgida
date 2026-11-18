@@ -1,6 +1,6 @@
 # Yavuz Gıda — E-Ticaret Sitesi (ön tasarım)
 
-Bakliyat, baharat, kuruyemiş, yağ, konserve, kahvaltılık, içecek ve daha fazlasını satan **Yavuz Gıda** için
+Kahve, şurup, çay, sıcak çikolata, barista sütleri, bardak ve barista ekipmanları satan **Yavuz Gıda** (kafe & HoReCa tedarikçisi) için
 Next.js 16 ile geliştirilen, Türkçe, mobil uyumlu, 600+ ürünlük e-ticaret sitesi.
 Altyapı [umbagida.com](https://umbagida.com) projesiyle aynıdır (Next.js 16, Tailwind v4, Vercel); tasarım sıfırdan ve tamamen farklıdır.
 
@@ -25,9 +25,9 @@ Bu sürüm **ön tasarımdır**: tüm sayfalar ve akışlar görsel olarak hazı
 
 `src/lib/types.ts` → `Product` (marka, kategori, alt kategori, etiketler, çoklu **varyant**: etiket, SKU, fiyat, eski fiyat, miktar/birim, koli adedi, stok).
 
-- Kategoriler ve alt kategoriler: `src/lib/categories.ts` (12 ana, 55 alt kategori)
+- Kategoriler ve alt kategoriler: `src/lib/categories.ts` (12 ana, 57 alt kategori; kafe odaklı)
 - Ürünler: `src/data/catalog.json` (tam) ve `src/data/catalog-index.json` (listeleme/arama için hafif kopya, varyantlar dâhil ~35 KB gzip)
-- Örnek katalog üretici: `node scripts/generate-catalog.mjs` (620 yer tutucu ürün, deterministik; puan, satış adedi ve ambalaj tipi dâhil)
+- Örnek katalog üretici: `node scripts/generate-catalog.mjs` (600+ yer tutucu kafe ürünü, deterministik; puan, satış adedi ve ambalaj tipi dâhil)
 
 Gerçek liste geldiğinde aynı JSON biçimini üreten bir içe aktarma scripti yazılacak; bileşenler değişmeyecek.
 

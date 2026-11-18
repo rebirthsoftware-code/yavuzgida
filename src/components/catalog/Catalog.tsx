@@ -89,9 +89,10 @@ export function Catalog({ fixedCategory, fixedSub }: { fixedCategory?: string; f
   const subOptions = useMemo(() => {
     if (!cat) return [];
     const m = new Map<string, number>();
-    for (const p of base) m.set(p.subcategory, (m.get(p.subcategory) ?? 0) + 1);
+    const pool = q ? searchProducts(all, q, 2000) : all;
+    for (const p of pool) if (p.category === cat) m.set(p.subcategory, (m.get(p.subcategory) ?? 0) + 1);
     return (categoryMap[cat]?.subcategories ?? []).map((s) => ({ ...s, count: m.get(s.slug) ?? 0 }));
-  }, [base, cat]);
+  }, [q, cat]);
 
   const filtered = useMemo(() => {
     let list = base;

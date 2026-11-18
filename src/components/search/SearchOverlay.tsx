@@ -14,7 +14,7 @@ import { minPriceOf } from "@/lib/index-of";
 import { PackArt } from "@/components/product/PackArt";
 
 const index = indexJson as ProductIndex[];
-const popular = ["Mercimek", "Zeytinyağı", "Pul biber", "Fındık", "Salça", "Rize çayı", "Baldo pirinç", "Toz şeker"];
+const popular = ["Espresso", "Karamel şurubu", "Yulaf sütü", "Karton bardak", "Salep", "Matcha", "Tamper", "Stick şeker"];
 
 export function SearchOverlay() {
   const { searchOpen, setSearchOpen } = useCart();

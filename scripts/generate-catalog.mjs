@@ -29,152 +29,162 @@ const slugify = (s) =>
 
 const round = (n) => Math.round(n * 2) / 2; // 0,50 ₺ hassasiyet
 
-/* Varyant şablonları: [etiket, miktar, birim, çarpan(kg başı fiyata göre indirim), koli adedi] */
+/* Varyant şablonları: [etiket, miktar, birim, çarpan(kg/L başı fiyata göre), koli adedi] */
 const TPL = {
-  bulk: [["1 kg", 1000, "g", 1, 12], ["5 kg", 5000, "g", 0.93], ["25 kg çuval", 25000, "g", 0.86]],
-  bulkSmall: [["500 g", 500, "g", 1.08, 20], ["1 kg", 1000, "g", 1, 12], ["5 kg", 5000, "g", 0.92]],
-  spice: [["100 g", 100, "g", 1.3, 24], ["500 g", 500, "g", 1, 12], ["1 kg", 1000, "g", 0.9]],
-  nuts: [["250 g", 250, "g", 1.15, 24], ["1 kg", 1000, "g", 1, 10], ["5 kg", 5000, "g", 0.93]],
-  oil: [["1 L", 1000, "ml", 1, 12], ["5 L", 5000, "ml", 0.95], ["18 L teneke", 18000, "ml", 0.9]],
-  bottle: [["500 ml", 500, "ml", 1.1, 12], ["1 L", 1000, "ml", 1, 12], ["5 L", 5000, "ml", 0.9]],
-  jar: [["720 g kavanoz", 720, "g", 1.1, 12], ["1,7 kg", 1700, "g", 1, 6], ["5 kg kova", 5000, "g", 0.9]],
-  jarSmall: [["380 g kavanoz", 380, "g", 1.15, 12], ["720 g kavanoz", 720, "g", 1, 12], ["2,5 kg", 2500, "g", 0.9]],
-  can: [["400 g teneke", 400, "g", 1, 24], ["800 g teneke", 800, "g", 0.95, 12], ["2,5 kg teneke", 2500, "g", 0.88, 6]],
-  pack: [["500 g paket", 500, "g", 1, 20], ["20'li koli", 10000, "g", 0.9]],
-  pack350: [["350 g paket", 350, "g", 1, 24], ["24'lü koli", 8400, "g", 0.9]],
-  snack: [["Tekli", 100, "g", 1.2, 24], ["24'lü koli", 2400, "g", 1]],
-  tea: [["500 g", 500, "g", 1.05, 12], ["1 kg", 1000, "g", 1, 10], ["5 kg", 5000, "g", 0.93]],
-  teaBag: [["20'li kutu", 40, "g", 1.2, 12], ["100'lü kutu", 200, "g", 1, 6]],
-  drink: [["1 L", 1000, "ml", 1, 12], ["12'li koli", 12000, "ml", 0.92]],
+  coffee: [["250 g", 250, "g", 1.12, 20], ["1 kg", 1000, "g", 1, 6], ["6 × 1 kg koli", 6000, "g", 0.93]],
+  coffeeBig: [["1 kg", 1000, "g", 1, 6], ["6 × 1 kg koli", 6000, "g", 0.93]],
+  capsule: [["10'lu kutu", 10, "adet", 1, 12], ["100'lü koli", 100, "adet", 0.9]],
+  syrup: [["700 ml", 700, "ml", 1, 6], ["1 L pompalı", 1000, "ml", 0.95, 6], ["6'lı koli", 6000, "ml", 0.88]],
+  sauce: [["1 kg sıkma şişe", 1000, "g", 1, 6], ["2,5 kg kova", 2500, "g", 0.9]],
+  puree: [["1 L pompalı", 1000, "ml", 1, 6], ["6'lı koli", 6000, "ml", 0.9]],
+  teaLoose: [["250 g", 250, "g", 1.1, 12], ["1 kg", 1000, "g", 1, 6], ["5 kg", 5000, "g", 0.92]],
+  teaBag: [["20'li kutu", 40, "g", 1.2, 12], ["100'lü kutu", 200, "g", 1, 6], ["Demlik poşet 48'li", 480, "g", 0.95]],
+  powder: [["1 kg", 1000, "g", 1, 10], ["5 kg", 5000, "g", 0.92], ["10 × 1 kg koli", 10000, "g", 0.9]],
+  milk: [["1 L", 1000, "ml", 1, 12], ["12'li koli", 12000, "ml", 0.93]],
+  cream: [["1 L", 1000, "ml", 1, 12], ["5 L", 5000, "ml", 0.93]],
+  can330: [["330 ml", 330, "ml", 1.15, 24], ["24'lü koli", 7920, "ml", 1]],
+  bottle500: [["500 ml", 500, "ml", 1.1, 12], ["12'li koli", 6000, "ml", 1]],
   water: [["6'lı paket", 3000, "ml", 1], ["Palet (84 paket)", 252000, "ml", 0.85]],
-  sarf: [["100'lü paket", 100, "adet", 1, 10], ["1000'lü koli", 1000, "adet", 0.85]],
-  sarfBig: [["50'li paket", 50, "adet", 1, 20], ["500'lü koli", 500, "adet", 0.88]],
+  bulk: [["1 kg", 1000, "g", 1, 12], ["5 kg", 5000, "g", 0.93], ["25 kg çuval", 25000, "g", 0.86]],
+  pouch: [["500 g", 500, "g", 1.08, 20], ["1 kg", 1000, "g", 1, 12], ["5 kg", 5000, "g", 0.92]],
+  snack: [["Tekli", 1, "adet", 1.2, 24], ["24'lü koli", 24, "adet", 1]],
+  frozen: [["Koli (40 adet)", 40, "adet", 1], ["Palet (12 koli)", 480, "adet", 0.9]],
+  tool: [["Adet", 1, "adet", 1]],
+  paper: [["100'lü paket", 100, "adet", 1, 20], ["1000'lü koli", 1000, "adet", 0.85]],
+  cups: [["50'li paket", 50, "adet", 1, 20], ["1000'lü koli", 1000, "adet", 0.86]],
+  cleaner: [["1 L", 1000, "ml", 1, 12], ["5 L", 5000, "ml", 0.9]],
+  cleanerPowder: [["900 g", 900, "g", 1, 12], ["3 kg", 3000, "g", 0.92]],
+  stick: [["500'lü kutu", 500, "adet", 1, 10], ["5000'li koli", 5000, "adet", 0.88]],
+  portion: [["100'lü kutu", 100, "adet", 1, 12], ["1000'li koli", 1000, "adet", 0.88]],
 };
 
 /* Marka havuzları (yer tutucu) */
 const BRANDS = {
-  bulk: ["Yavuz Seçkin", "Anadolu Bakliyat", "Harman", "Köy Pazarı"],
-  spice: ["Yavuz Seçkin", "Baharat Evi", "Akdeniz Çeşni", "Harman"],
-  nuts: ["Yavuz Seçkin", "Karadeniz Kuruyemiş", "Çerezci", "Köy Pazarı"],
-  oil: ["Ege Zeytin", "Altın Damla", "Yavuz Seçkin", "Akdeniz Çeşni"],
-  jar: ["Yavuz Seçkin", "Köy Pazarı", "Bereket Konserve", "Ege Zeytin"],
-  pasta: ["Durum", "Harman", "Yavuz Seçkin", "Anadolu Bakliyat"],
-  breakfast: ["Köy Pazarı", "Petek", "Yavuz Seçkin", "Bereket Konserve"],
-  drink: ["Çaykent", "Yavuz Seçkin", "Pınar Su", "Mevsim"],
-  snack: ["Kıtır", "Tatlıcı", "Yavuz Seçkin", "Harman"],
-  sauce: ["Mutfak Şefi", "Yavuz Seçkin", "Bereket Konserve", "Akdeniz Çeşni"],
-  sugar: ["Şekerpare", "Yavuz Seçkin", "Harman"],
-  sarf: ["Ambalajcı", "Yavuz Seçkin", "Servis Pro"],
+  coffee: ["Yavuz Roastery", "Roast Lab", "Nordic Bean", "Anatolia Coffee"],
+  syrup: ["Yavuz Barista", "Sweet Cup", "Flavoria", "Roast Lab"],
+  tea: ["Tea House", "Yavuz Barista", "Çaykent", "Herbal Garden"],
+  powder: ["Yavuz Barista", "Sweet Cup", "Choco Nova", "Flavoria"],
+  milk: ["Milkhouse", "Oatly Style", "Barista Blend", "Yavuz Barista"],
+  cold: ["Sipp", "Fizzco", "Mevsim", "Pınar Su"],
+  pastry: ["Patisse", "Choco Nova", "Yavuz Barista", "Harman"],
+  snack: ["Patisse", "Kıtır", "Bake House", "Sweet Cup"],
+  tool: ["Bar Sense", "Barista Pro", "Brew Craft"],
+  pack: ["PackCup", "Yavuz Barista", "Servis Pro"],
+  clean: ["Clean Bar", "Barista Pro", "Hijyen Plus"],
+  sugar: ["Sweet Cup", "Yavuz Barista", "Şekerpare"],
 };
 
-/* Katalog kaynağı: kategori → alt kategori → [şablon, kg/L başı taban fiyat, marka havuzu, ürün adları] */
+/* Katalog kaynağı: kategori → alt kategori → [şablon, kg/L/adet başı taban fiyat, marka havuzu, ürün adları] */
 const SOURCE = {
-  "bakliyat-tahil": {
-    hue: 36,
-    mercimek: ["bulk", 95, "bulk", ["Kırmızı Mercimek", "Yeşil Mercimek", "Sarı Mercimek", "Kırmızı Futbol Mercimek", "Kara Mercimek", "Siyah Mercimek (Beluga)"]],
-    "nohut-fasulye": ["bulk", 120, "bulk", ["Koçbaşı Nohut 9 mm", "Nohut 8 mm", "Dermason Fasulye", "Şeker Fasulye", "Barbunya", "Çalı Fasulyesi", "Kırmızı Barbunya", "Börülce", "Bakla (Kuru)", "Soya Fasulyesi"]],
-    pirinc: ["bulk", 110, "bulk", ["Baldo Pirinç", "Osmancık Pirinç", "Basmati Pirinç", "Jasmine Pirinç", "Kırık Pirinç", "Tosya Pirinci", "Yerli Baldo", "Kalrose Pirinç"]],
-    bulgur: ["bulk", 70, "bulk", ["Pilavlık Bulgur", "Köftelik İnce Bulgur", "Esmer Pilavlık Bulgur", "Midyat Bulguru", "Çiğköftelik Bulgur", "Tam Buğday Bulguru"]],
-    "un-irmik": ["bulk", 45, "bulk", ["Tip 550 Un", "Tam Buğday Unu", "Baklavalık Un", "Pizza Unu", "Mısır Unu", "Nohut Unu", "İnce İrmik", "Kalın İrmik", "Pirinç Unu", "Çavdar Unu", "Kepekli Un"]],
-    "diger-tahil": ["bulkSmall", 130, "bulk", ["Yulaf Ezmesi", "Kinoa", "Karabuğday", "Aşurelik Buğday", "Çavdar", "Arpa (Yarma)", "Chia Tohumu", "Keten Tohumu", "Mısır (Patlatmalık)", "Firik"]],
+  kahve: {
+    hue: 25,
+    "espresso-cekirdek": ["coffee", 900, "coffee", ["Espresso Daily Blend", "Espresso Intenso", "Espresso Crema", "Espresso Reserve", "Espresso Bar Blend", "Espresso Dark Roast", "Espresso %100 Arabica", "Espresso Robusta Blend", "Espresso Decaf", "Espresso House Blend"]],
+    "tek-orijin": ["coffee", 1250, "coffee", ["Colombia Supremo", "Brazil Santos", "Ethiopia Yirgacheffe", "Guatemala Antigua", "Kenya AA", "Costa Rica Tarrazu", "Honduras SHG", "Peru Organic", "Sumatra Mandheling", "Rwanda Bourbon"]],
+    "filtre-kahve": ["coffee", 850, "coffee", ["Filtre Kahve (Öğütülmüş)", "Filtre Kahve Çekirdek", "French Press Öğütüm", "V60 Öğütüm", "Cold Brew Öğütüm", "Filtre Kahve Decaf", "Breakfast Blend"]],
+    "turk-kahvesi": ["pouch", 700, "coffee", ["Türk Kahvesi", "Dibek Kahvesi", "Damla Sakızlı Türk Kahvesi", "Menengiç Kahvesi", "Osmanlı Kahvesi", "Kakuleli Türk Kahvesi"]],
+    "kapsul-pod": ["capsule", 14, "coffee", ["Espresso Kapsül Intenso", "Espresso Kapsül Lungo", "Espresso Kapsül Decaf", "Espresso Kapsül Ristretto", "ESE Pod Espresso", "Kapsül Vanilya Aromalı"]],
+    "hazir-kahve": ["powder", 650, "coffee", ["Hazır Granül Kahve", "Cold Brew Konsantre", "Hazır Kahve Gold", "3'ü 1 Arada Kahve", "Kafeinsiz Hazır Kahve", "Cold Brew Şişe 250 ml"]],
   },
-  "baharat-cesni": {
-    hue: 20,
-    "toz-baharat": ["spice", 420, "spice", ["Pul Biber", "Toz Kırmızı Biber (Tatlı)", "Toz Kırmızı Biber (Acı)", "Karabiber (Toz)", "Kimyon (Toz)", "Zerdeçal", "Zencefil (Toz)", "Tarçın (Toz)", "Sumak", "Köri", "Kekik", "Nane", "Kişniş (Toz)", "Sarımsak Tozu", "Soğan Tozu", "Yenibahar (Toz)", "Karanfil (Toz)", "Isot Biber", "Paprika", "Tatlı Toz Biber Çekilmiş"]],
-    "tane-baharat": ["spice", 480, "spice", ["Karabiber (Tane)", "Kimyon (Tane)", "Kişniş (Tane)", "Karanfil (Tane)", "Yenibahar (Tane)", "Çörek Otu", "Susam", "Hardal Tohumu", "Defne Yaprağı", "Tarçın Çubuk", "Kakule", "Yıldız Anason", "Rezene", "Anason", "Çemen Tohumu", "Mahlep"]],
-    karisim: ["spice", 390, "spice", ["Köfte Harcı", "Tavuk Baharatı", "Balık Baharatı", "Pizza Baharatı", "Patates Baharatı", "Salata Baharatı", "Mantı Baharatı", "Kebap Baharatı", "Döner Baharatı", "Çiğköfte Baharatı", "Garam Masala", "Kısır Baharatı", "Izgara Baharatı"]],
-    tuz: ["bulkSmall", 25, "spice", ["Kaya Tuzu (İnce)", "Kaya Tuzu (Kalın)", "Deniz Tuzu", "İyotlu Sofra Tuzu", "Himalaya Tuzu", "Çankırı Kaya Tuzu", "Sarımsaklı Tuz", "Kekikli Tuz"]],
-    "kurutulmus-bitki": ["spice", 350, "spice", ["Fesleğen", "Biberiye", "Dereotu", "Maydanoz (Kuru)", "Tarhun", "Nane (Kuru)", "Kuru Soğan Kıyım", "Kuru Domates", "Kuru Biber (Dolmalık)", "Kuru Patlıcan", "Kuru Bamya"]],
+  "surup-sos": {
+    hue: 345,
+    "aroma-surubu": ["syrup", 480, "syrup", ["Vanilya Şurubu", "Karamel Şurubu", "Fındık Şurubu", "Tuzlu Karamel Şurubu", "Beyaz Çikolata Şurubu", "Çilek Şurubu", "Mango Şurubu", "Şeftali Şurubu", "Mojito Şurubu", "Cool Lime Şurubu", "Yeşil Elma Şurubu", "Nane Şurubu", "Irish Cream Şurubu", "Cookies Şurubu", "Chai Tea Şurubu", "Damla Sakızı Şurubu", "Muz Şurubu", "Vişne Şurubu", "Lavanta Şurubu", "Karpuz Şurubu", "Badem Şurubu", "Hindistan Cevizi Şurubu", "Zencefil Şurubu", "Böğürtlen Şurubu"]],
+    "sekersiz-surup": ["syrup", 560, "syrup", ["Şekersiz Vanilya Şurubu", "Şekersiz Karamel Şurubu", "Şekersiz Fındık Şurubu", "Şekersiz Çikolata Şurubu", "Şekersiz Tuzlu Karamel Şurubu", "Şekersiz Mocha Şurubu"]],
+    "dekor-sos": ["sauce", 360, "syrup", ["Çikolata Dekor Sos", "Karamel Dekor Sos", "Beyaz Çikolata Dekor Sos", "Çilek Dekor Sos", "Fındık Dekor Sos", "Krema Sos Karamel 2,5 kg", "Mocha Sos"]],
+    "meyve-puresi": ["puree", 520, "syrup", ["Çilek Püresi", "Mango Püresi", "Şeftali Püresi", "Vişne Püresi", "Orman Meyveleri Püresi", "Muz Püresi", "Yeşil Elma Püresi", "Karpuz Püresi", "Ananas Püresi", "Maracuja Püresi", "Kivi Püresi", "Limon Püresi"]],
+    "kokteyl-bazi": ["puree", 420, "syrup", ["Limonata Bazı", "Mojito Bazı", "Sangria Bazı", "Pina Colada Bazı", "Ice Tea Şeftali Bazı", "Ice Tea Limon Bazı", "Frozen Çilek Bazı"]],
   },
-  "kuruyemis-kuru-meyve": {
-    hue: 28,
-    findik: ["nuts", 520, "nuts", ["Çiğ Fındık İçi", "Kavrulmuş Fındık", "Fındık Kıyım", "Fındık Unu", "Kabuklu Fındık", "Beyazlatılmış Fındık", "Giresun Fındığı (Kalite)"]],
-    "badem-ceviz": ["nuts", 640, "nuts", ["Çiğ Badem", "Kavrulmuş Tuzlu Badem", "Badem File", "Badem Unu", "Ceviz İçi (Kelebek)", "Ceviz İçi Kırık", "Kabuklu Ceviz", "Kaju (Çiğ)", "Kaju (Kavrulmuş)", "Çam Fıstığı", "Antep Fıstığı İçi", "Badem (Kabuklu)"]],
-    fistik: ["nuts", 380, "nuts", ["Siirt Fıstığı", "Antep Fıstığı (Kavrulmuş)", "Yer Fıstığı (Kabuklu)", "Yer Fıstığı (Soyulmuş)", "Tuzlu Yer Fıstığı", "Fıstık Ezmesi"]],
-    cekirdek: ["nuts", 180, "nuts", ["Ay Çekirdeği (Tuzlu)", "Ay Çekirdeği (Tuzsuz)", "Kabak Çekirdeği", "Siyah Çekirdek", "Dakota Çekirdek", "Kavun Çekirdeği", "Kabak Çekirdeği İçi"]],
-    "kuru-meyve": ["nuts", 260, "nuts", ["Kuru Kayısı (Jumbo)", "Kuru Kayısı (Standart)", "Gün Kurusu Kayısı", "Kuru İncir", "Kuru Üzüm (Çekirdeksiz)", "Sultaniye Üzüm", "Kuru Erik", "Hurma (Medjool)", "Hurma (Deglet)", "Kuru Dut", "Kuru Kızılcık", "Kuru Elma Dilimi", "Kuru Muz", "Kuru Kivi", "Zeytinyağlı Kuru Üzüm"]],
-    karisik: ["nuts", 420, "nuts", ["Karışık Kuruyemiş (Lüks)", "Karışık Kuruyemiş (Ekonomik)", "Çerez Karışımı", "Öğrenci Karışımı", "Leblebi (Sarı)", "Leblebi (Beyaz)", "Tuzlu Leblebi", "Şekerli Leblebi", "Mısır Çerezi"]],
+  cay: {
+    hue: 135,
+    "siyah-cay": ["teaLoose", 320, "tea", ["Rize Çayı (Tomurcuk)", "Rize Çayı (Filiz)", "Dökme Siyah Çay", "Earl Grey", "Seylan Çayı", "English Breakfast", "Kokulu Çay", "Assam Çayı"]],
+    "yesil-cay": ["teaLoose", 520, "tea", ["Yeşil Çay", "Yasemin Yeşil Çay", "Matcha Tozu", "Matcha Latte Karışımı", "Sencha", "Gunpowder Yeşil Çay", "Beyaz Çay"]],
+    "bitki-cayi": ["teaLoose", 420, "tea", ["Ihlamur", "Papatya", "Nane Limon", "Adaçayı", "Rezene", "Melisa", "Kış Çayı", "Zencefil Limon", "Kuşburnu", "Hibiskus", "Rooibos", "Ekinezya"]],
+    "meyve-cayi": ["teaLoose", 360, "tea", ["Elma Çayı", "Orman Meyveli Çay", "Böğürtlen Çayı", "Portakal Tarçın Çayı", "Nar Çayı", "Karadut Çayı", "Mango Çayı", "Vişne Çayı"]],
+    "poset-cay": ["teaBag", 480, "tea", ["Siyah Çay Poşet", "Yeşil Çay Poşet", "Earl Grey Poşet", "Papatya Poşet", "Nane Limon Poşet", "Kuşburnu Poşet", "Ihlamur Poşet", "Kış Çayı Poşet", "Demlik Poşet Siyah Çay", "Demlik Poşet Earl Grey"]],
   },
-  "yag-sirke": {
-    hue: 85,
-    zeytinyagi: ["oil", 480, "oil", ["Naturel Sızma Zeytinyağı", "Erken Hasat Sızma Zeytinyağı", "Riviera Zeytinyağı", "Soğuk Sıkım Zeytinyağı", "Organik Sızma Zeytinyağı", "Ayvalık Zeytinyağı", "Memecik Zeytinyağı"]],
-    "aycicek-misir": ["oil", 95, "oil", ["Ayçiçek Yağı", "Mısır Yağı", "Kızartmalık Ayçiçek Yağı", "Kanola Yağı", "Bitkisel Karışım Yağ"]],
-    "ozel-yaglar": ["bottle", 420, "oil", ["Fındık Yağı", "Susam Yağı", "Hindistan Cevizi Yağı", "Üzüm Çekirdeği Yağı", "Avokado Yağı", "Tereyağı (Sade)", "Margarin (Paket)"]],
-    sirke: ["bottle", 60, "oil", ["Elma Sirkesi", "Üzüm Sirkesi", "Beyaz Sirke", "Balzamik Sirke", "Nar Sirkesi", "Doğal Fermente Elma Sirkesi"]],
-    "nar-eksisi": ["bottle", 150, "oil", ["Nar Ekşisi", "Nar Ekşili Sos", "Limon Sosu", "Sumak Ekşisi", "Koruk Suyu"]],
+  "sicak-icecek-tozlari": {
+    hue: 15,
+    "sicak-cikolata": ["powder", 420, "powder", ["Hot Chocolate Classic", "Hot Chocolate Premium", "Beyaz Sıcak Çikolata", "Bitter Sıcak Çikolata", "Fındıklı Sıcak Çikolata", "Karamelli Sıcak Çikolata", "Sıcak Çikolata Vegan"]],
+    salep: ["powder", 380, "powder", ["Salep Classic", "Salep Premium", "Damla Sakızlı Salep", "Çikolatalı Salep", "Fındıklı Salep", "Tarçınlı Salep"]],
+    "frappe-milkshake": ["powder", 360, "powder", ["Frappe Tozu Vanilya", "Frappe Tozu Çikolata", "Frappe Tozu Karamel", "Milkshake Tozu Vanilya", "Milkshake Tozu Çilek", "Milkshake Tozu Çikolata", "Frappe Bazı Mocha", "Frappe Tozu Cookies", "Frappe Tozu Beyaz Çikolata"]],
+    "chai-latte": ["powder", 440, "powder", ["Chai Latte Tozu", "Zerdeçal Latte (Golden Milk)", "Matcha Latte Tozu", "Pumpkin Spice Latte Tozu", "Taro Latte Tozu", "Red Velvet Latte Tozu", "Lotus Latte Tozu"]],
+    smoothie: ["powder", 390, "powder", ["Smoothie Bazı Çilek", "Smoothie Bazı Mango", "Smoothie Bazı Yeşil", "Smoothie Bazı Orman Meyveleri", "Açaí Bazı", "Protein Smoothie Bazı"]],
   },
-  "konserve-salca": {
-    hue: 0,
-    salca: ["jar", 110, "jar", ["Domates Salçası", "Biber Salçası (Tatlı)", "Biber Salçası (Acı)", "Karışık Salça", "Güneşte Kurutulmuş Domates Salçası", "Organik Domates Salçası"]],
-    tursu: ["jar", 85, "jar", ["Kornişon Turşu", "Karışık Turşu", "Biber Turşusu", "Lahana Turşusu", "Sarımsak Turşusu", "Salatalık Turşusu", "Pancar Turşusu", "Jalapeno Biber Turşusu"]],
-    "konserve-sebze": ["can", 90, "jar", ["Konserve Bezelye", "Konserve Mısır", "Konserve Mantar", "Közlenmiş Biber", "Doğranmış Domates", "Kapya Biber (Közlenmiş)", "Enginar Kalbi", "Közlenmiş Patlıcan"]],
-    "konserve-bakliyat": ["can", 80, "jar", ["Haşlanmış Nohut", "Haşlanmış Fasulye", "Haşlanmış Barbunya", "Haşlanmış Mercimek", "Fasulye Pilaki"]],
-    zeytin: ["jar", 180, "jar", ["Siyah Zeytin (Gemlik)", "Yeşil Zeytin (Kırma)", "Siyah Zeytin (Sele)", "Yeşil Çizik Zeytin", "Yağlı Sele Zeytin", "Biber Dolgulu Yeşil Zeytin", "Çekirdeksiz Siyah Zeytin", "Kalamata Zeytin"]],
+  "sut-krema": {
+    hue: 215,
+    "barista-sut": ["milk", 48, "milk", ["Barista Süt %3,5", "Barista Süt Laktozsuz", "Barista Süt %1,5", "UHT Tam Yağlı Süt", "UHT Yarım Yağlı Süt", "Keçi Sütü UHT"]],
+    "bitkisel-sut": ["milk", 95, "milk", ["Yulaf Sütü Barista", "Badem Sütü Barista", "Soya Sütü Barista", "Hindistan Cevizi Sütü", "Fındık Sütü", "Bezelye Sütü Barista", "Pirinç Sütü", "Yulaf Sütü Çikolatalı"]],
+    krema: ["cream", 160, "milk", ["Krema %35", "Çırpma Kreması Bitkisel", "Çırpma Kreması Hayvansal", "Sprey Krema", "Pişirme Kreması %18", "Mascarpone 2 kg"]],
+    kondanse: ["powder", 180, "milk", ["Kondanse Süt", "Süt Tozu Tam Yağlı", "Süt Tozu Yağsız", "Krema Tozu", "Dulce de Leche", "Kremşanti Tozu"]],
   },
-  "makarna-hamur": {
-    hue: 45,
-    makarna: ["pack", 55, "pasta", ["Spagetti", "Burgu Makarna", "Fiyonk Makarna", "Kalem Makarna", "Arpa Şehriye", "Tel Şehriye", "Penne", "Fettuccine", "Mantı Makarna", "Yıldız Şehriye", "Tam Buğday Spagetti", "Lazanya", "Kuskus", "Tortellini"]],
-    eriste: ["pack", 95, "pasta", ["Ev Eriştesi (Yumurtalı)", "Kesme Erişte", "Tam Buğday Erişte", "Kuskus (El Yapımı)", "Pirinç Eriştesi", "Soba Eriştesi"]],
-    hamur: ["pack", 70, "pasta", ["Yufka (El Açması)", "Baklavalık Yufka", "Mantı (Dondurulmuş)", "Milföy Hamuru", "Pizza Hamuru", "Lahmacun Hamuru"]],
-    "ekmek-cesitleri": ["pack350", 60, "pasta", ["Galeta Unu", "Galeta (Tam Buğday)", "Grissini", "Ekmek Kırıntısı", "Kruton", "Tortilla Lavaş", "Kuru Ekmek (Peksimet)"]],
-  },
-  kahvaltilik: {
-    hue: 40,
-    bal: ["jarSmall", 480, "breakfast", ["Çiçek Balı", "Çam Balı", "Kestane Balı", "Petek Bal", "Süzme Bal", "Yayla Balı", "Organik Çiçek Balı", "Karakovan Balı"]],
-    "recel-marmelat": ["jarSmall", 120, "breakfast", ["Çilek Reçeli", "Vişne Reçeli", "Kayısı Reçeli", "Portakal Marmelatı", "İncir Reçeli", "Gül Reçeli", "Ayva Reçeli", "Böğürtlen Reçeli", "Karadut Reçeli", "Şekersiz Kayısı Reçeli"]],
-    "tahin-pekmez": ["jar", 190, "breakfast", ["Tahin", "Üzüm Pekmezi", "Keçiboynuzu Pekmezi", "Dut Pekmezi", "Tahin-Pekmez Karışımı", "Andız Pekmezi", "Tam Tahin (Kabuklu)"]],
-    surulebilir: ["jarSmall", 260, "breakfast", ["Fındık Ezmesi", "Fıstık Ezmesi", "Kakaolu Fındık Kreması", "Badem Ezmesi", "Susam Ezmesi", "Kayısı Ezmesi"]],
-  },
-  icecek: {
+  "soguk-icecek": {
     hue: 190,
-    cay: ["tea", 220, "drink", ["Rize Çayı (Tomurcuk)", "Rize Çayı (Filiz)", "Dökme Siyah Çay", "Earl Grey", "Yeşil Çay", "Kokulu Çay", "Seylan Çayı", "Organik Siyah Çay"]],
-    kahve: ["tea", 450, "drink", ["Türk Kahvesi", "Dibek Kahvesi", "Menengiç Kahvesi", "Filtre Kahve (Öğütülmüş)", "Espresso Çekirdek", "Hazır Granül Kahve", "Damla Sakızlı Türk Kahvesi"]],
-    "bitki-cayi": ["teaBag", 400, "drink", ["Ihlamur", "Kuşburnu Çayı", "Papatya Çayı", "Nane Limon", "Adaçayı", "Rezene Çayı", "Kış Çayı", "Melisa Çayı", "Hibiskus Çayı", "Zencefil Çayı"]],
-    "meyve-suyu": ["drink", 45, "drink", ["Portakal Suyu", "Vişne Nektarı", "Şeftali Nektarı", "Elma Suyu", "Karışık Meyve Suyu", "Nar Suyu", "Kayısı Nektarı", "Limonata"]],
-    "su-gazli": ["water", 8, "drink", ["Doğal Kaynak Suyu 500 ml", "Doğal Kaynak Suyu 1,5 L", "Soda (Sade)", "Soda (Limonlu)", "Gazoz", "Kola", "Ayran (Şişe)", "Şalgam Suyu"]],
+    "soda-gazli": ["can330", 14, "cold", ["Soda Sade", "Soda Limonlu", "Tonik", "Gazoz", "Kola", "Kola Şekersiz", "Zencefilli Gazoz", "Portakallı Gazlı İçecek", "Premium Soda Şişe", "Elma Gazozu"]],
+    "meyve-suyu": ["bottle500", 28, "cold", ["Portakal Suyu %100", "Vişne Nektarı", "Şeftali Nektarı", "Elma Suyu", "Nar Suyu", "Karışık Meyve Suyu", "Kayısı Nektarı", "Limonata Şişe", "Domates Suyu"]],
+    "buzlu-cay": ["bottle500", 24, "cold", ["Buzlu Çay Şeftali", "Buzlu Çay Limon", "Buzlu Çay Mango", "Buzlu Çay Şekersiz", "Kombucha Zencefil", "Kombucha Orman Meyveli", "Yeşil Buzlu Çay"]],
+    enerji: ["can330", 40, "cold", ["Enerji İçeceği", "Enerji İçeceği Şekersiz", "Enerji İçeceği Tropikal", "Enerji İçeceği Karpuz", "Spor İçeceği Limon"]],
+    su: ["water", 9, "cold", ["Doğal Kaynak Suyu 500 ml", "Doğal Kaynak Suyu 330 ml Cam", "Doğal Kaynak Suyu 1,5 L", "Maden Suyu Sade", "Maden Suyu Limonlu", "Premium Cam Şişe Su 750 ml"]],
+  },
+  pastane: {
+    hue: 40,
+    kuvertur: ["pouch", 420, "pastry", ["Bitter Kuvertür %54", "Bitter Kuvertür %70", "Sütlü Kuvertür", "Beyaz Kuvertür", "Ruby Kuvertür", "Çikolata Damla", "Kakao Yağı", "Kaplama Çikolata Bitter"]],
+    kakao: ["pouch", 380, "pastry", ["Kakao Tozu %22", "Kakao Tozu Alkalize", "Karamel Tozu", "Vanilin", "Kabartma Tozu", "Toz Şeker Pudra", "Nişasta Vanilyalı Puding", "Jöle Tozu Çilek"]],
+    "un-nisasta": ["bulk", 55, "pastry", ["Pastalık Un", "Baklavalık Un", "Tam Buğday Unu", "Badem Unu", "Mısır Nişastası", "Pirinç Unu", "Glutensiz Un Karışımı", "Fındık Unu"]],
+    "dolgu-krema": ["pouch", 260, "pastry", ["Fındık Kreması Dolgu", "Krema Şanti Tozu", "Pastacı Kreması Tozu", "Çilek Dolgu", "Karamel Dolgu", "Limon Kremi", "Cheesecake Bazı", "Tiramisu Bazı"]],
+    susleme: ["pouch", 350, "pastry", ["Renkli Şeker Serpme", "Çikolata Parçacıkları", "Hindistan Cevizi Rende", "Fındık Kırığı", "Antep Fıstığı Kırığı", "Vanilya Aroması", "Badem File", "Yenilebilir Yaprak Altın 5'li"]],
   },
   atistirmalik: {
-    hue: 275,
-    biskuvi: ["pack350", 110, "snack", ["Pötibör Bisküvi", "Kremalı Bisküvi", "Çikolatalı Bisküvi", "Tuzlu Bisküvi", "Yulaflı Bisküvi", "Kepekli Bisküvi", "Çay Bisküvisi", "Sandviç Bisküvi", "Tam Buğday Bisküvi"]],
-    "kraker-cips": ["snack", 180, "snack", ["Tuzlu Kraker", "Çubuk Kraker", "Patates Cipsi (Sade)", "Patates Cipsi (Baharatlı)", "Mısır Cipsi", "Simit Kraker", "Peynirli Kraker", "Susamlı Çubuk"]],
-    "cikolata-sekerleme": ["snack", 320, "snack", ["Sütlü Çikolata", "Bitter Çikolata", "Fındıklı Çikolata", "Draje Çikolata", "Meyveli Şeker", "Nane Şekeri", "Jelibon", "Lolipop", "Çikolatalı Gofret", "Kokolin"]],
-    "lokum-helva": ["jar", 240, "snack", ["Fındıklı Lokum", "Fıstıklı Lokum", "Sade Lokum", "Güllü Lokum", "Tahin Helvası (Sade)", "Kakaolu Tahin Helvası", "Fıstıklı Helva", "Cezerye", "Pişmaniye", "Pestil & Köme"]],
+    hue: 20,
+    kurabiye: ["snack", 28, "snack", ["Çikolatalı Kurabiye", "Yulaflı Kurabiye", "Fındıklı Kurabiye", "Biscotti Badem", "Un Kurabiyesi", "Tarçınlı Kurabiye", "Tuzlu Kurabiye", "Cookie Dough Dondurulmuş"]],
+    "kek-brownie": ["snack", 38, "snack", ["Brownie", "Havuçlu Kek Dilim", "Limonlu Kek Dilim", "Muffin Çikolatalı", "Muffin Yaban Mersinli", "Banana Bread Dilim", "Cheesecake Dilim Dondurulmuş", "Red Velvet Dilim"]],
+    "donuk-hamur": ["frozen", 18, "snack", ["Tereyağlı Kruvasan", "Çikolatalı Kruvasan", "Pain au Raisin", "Poğaça Peynirli", "Simit Dondurulmuş", "Açma", "Danish Elmalı", "Cinnamon Roll"]],
+    "granola-bar": ["snack", 32, "snack", ["Granola Bal & Badem", "Granola Kakao", "Protein Bar Fıstık", "Hurma Bar", "Yulaf Bar Çikolatalı", "Müsli Porsiyon"]],
+    cikolata: ["snack", 22, "snack", ["Madlen Çikolata", "Çikolata Bar Sütlü", "Çikolata Bar Bitter", "Draje Kahve Çekirdeği", "Napoliten Çikolata", "Trüf Çikolata"]],
   },
-  "sos-hazir": {
-    hue: 5,
-    sos: ["bottle", 90, "sauce", ["Ketçap", "Mayonez", "Hardal", "Acı Sos", "Barbekü Sos", "Soya Sosu", "Ranch Sos", "Köfte Sosu", "Pizza Sosu", "Sarımsaklı Mayonez", "Ketçap (Acılı)", "Tatlı Ekşi Sos", "Teriyaki Sos"]],
-    "corba-bulyon": ["pack", 140, "sauce", ["Tavuk Bulyon", "Et Bulyon", "Sebze Bulyon", "Mercimek Çorbası (Hazır)", "Tarhana", "Domates Çorbası (Hazır)", "Ezogelin Çorbası (Hazır)", "Mantar Çorbası (Hazır)"]],
-    "hazir-yemek": ["can", 120, "sauce", ["Kuru Fasulye (Hazır)", "Nohut Yemeği (Hazır)", "Patlıcan Musakka (Hazır)", "Yaprak Sarma (Konserve)", "Fasulye Pilaki (Hazır)"]],
-    "pasta-malzeme": ["pack350", 160, "sauce", ["Kakao", "Vanilin", "Kabartma Tozu", "Puding (Sütlü)", "Krem Şanti", "Kuvertür Çikolata", "Jöle (Çilek)", "Hindistan Cevizi (Rendelenmiş)", "Nişasta (Mısır)", "Nişasta (Buğday)", "Toz Tarçın (Paket)"]],
-  },
-  "seker-tatlandirici": {
-    hue: 330,
-    "toz-seker": ["bulk", 38, "sugar", ["Toz Şeker", "Kristal Toz Şeker", "İnce Toz Şeker", "Esmer Şeker"]],
-    "kup-seker": ["bulk", 45, "sugar", ["Küp Şeker", "Küp Şeker (Küçük)", "Esmer Küp Şeker", "Tek Sargılı Küp Şeker"]],
-    "ozel-seker": ["bulkSmall", 120, "sugar", ["Pudra Şekeri", "Kahverengi Şeker (Demerara)", "Stevia Tatlandırıcı", "Glikoz Şurubu", "Vanilyalı Şeker", "Akçaağaç Şurubu", "Agave Şurubu"]],
-  },
-  "ambalaj-sarf": {
+  "barista-ekipman": {
     hue: 215,
-    "poset-torba": ["sarf", 2.5, "sarf", ["Market Poşeti (Küçük)", "Market Poşeti (Orta)", "Market Poşeti (Büyük)", "Kağıt Kese (Kraft)", "Buzdolabı Poşeti", "Çöp Torbası (Orta)", "Çöp Torbası (Jumbo)", "Vakum Poşeti"]],
-    "kagit-urun": ["sarfBig", 3, "sarf", ["Peçete (Servis)", "Kağıt Havlu", "Yağlı Kağıt", "Alüminyum Folyo", "Streç Film", "Pişirme Kağıdı", "Kraft Ambalaj Kağıdı"]],
-    servis: ["sarf", 4, "sarf", ["Karton Bardak 7 oz", "Karton Bardak 12 oz", "Plastik Çatal", "Plastik Kaşık", "Tahta Karıştırıcı", "Sızdırmaz Kap 500 ml", "Pizza Kutusu 33 cm", "Alüminyum Kap (Orta)"]],
+    "espresso-araclari": ["tool", 650, "tool", ["Tamper 58 mm", "Tamper 53 mm", "Distribütör 58 mm", "Dozaj Hunisi", "Knock Box", "Tamper Matı", "Portafiltre Sepeti 18 g", "Shot Bardağı 70 ml", "Barista Terazisi 0,1 g", "Zamanlayıcı"]],
+    "sut-pitcher": ["tool", 380, "tool", ["Süt Pitcher 350 ml", "Süt Pitcher 600 ml", "Süt Pitcher 1 L", "Latte Art Kalemi", "Süt Termometresi", "Latte Art Şablon Seti", "Pitcher Siyah Teflon 600 ml"]],
+    demleme: ["tool", 520, "tool", ["V60 Dripper 02", "V60 Sürahi 600 ml", "Chemex 6 Cup", "French Press 1 L", "Aeropress", "Cold Brew Sürahi 1,5 L", "Gooseneck Kettle 1 L", "Moka Pot 6 Cup", "Sifon Kahve Seti"]],
+    "filtre-kagidi": ["paper", 1.2, "tool", ["V60 Filtre Kağıdı 02", "Chemex Filtre Kağıdı", "Aeropress Filtre Kağıdı", "Kalita Filtre Kağıdı 185", "Filtre Kahve Makinesi Kağıdı 1×4", "Cold Brew Filtre Torbası"]],
+    "bar-araclari": ["tool", 240, "tool", ["Shaker 700 ml", "Bar Kaşığı", "Jigger 30/60 ml", "Muddler", "Buz Maşası", "Buz Kalıbı Küp", "Blender Sürahisi 2 L", "Pompa Şurup 10 ml", "Sos Sıkma Şişesi", "Süzgeç Strainer"]],
+  },
+  "servis-ambalaj": {
+    hue: 35,
+    "karton-bardak": ["cups", 1.6, "pack", ["Karton Bardak 4 oz", "Karton Bardak 7 oz", "Karton Bardak 8 oz", "Karton Bardak 12 oz", "Karton Bardak 16 oz", "Çift Katmanlı Bardak 8 oz", "Çift Katmanlı Bardak 12 oz", "Kraft Bardak 12 oz", "Bardak Kılıfı 12-16 oz"]],
+    "kapak-pipet": ["cups", 0.9, "pack", ["Bardak Kapağı 8 oz", "Bardak Kapağı 12-16 oz", "Kubbe Kapak 12-16 oz", "Kağıt Pipet", "Kağıt Pipet Kalın", "Tahta Karıştırıcı", "Plastik Pipet Boba", "Kapak Tıpası"]],
+    "soguk-bardak": ["cups", 2.4, "pack", ["PET Bardak 12 oz", "PET Bardak 16 oz", "PET Bardak 20 oz", "PP Bardak 400 ml", "Kubbe Kapaklı Frappe Bardağı", "Cam Görünümlü Bardak 350 ml"]],
+    "take-away": ["cups", 3.5, "pack", ["Kraft Kutu Küçük", "Kraft Kutu Orta", "Pasta Kutusu Tekli", "Sandviç Kutusu", "Bardak Taşıyıcı 2'li", "Bardak Taşıyıcı 4'lü", "Kraft Poşet Küçük", "Kraft Poşet Büyük", "Burger Kutusu"]],
+    "pecete-servis": ["paper", 0.6, "pack", ["Servis Peçetesi 30×30", "Dispenser Peçete", "Kokteyl Peçetesi", "Tahta Çatal", "Tahta Kaşık", "Tahta Bıçak", "Yağlı Kağıt", "Kahve Altlığı Karton", "Islak Mendil Tekli"]],
+  },
+  temizlik: {
+    hue: 175,
+    "makine-temizlik": ["cleanerPowder", 650, "clean", ["Espresso Makinesi Temizleme Tozu", "Grup Kafa Temizleme Tableti", "Değirmen Temizleme Tableti", "Süt Sistemi Temizleyici", "Filtre Kahve Makinesi Temizleyici", "Kör Filtre"]],
+    "kirec-cozucu": ["cleaner", 180, "clean", ["Kireç Çözücü Sıvı", "Kireç Çözücü Toz", "Su Filtresi Kartuşu", "Kettle Kireç Çözücü", "Buhar Kazanı Kireç Çözücü"]],
+    "genel-hijyen": ["cleaner", 60, "clean", ["Yüzey Dezenfektanı", "Bulaşık Deterjanı", "Cam Temizleyici", "El Sabunu Antibakteriyel", "Nitril Eldiven 100'lü", "Mikrofiber Bez 5'li", "Çöp Poşeti Jumbo", "Bar Havlusu"]],
+  },
+  "seker-cesni": {
+    hue: 330,
+    "stick-seker": ["stick", 0.25, "sugar", ["Stick Şeker Beyaz 4 g", "Stick Şeker Esmer 4 g", "Küp Şeker Tek Sargılı", "Stick Şeker Logolu", "Kahverengi Şeker Stick 5 g"]],
+    tatlandirici: ["portion", 0.6, "sugar", ["Tatlandırıcı Stick Stevia", "Tatlandırıcı Tablet", "Tatlandırıcı Stick Sukraloz", "Hindistan Cevizi Şekeri Stick", "Bal Stick 8 g"]],
+    serpme: ["pouch", 360, "sugar", ["Tarçın Toz", "Kakao Serpme", "Çikolata Rende", "Zencefil Toz", "Kakule Toz", "Muskat Toz", "Vanilya Şekeri", "Kahve Tuzu Karamel"]],
+    "bal-recel": ["portion", 2.8, "sugar", ["Bal Porsiyon 20 g", "Reçel Porsiyon Çilek 20 g", "Reçel Porsiyon Kayısı 20 g", "Fındık Kreması Porsiyon 15 g", "Tereyağı Porsiyon 10 g", "Pekmez Porsiyon 20 g"]],
   },
 };
 
 /* Şablon → ambalaj görseli tipi */
-const ART = { bulk: "sack", bulkSmall: "pouch", spice: "pouch", nuts: "pouch", oil: "bottle", bottle: "bottle", jar: "jar", jarSmall: "jar", can: "can", pack: "box", pack350: "box", snack: "box", tea: "box", teaBag: "box", drink: "carton", water: "bottle", sarf: "box", sarfBig: "box" };
+const ART = { coffee: "pouch", coffeeBig: "pouch", capsule: "box", syrup: "bottle", sauce: "bottle", puree: "bottle", teaLoose: "pouch", teaBag: "box", powder: "can", milk: "carton", cream: "carton", can330: "can", bottle500: "bottle", water: "bottle", bulk: "sack", pouch: "pouch", snack: "box", frozen: "box", tool: "box", paper: "box", cups: "box", cleaner: "bottle", cleanerPowder: "can", stick: "box", portion: "box" };
 
-const SPEC_ORIGIN = ["Türkiye", "Türkiye", "Türkiye", "İthal"];
+const SPEC_ORIGIN = ["Türkiye", "Türkiye", "İtalya", "İthal"];
 const SHELF = ["12 ay", "18 ay", "24 ay", "36 ay"];
 const STORAGE = ["Serin ve kuru yerde saklayınız", "Doğrudan güneş ışığından uzak tutunuz", "Açıldıktan sonra ağzı kapalı saklayınız"];
 
 const SHORTS = [
-  "Günlük kullanım için güvenilir kalite.",
+  "Kafe barının vazgeçilmezi.",
+  "Barista testinden geçmiş kalite.",
   "Toplu alımda avantajlı fiyat.",
-  "Restoran ve kafelerin tercihi.",
-  "Taze parti, hızlı sevkiyat.",
-  "Standart kalite, istikrarlı tedarik.",
-  "Seçilmiş hammadde, özenli paketleme.",
+  "Taze parti, aynı gün kargo.",
+  "Zincir kafelerin tercihi.",
+  "İstikrarlı tat, istikrarlı tedarik.",
 ];
 
 const products = [];
@@ -189,7 +199,7 @@ for (const [catSlug, subs] of Object.entries(SOURCE)) {
     const [tplKey, ppk, brandKey, names] = def;
     for (const baseName of names) {
       const pool = BRANDS[brandKey];
-      const brandCount = rnd() < 0.5 ? 2 : 1;
+      const brandCount = rnd() < 0.58 ? 2 : 1;
       const brands = [...new Set([pick(pool), pick(pool)])].slice(0, brandCount);
       for (const brand of brands) {
         n += 1;
@@ -227,9 +237,10 @@ for (const [catSlug, subs] of Object.entries(SOURCE)) {
         if (popularity > 86) tags.push("cok-satan");
         if (daysAgo < 45) tags.push("yeni");
         if (discounted) tags.push("indirim");
-        if (rnd() < 0.55 && brandKey !== "sarf") tags.push("yerli");
-        if (rnd() < 0.08 && ["bulk", "nuts", "oil", "breakfast"].includes(brandKey)) tags.push("organik");
-        if (["bulk", "nuts", "oil"].includes(brandKey) && rnd() < 0.25) tags.push("glutensiz");
+        if (rnd() < 0.5 && !["tool", "pack", "clean"].includes(brandKey)) tags.push("yerli");
+        if (rnd() < 0.1 && ["coffee", "tea", "milk", "pastry"].includes(brandKey)) tags.push("organik");
+        if (["coffee", "tea", "syrup", "milk"].includes(brandKey) && rnd() < 0.2) tags.push("glutensiz");
+        if (["milk"].includes(brandKey) && baseName.match(/Yulaf|Badem|Soya|Hindistan|Fındık|Bezelye|Pirinç/) ) tags.push("vegan");
 
         const rating = Math.round((3.9 + (popularity / 100) * 1.0 + between(-0.15, 0.15)) * 10) / 10;
         const reviews = Math.round(popularity * between(0.4, 3.5));
@@ -246,7 +257,7 @@ for (const [catSlug, subs] of Object.entries(SOURCE)) {
           category: catSlug,
           subcategory: subSlug,
           short: pick(SHORTS),
-          description: `${baseName}, ${brand} kalitesiyle; ${tpl[0][0]} ambalajdan ${tpl[tpl.length - 1][0]} ambalaja kadar farklı boylarda. Market, restoran, kafe ve toplu tüketim noktaları için istikrarlı tedarik ve toplu alımda kademeli fiyat.`,
+          description: `${baseName}, ${brand} kalitesiyle; ${tpl[0][0]} ambalajdan ${tpl[tpl.length - 1][0]} ambalaja kadar farklı boylarda. Kafe, restoran, otel ve ofisler için istikrarlı tedarik, toplu alımda kademeli fiyat.`,
           tags,
           variants,
           specs: [
