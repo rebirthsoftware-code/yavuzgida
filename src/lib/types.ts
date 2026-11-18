@@ -20,7 +20,7 @@ export type Variant = {
   caseQty?: number;
 };
 
-export type PackArt = "sack" | "pouch" | "bottle" | "jar" | "can" | "box" | "carton";
+export type PackArt = "sack" | "pouch" | "bottle" | "jar" | "can" | "box" | "carton" | "cake" | "slice";
 
 export type Product = {
   slug: string;

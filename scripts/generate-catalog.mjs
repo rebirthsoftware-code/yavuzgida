@@ -56,6 +56,11 @@ const TPL = {
   cleanerPowder: [["900 g", 900, "g", 1, 12], ["3 kg", 3000, "g", 0.92]],
   stick: [["500'lü kutu", 500, "adet", 1, 10], ["5000'li koli", 5000, "adet", 0.88]],
   portion: [["100'lü kutu", 100, "adet", 1, 12], ["1000'li koli", 1000, "adet", 0.88]],
+  cakeWhole: [["Bütün (8 dilim)", 8, "adet", 1], ["Bütün (12 dilim)", 12, "adet", 0.95], ["Bütün (16 dilim)", 16, "adet", 0.9]],
+  cakeSlice: [["Dilim", 1, "adet", 1.15, 12], ["12'li koli", 12, "adet", 1]],
+  tray: [["1 kg tepsi", 1000, "g", 1, 4], ["3 kg tepsi", 3000, "g", 0.93]],
+  dessertCup: [["Porsiyon", 1, "adet", 1.15, 12], ["12'li koli", 12, "adet", 1]],
+  cookieBox: [["Kutu (12 adet)", 12, "adet", 1, 6], ["Koli (72 adet)", 72, "adet", 0.9]],
 };
 
 /* Marka havuzları (yer tutucu) */
@@ -68,6 +73,7 @@ const BRANDS = {
   cold: ["Sipp", "Fizzco", "Mevsim", "Pınar Su"],
   pastry: ["Patisse", "Choco Nova", "Yavuz Barista", "Harman"],
   snack: ["Patisse", "Kıtır", "Bake House", "Sweet Cup"],
+  cake: ["Yavuz Pastane", "Patisse", "Dolce Vita", "Bake House"],
   tool: ["Bar Sense", "Barista Pro", "Brew Craft"],
   pack: ["PackCup", "Yavuz Barista", "Servis Pro"],
   clean: ["Clean Bar", "Barista Pro", "Hijyen Plus"],
@@ -132,10 +138,20 @@ const SOURCE = {
     "dolgu-krema": ["pouch", 260, "pastry", ["Fındık Kreması Dolgu", "Krema Şanti Tozu", "Pastacı Kreması Tozu", "Çilek Dolgu", "Karamel Dolgu", "Limon Kremi", "Cheesecake Bazı", "Tiramisu Bazı"]],
     susleme: ["pouch", 350, "pastry", ["Renkli Şeker Serpme", "Çikolata Parçacıkları", "Hindistan Cevizi Rende", "Fındık Kırığı", "Antep Fıstığı Kırığı", "Vanilya Aroması", "Badem File", "Yenilebilir Yaprak Altın 5'li"]],
   },
+  "pasta-tatli": {
+    hue: 345,
+    "butun-pasta": ["cakeWhole", 95, "cake", ["Çilekli Yaş Pasta", "Muzlu Çikolatalı Pasta", "Red Velvet Pasta", "Havuçlu Cevizli Pasta", "Fıstıklı Pasta", "Frambuazlı Pasta", "Çikolatalı Mousse Pasta", "Beyaz Çikolatalı Pasta", "Karadutlu Pasta", "Lotus Pasta", "Oreo Pasta", "Tiramisu Pasta", "Meyveli Pasta", "Karamelli Pasta", "Profiterollü Pasta", "Mozaik Pasta", "Limonlu Pasta", "Vişneli Pasta", "Kestaneli Pasta", "Böğürtlenli Pasta"]],
+    "dilim-pasta": ["cakeSlice", 85, "cake", ["Çilekli Pasta Dilim", "Red Velvet Dilim", "Havuçlu Kek Dilim", "Çikolatalı Pasta Dilim", "Tiramisu Dilim", "Lotus Pasta Dilim", "Fıstıklı Pasta Dilim", "Frambuazlı Pasta Dilim", "Muzlu Pasta Dilim", "Brownie Dilim", "Islak Kek Dilim", "Limonlu Kek Dilim", "Banana Bread Dilim", "Mozaik Pasta Dilim", "Oreo Pasta Dilim", "Karamelli Pasta Dilim"]],
+    cheesecake: ["cakeSlice", 95, "cake", ["San Sebastian Cheesecake", "Frambuazlı Cheesecake", "Limonlu Cheesecake", "Lotus Cheesecake", "Çikolatalı Cheesecake", "New York Cheesecake", "Çilekli Cheesecake", "Fıstıklı Cheesecake", "Karamelli Cheesecake", "Yaban Mersinli Cheesecake", "Oreo Cheesecake", "Mango Cheesecake"]],
+    serbetli: ["tray", 520, "cake", ["Fıstıklı Baklava", "Cevizli Baklava", "Havuç Dilimi Baklava", "Soğuk Baklava", "Şöbiyet", "Kadayıf Fıstıklı", "Künefe Porsiyon", "Tulumba", "Revani", "Şekerpare", "Kalburabastı", "Sütlü Nuriye", "Fıstıklı Sarma", "Midye Baklava"]],
+    "sutlu-tatli": ["dessertCup", 55, "cake", ["Sütlaç", "Fırın Sütlaç", "Kazandibi", "Tavuk Göğsü", "Supangle", "Profiterol", "Magnolia Çilekli", "Magnolia Muzlu", "Magnolia Lotus", "Trileçe", "Trileçe Karamelli", "Krem Karamel", "Muhallebi", "Güllaç (Mevsimlik)", "Panna Cotta", "Keşkül"]],
+    tart: ["cakeSlice", 75, "cake", ["Limonlu Tart", "Çilekli Tart", "Çikolatalı Tart", "Frambuazlı Tartolet", "Fıstıklı Tartolet", "Elmalı Tart", "Karamelli Fındıklı Tart", "Meyveli Tartolet", "Badem Tartı", "Cevizli Tart"]],
+    "cupcake-muffin": ["cookieBox", 32, "cake", ["Cupcake Vanilya", "Cupcake Çikolata", "Cupcake Red Velvet", "Cupcake Lotus", "Muffin Çikolatalı", "Muffin Yaban Mersinli", "Muffin Muzlu", "Muffin Havuçlu", "Cupcake Çilekli", "Muffin Limonlu"]],
+    "porsiyon-tatli": ["dessertCup", 48, "cake", ["Bardak Tiramisu", "Bardak Cheesecake Çilekli", "Bardak Lotus", "Bardak Brownie", "Mousse Çikolata", "Mousse Frambuaz", "Chia Puding", "Yulaf Kasesi", "Parfe Meyveli", "Bardak Magnolia", "Eclair", "Mini Profiterol"]],
+    "kurabiye-makaron": ["cookieBox", 22, "cake", ["Çikolatalı Kurabiye", "Yulaflı Kurabiye", "Fındıklı Kurabiye", "Biscotti Badem", "Un Kurabiyesi", "Tarçınlı Kurabiye", "Makaron Karışık", "Makaron Çikolata", "Makaron Frambuaz", "Makaron Fıstık", "Cookie Dough Dondurulmuş", "Tuzlu Kurabiye", "Acıbadem Kurabiyesi", "Kavala Kurabiyesi"]],
+  },
   atistirmalik: {
     hue: 20,
-    kurabiye: ["snack", 28, "snack", ["Çikolatalı Kurabiye", "Yulaflı Kurabiye", "Fındıklı Kurabiye", "Biscotti Badem", "Un Kurabiyesi", "Tarçınlı Kurabiye", "Tuzlu Kurabiye", "Cookie Dough Dondurulmuş"]],
-    "kek-brownie": ["snack", 38, "snack", ["Brownie", "Havuçlu Kek Dilim", "Limonlu Kek Dilim", "Muffin Çikolatalı", "Muffin Yaban Mersinli", "Banana Bread Dilim", "Cheesecake Dilim Dondurulmuş", "Red Velvet Dilim"]],
     "donuk-hamur": ["frozen", 18, "snack", ["Tereyağlı Kruvasan", "Çikolatalı Kruvasan", "Pain au Raisin", "Poğaça Peynirli", "Simit Dondurulmuş", "Açma", "Danish Elmalı", "Cinnamon Roll"]],
     "granola-bar": ["snack", 32, "snack", ["Granola Bal & Badem", "Granola Kakao", "Protein Bar Fıstık", "Hurma Bar", "Yulaf Bar Çikolatalı", "Müsli Porsiyon"]],
     cikolata: ["snack", 22, "snack", ["Madlen Çikolata", "Çikolata Bar Sütlü", "Çikolata Bar Bitter", "Draje Kahve Çekirdeği", "Napoliten Çikolata", "Trüf Çikolata"]],
@@ -172,7 +188,7 @@ const SOURCE = {
 };
 
 /* Şablon → ambalaj görseli tipi */
-const ART = { coffee: "pouch", coffeeBig: "pouch", capsule: "box", syrup: "bottle", sauce: "bottle", puree: "bottle", teaLoose: "pouch", teaBag: "box", powder: "can", milk: "carton", cream: "carton", can330: "can", bottle500: "bottle", water: "bottle", bulk: "sack", pouch: "pouch", snack: "box", frozen: "box", tool: "box", paper: "box", cups: "box", cleaner: "bottle", cleanerPowder: "can", stick: "box", portion: "box" };
+const ART = { cakeWhole: "cake", cakeSlice: "slice", tray: "box", dessertCup: "jar", cookieBox: "box", coffee: "pouch", coffeeBig: "pouch", capsule: "box", syrup: "bottle", sauce: "bottle", puree: "bottle", teaLoose: "pouch", teaBag: "box", powder: "can", milk: "carton", cream: "carton", can330: "can", bottle500: "bottle", water: "bottle", bulk: "sack", pouch: "pouch", snack: "box", frozen: "box", tool: "box", paper: "box", cups: "box", cleaner: "bottle", cleanerPowder: "can", stick: "box", portion: "box" };
 
 const SPEC_ORIGIN = ["Türkiye", "Türkiye", "İtalya", "İthal"];
 const SHELF = ["12 ay", "18 ay", "24 ay", "36 ay"];
@@ -240,6 +256,7 @@ for (const [catSlug, subs] of Object.entries(SOURCE)) {
         if (rnd() < 0.5 && !["tool", "pack", "clean"].includes(brandKey)) tags.push("yerli");
         if (rnd() < 0.1 && ["coffee", "tea", "milk", "pastry"].includes(brandKey)) tags.push("organik");
         if (["coffee", "tea", "syrup", "milk"].includes(brandKey) && rnd() < 0.2) tags.push("glutensiz");
+        if (brandKey === "cake" && rnd() < 0.3) tags.push("cok-satan");
         if (["milk"].includes(brandKey) && baseName.match(/Yulaf|Badem|Soya|Hindistan|Fındık|Bezelye|Pirinç/) ) tags.push("vegan");
 
         const rating = Math.round((3.9 + (popularity / 100) * 1.0 + between(-0.15, 0.15)) * 10) / 10;

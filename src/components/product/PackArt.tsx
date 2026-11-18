@@ -17,6 +17,8 @@ const LABEL: Record<ArtType, [number, number, number, number, boolean?]> = {
   can: [48, 78, 64, 62],
   box: [44, 78, 72, 62],
   carton: [48, 82, 64, 60],
+  cake: [36, 150, 88, 46, true],
+  slice: [36, 148, 88, 46, true],
 };
 
 const wrap = (s: string, max: number): string[] => {
@@ -35,22 +37,23 @@ const wrap = (s: string, max: number): string[] => {
 
 export function PackArt({ art, hue, name, brand, label, className = "" }: Props) {
   const [x, y, w, h, light] = LABEL[art] ?? LABEL.box;
-  const lines = wrap(name, 13);
+  const compact = art === "cake" || art === "slice";
+  const lines = wrap(name, compact ? 16 : 13);
   const vars = { "--c1": `hsl(${hue} 62% 48%)`, "--c2": `hsl(${hue} 58% 36%)`, "--soft": `hsl(${hue} 50% 92%)`, "--dark": `hsl(${hue} 40% 22%)` } as CSSProperties;
   return (
     <svg viewBox="0 0 160 200" className={className} style={vars} role="img" aria-label={`${brand} ${name}`}>
       <use href={`#pk-${art}`} />
       <rect x={x} y={y} width={w} height={h} rx={4} fill={light ? "rgba(255,255,255,0.92)" : "#fff"} />
-      <text x={x + w / 2} y={y + 14} textAnchor="middle" fontSize="6.5" fontWeight="700" letterSpacing="1.2" style={{ fill: "var(--c2)" }}>
+      <text x={x + w / 2} y={y + (compact ? 11 : 14)} textAnchor="middle" fontSize="6.5" fontWeight="700" letterSpacing="1.2" style={{ fill: "var(--c2)" }}>
         {brand.toUpperCase()}
       </text>
       {lines.map((l, i) => (
-        <text key={i} x={x + w / 2} y={y + 28 + i * 12} textAnchor="middle" fontSize="10.5" fontWeight="800" style={{ fill: "var(--dark)" }}>
+        <text key={i} x={x + w / 2} y={y + (compact ? 22 : 28) + i * (compact ? 10 : 12)} textAnchor="middle" fontSize={compact ? 8.5 : 10.5} fontWeight="800" style={{ fill: "var(--dark)" }}>
           {l}
         </text>
       ))}
       {label && (
-        <text x={x + w / 2} y={y + h - 7} textAnchor="middle" fontSize="7" fontWeight="600" style={{ fill: "var(--c1)" }}>
+        <text x={x + w / 2} y={y + h - (compact ? 5 : 7)} textAnchor="middle" fontSize={compact ? 6 : 7} fontWeight="600" style={{ fill: "var(--c1)" }}>
           {label}
         </text>
       )}

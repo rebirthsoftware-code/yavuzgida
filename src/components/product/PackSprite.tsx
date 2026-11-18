@@ -88,6 +88,44 @@ export function PackSprite() {
           <rect x="44" y="150" width="72" height="4" rx="2" fill="rgba(255,255,255,0.25)" />
         </symbol>
 
+        <symbol id="pk-cake" viewBox="0 0 160 200">
+          <ellipse cx="80" cy="140" rx="64" ry="12" fill="rgba(0,0,0,0.12)" />
+          <ellipse cx="80" cy="134" rx="62" ry="11" fill="#fff" />
+          <ellipse cx="80" cy="134" rx="62" ry="11" fill="url(#pk-side)" opacity="0.5" />
+          {/* alt kat */}
+          <path d="M28 92 L28 128 Q28 138 80 138 Q132 138 132 128 L132 92 Z" style={f1} />
+          <path d="M28 92 L28 128 Q28 138 80 138 Q132 138 132 128 L132 92 Z" fill="url(#pk-side)" />
+          <ellipse cx="80" cy="92" rx="52" ry="10" style={fs} />
+          {/* krema katmanı */}
+          <path d="M30 110 Q80 118 130 110" stroke="rgba(255,255,255,0.55)" strokeWidth="4" fill="none" />
+          {/* üst kat */}
+          <path d="M40 60 L40 92 Q40 100 80 100 Q120 100 120 92 L120 60 Z" style={f1} />
+          <path d="M40 60 L40 92 Q40 100 80 100 Q120 100 120 92 L120 60 Z" fill="url(#pk-side)" />
+          <ellipse cx="80" cy="60" rx="40" ry="8" style={f2} />
+          {/* akan sos */}
+          <path d="M40 62 Q46 78 50 66 Q56 84 62 68 Q68 86 74 70 Q80 88 86 70 Q92 84 98 68 Q104 82 110 66 Q116 76 120 62 L120 60 Q80 70 40 60 Z" style={f2} />
+          <ellipse cx="80" cy="60" rx="40" ry="8" fill="url(#pk-shine)" />
+          {/* kiraz */}
+          <circle cx="80" cy="50" r="7" fill="#c81e3a" />
+          <circle cx="78" cy="47" r="2" fill="rgba(255,255,255,0.6)" />
+          <path d="M80 44 Q84 34 92 34" stroke="#2f6b3a" strokeWidth="2" fill="none" />
+        </symbol>
+
+        <symbol id="pk-slice" viewBox="0 0 160 200">
+          <ellipse cx="82" cy="138" rx="60" ry="11" fill="rgba(0,0,0,0.12)" />
+          <ellipse cx="82" cy="132" rx="58" ry="10" fill="#fff" />
+          {/* dilim gövde: üçgen prizma */}
+          <path d="M40 126 L40 78 L124 56 L124 104 Z" style={f1} />
+          <path d="M40 126 L40 78 L124 56 L124 104 Z" fill="url(#pk-side)" />
+          <path d="M40 78 L124 56 L96 40 L24 62 Z" style={fs} />
+          <path d="M124 56 L124 104 L96 88 L96 40 Z" style={f2} />
+          {/* katmanlar */}
+          <path d="M42 94 L122 72 M42 110 L122 88" stroke="rgba(255,255,255,0.55)" strokeWidth="4" />
+          {/* üst krema */}
+          <path d="M24 62 L96 40 L96 48 Q60 56 28 70 Z" fill="rgba(255,255,255,0.7)" />
+          <circle cx="60" cy="56" r="6" fill="#c81e3a" />
+        </symbol>
+
         <symbol id="pk-carton" viewBox="0 0 160 200">
           <ellipse cx="80" cy="188" rx="46" ry="7" fill="url(#pk-shadow)" />
           <path d="M40 60 L120 60 L120 182 L40 182 Z" style={f1} />
