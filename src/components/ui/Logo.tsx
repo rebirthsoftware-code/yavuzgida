@@ -2,6 +2,12 @@ import Link from "next/link";
 
 const base = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
+/** Bağlantısız logo görseli (yönetim paneli vb.) */
+export function LogoImage({ className = "h-12 w-auto" }: { className?: string }) {
+  // eslint-disable-next-line @next/next/no-img-element
+  return <img src={`${base}/brand/logo-sm.png`} alt="Yavuz Gıda" width={560} height={418} className={className} />;
+}
+
 /** Marka logosu (altın/siyah). Koyu zeminler için tasarlandı; başlık ve altbilgide kullanılır. */
 export function Logo({ className = "", size = "md" }: { className?: string; size?: "sm" | "md" | "lg" }) {
   const h = size === "lg" ? "h-24" : size === "sm" ? "h-12" : "h-16";

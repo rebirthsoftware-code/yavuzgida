@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Percent, Clock, FileText, Headset, Truck, CheckCircle2 } from "lucide-react";
 import { PageShell, Field, inputCls } from "@/components/ui/PageShell";
 import { Button } from "@/components/ui/Button";
+import { References } from "@/components/home/References";
 
 export const metadata: Metadata = { title: "Kurumsal & Toptan Satış", description: "Restoran, kafe, otel ve marketler için toptan fiyat listesi, vade ve atanmış satış temsilcisi." };
 
@@ -60,6 +61,9 @@ export default function Page() {
             Fiyat listesi iste
           </Button>
         </form>
+      </div>
+      <div className="mt-10">
+        <References compact />
       </div>
     </PageShell>
   );

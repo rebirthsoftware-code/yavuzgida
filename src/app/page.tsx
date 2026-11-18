@@ -11,6 +11,7 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
 import { OnlyNew } from "@/components/cart/OnlyNew";
 import { ExistingCustomerBand } from "@/components/home/ExistingCustomerBand";
 import { BlendPromo } from "@/components/home/BlendPromo";
+import { References } from "@/components/home/References";
 import { bestSellers, newArrivals, discounted, categoryCounts, products, categories, brands } from "@/lib/catalog";
 import { toIndex } from "@/lib/index-of";
 
@@ -62,6 +63,8 @@ export default function HomePage() {
         <SectionHeading title="Sizin İçin Seçtiklerimiz" href="/urunler?sirala=populer" />
         <ProductRail items={best.slice(12, 24).map(toIndex)} />
       </section>
+
+      <References />
 
       <BrandStrip brands={brands} />
     </div>

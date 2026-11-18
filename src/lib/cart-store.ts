@@ -49,6 +49,9 @@ export const cartStore = {
   },
   get: () => state,
   getServer: () => serverState,
+  clear() {
+    this.set([]);
+  },
   set(items: CartItem[]) {
     state = { items, ready: true };
     persist();

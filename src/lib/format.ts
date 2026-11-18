@@ -15,6 +15,10 @@ export function unitPrice(price: number, amount: number, unit: "g" | "ml" | "ade
   return `${formatPrice(per)} / ${unit === "g" ? "kg" : "L"}`;
 }
 
+export function cn(...classes: Array<string | false | null | undefined>): string {
+  return classes.filter(Boolean).join(" ");
+}
+
 export function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString("tr-TR", { day: "numeric", month: "long", year: "numeric" });
 }

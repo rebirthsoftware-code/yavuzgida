@@ -27,6 +27,8 @@ jobs:
         with:
           enablement: true
       - run: npm ci
+      # Statik demo: sunucu rotaları (API, yönetim) dışa aktarıma dahil edilmez
+      - run: rm -rf src/app/api src/app/yonetim
       - run: npm run build
         env:
           GITHUB_PAGES: "1"
