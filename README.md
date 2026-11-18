@@ -21,6 +21,13 @@ Bu sürüm **ön tasarımdır**: tüm sayfalar ve akışlar görsel olarak hazı
 - **Renkler:** turuncu aksiyon (`orange-500`), açık mavi yüzey ve rozetler (`sky-50…200`), lacivert (`navy-900`), açık gri sayfa zemini (`paper-50`). Tanımlar `src/app/globals.css` içindeki `@theme` bloğunda.
 - **Yazı tipi:** Inter, `next/font/google`.
 
+## Müşteri modları ve özel harman
+
+- **Giriş kapısı:** ilk ziyarette "Mevcut Müşteriyim / Yeni Müşteriyim" seçimi (`WelcomeGate`), tercih `localStorage`'da (`mode-store.ts`); üst şeritteki rozetten değiştirilir.
+- **Mevcut müşteri:** fiyatlar, indirim rozetleri, kargo eşiği ve fiyat filtreleri gizlenir; "Sepete Ekle" → "Listeye Ekle". Liste sayfasında firma/telefon girilir, **"Listeyi Onayla ve WhatsApp'tan Gönder"** `wa.me` bağlantısıyla hazır mesajı açar (`lib/whatsapp.ts`). Ödeme sayfası bu modda listeye yönlendirir.
+- **Yeni müşteri:** fiyatlı katalog, sepet, ödeme; ayrıca sepette WhatsApp ile sipariş seçeneği.
+- **Özel harman (`/ozel-harman`):** 11 orijin için %5 adımlı oranlar (toplam %100), kavurma, öğütüm, ambalaj, etiket rengi, marka ve ürün adı; canlı paket önizlemesi ve tat profili. Yeni müşteri modunda tahmini fiyat; her iki modda sepete/listeye eklenir ve WhatsApp talebi oluşturulur. Orijin fiyatları ve işçilik `BlendBuilder.tsx` içinde yer tutucudur.
+
 ## Katalog veri modeli
 
 `src/lib/types.ts` → `Product` (marka, kategori, alt kategori, etiketler, çoklu **varyant**: etiket, SKU, fiyat, eski fiyat, miktar/birim, koli adedi, stok).

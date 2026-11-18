@@ -7,14 +7,20 @@ import type { ProductIndex } from "@/lib/types";
 import { PackArt } from "@/components/product/PackArt";
 import { formatPrice } from "@/lib/format";
 import { minPriceOf } from "@/lib/index-of";
+import { useCart } from "@/components/cart/CartProvider";
 
 type Slide = { cls: string; kicker: string; title: string; text: string; cta: string; href: string; dark?: boolean; items: ProductIndex[] };
 
 export function HeroBanners({ picks }: { picks: ProductIndex[] }) {
-  const slides: Slide[] = [
+  const { showPrices } = useCart();
+  const slides: Slide[] = showPrices ? [
     { cls: "banner-a", kicker: "Haftanın fırsatları", title: "Şurup, çay ve sıcak çikolatada %25'e varan indirim", text: "Kış barı için stok yenileme indirimleri. Fırsatlar stoklarla sınırlıdır.", cta: "Fırsatları Gör", href: "/urunler?etiket=indirim", dark: true, items: picks.slice(0, 3) },
     { cls: "banner-b", kicker: "Kafeler için", title: "Koli alımında birim fiyat düşer", text: "Espresso çekirdekten karton bardağa; koli seçin, birim fiyatınız %6–14 azalsın. Zincir kafelere özel liste.", cta: "Kurumsal Fiyat Al", href: "/kurumsal", dark: true, items: picks.slice(3, 6) },
     { cls: "banner-c", kicker: "Yeni açılan kafelere", title: "İlk siparişte kargo bedava + ücretsiz numune", text: "Barınızı tek siparişle kurun: kahve, şurup, bardak ve ekipman aynı koliden çıksın.", cta: "Alışverişe Başla", href: "/urunler", items: picks.slice(6, 9) },
+  ] : [
+    { cls: "banner-a", kicker: "Mevcut müşteri", title: "Sipariş listenizi dakikalar içinde oluşturun", text: "Katalogdan ürünleri seçin, adetleri girin; listeniz tek tıkla WhatsApp üzerinden bize ulaşsın. Anlaşmalı fiyatlarınız geçerlidir.", cta: "Kataloğa Git", href: "/urunler", dark: true, items: picks.slice(0, 3) },
+    { cls: "banner-b", kicker: "Özel harman", title: "Kendi markanızla espresso", text: "Orijinleri ve oranları siz belirleyin; biz kavurup markanızın adıyla paketleyelim.", cta: "Harmanı Oluştur", href: "/ozel-harman", dark: true, items: picks.slice(3, 6) },
+    { cls: "banner-c", kicker: "Pasta & tatlı", title: "Vitrininiz için günlük taze pasta ve tatlı", text: "Bütün pasta, dilim, cheesecake, şerbetli ve sütlü tatlılar; soğuk zincirle teslim.", cta: "Pastaları Gör", href: "/kategori/pasta-tatli", items: picks.slice(6, 9) },
   ];
   const [i, setI] = useState(0);
   const [paused, setPaused] = useState(false);
@@ -41,7 +47,7 @@ export function HeroBanners({ picks }: { picks: ProductIndex[] }) {
           {s.items.map((p, k) => (
             <div key={p.slug} className={`relative ${k === 1 ? "mb-8 w-[34%]" : "mb-3 w-[27%]"}`}>
               <PackArt art={p.art} hue={p.hue} name={p.name} brand={p.brand} className="h-auto w-full drop-shadow-[0_24px_30px_rgba(0,0,0,0.35)]" />
-              <span className="absolute -right-2 top-4 rounded-full bg-white px-2 py-0.5 text-[0.7rem] font-extrabold text-ink-900 shadow-card">{formatPrice(minPriceOf(p))}</span>
+              {showPrices && <span className="absolute -right-2 top-4 rounded-full bg-white px-2 py-0.5 text-[0.7rem] font-extrabold text-ink-900 shadow-card">{formatPrice(minPriceOf(p))}</span>}
             </div>
           ))}
         </div>

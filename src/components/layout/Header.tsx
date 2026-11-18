@@ -6,6 +6,8 @@ import { SearchBox } from "./SearchBox";
 import { MiniCart } from "./MiniCart";
 import { CategoryBar } from "./CategoryBar";
 import { MobileSearchButton } from "./MobileBits";
+import { ModeSwitch } from "./ModeSwitch";
+import { OnlyNew } from "@/components/cart/OnlyNew";
 import { categoryCounts } from "@/lib/catalog";
 
 export function Header() {
@@ -27,7 +29,10 @@ export function Header() {
             </Link>
           </nav>
           <div className="flex items-center gap-5">
-            <span className="font-semibold text-gold-400">2.500 ₺ üzeri kargo bedava</span>
+            <ModeSwitch />
+            <OnlyNew fallback={<span className="font-semibold text-gold-400">Anlaşmalı fiyatlarınız geçerlidir</span>}>
+              <span className="font-semibold text-gold-400">2.500 ₺ üzeri kargo bedava</span>
+            </OnlyNew>
             <a href={site.contact.phoneHref} className="flex items-center gap-1.5 font-semibold text-white">
               <Phone className="size-3.5 text-gold-400" /> {site.contact.phone}
             </a>
@@ -45,6 +50,9 @@ export function Header() {
         </div>
         <SearchBox className="hidden flex-1 md:block lg:max-w-2xl" />
         <div className="ml-auto flex items-center gap-1">
+          <div className="md:hidden">
+            <ModeSwitch compact />
+          </div>
           <MobileSearchButton />
           <button className="hidden h-11 items-center gap-2 rounded-lg border border-transparent px-3 text-sm font-semibold text-white hover:border-white/15 lg:flex">
             <User className="size-5 text-gold-400" />

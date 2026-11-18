@@ -13,6 +13,8 @@ export type CartItem = {
   art: PackArt;
   image?: string;
   category: string;
+  /** Özel harman gibi kişiselleştirilmiş kalemlerde içerik özeti */
+  custom?: string;
 };
 
 export const CART_KEY = "yavuz-cart-v1";

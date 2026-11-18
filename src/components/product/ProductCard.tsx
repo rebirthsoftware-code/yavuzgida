@@ -12,7 +12,7 @@ import { site } from "@/lib/site";
 
 /** Pazar yeri ürün kartı: görsel, rozetler, marka + ad, puan, fiyat, sepete ekle. */
 export function ProductCard({ p, priority, compact }: { p: ProductIndex; priority?: boolean; compact?: boolean }) {
-  const { add, qtyOf } = useCart();
+  const { add, qtyOf, showPrices } = useCart();
   const v = p.variants.find((x) => x.inStock) ?? p.variants[0];
   const inCart = qtyOf(p.slug, v.id);
   const [fav, setFav] = useState(false);
@@ -32,7 +32,7 @@ export function ProductCard({ p, priority, compact }: { p: ProductIndex; priorit
       <Link href={`/urun/${p.slug}`} className="relative block aspect-[4/5] overflow-hidden bg-paper-50" aria-label={p.name}>
         <ProductImage name={p.name} brand={p.brand} art={p.art} hue={p.hue} image={p.image} label={v.label} priority={priority} className="transition-transform duration-500 group-hover:scale-[1.05]" />
         <span className="absolute left-2 top-2 flex flex-col gap-1">
-          {pct > 0 && <span className="rounded bg-red-600 px-1.5 py-0.5 text-[0.7rem] font-extrabold text-white">%{pct}</span>}
+          {showPrices && pct > 0 && <span className="rounded bg-red-600 px-1.5 py-0.5 text-[0.7rem] font-extrabold text-white">%{pct}</span>}
           {p.tags.includes("cok-satan") && <span className="rounded bg-orange-500 px-1.5 py-0.5 text-[0.65rem] font-bold text-white">Çok Satan</span>}
           {p.tags.includes("yeni") && <span className="rounded bg-sky-600 px-1.5 py-0.5 text-[0.65rem] font-bold text-white">Yeni</span>}
         </span>
@@ -56,7 +56,7 @@ export function ProductCard({ p, priority, compact }: { p: ProductIndex; priorit
           <Stars rating={p.rating} count={p.reviews} />
         </div>
         <div className="mt-2 flex flex-wrap items-center gap-1 text-[0.65rem] font-semibold">
-          {freeShip && (
+          {showPrices && freeShip && (
             <span className="inline-flex items-center gap-1 rounded bg-green-100 px-1.5 py-0.5 text-green-600">
               <Truck className="size-3" /> Kargo Bedava
             </span>
@@ -64,7 +64,9 @@ export function ProductCard({ p, priority, compact }: { p: ProductIndex; priorit
           <span className="rounded bg-sky-50 px-1.5 py-0.5 text-sky-700">{soldLabel} satıldı</span>
         </div>
         <div className="mt-auto pt-3">
-          {v.oldPrice ? (
+          {!showPrices ? (
+            <span className="text-xs font-semibold text-ink-500">Anlaşmalı fiyatınız geçerlidir</span>
+          ) : v.oldPrice ? (
             <div className="flex items-baseline gap-1.5">
               <span className="text-xs text-ink-400 line-through">{formatPrice(v.oldPrice)}</span>
               <span className="text-[1.05rem] font-extrabold text-orange-600">{formatPrice(v.price)}</span>
@@ -80,7 +82,7 @@ export function ProductCard({ p, priority, compact }: { p: ProductIndex; priorit
             }`}
           >
             {flash ? <Check className="size-4" /> : <ShoppingCart className="size-4" />}
-            {flash ? "Eklendi" : inCart > 0 ? `Sepette (${inCart}) · Ekle` : v.inStock ? "Sepete Ekle" : "Tükendi"}
+            {flash ? "Eklendi" : inCart > 0 ? `${showPrices ? "Sepette" : "Listede"} (${inCart}) · Ekle` : v.inStock ? (showPrices ? "Sepete Ekle" : "Listeye Ekle") : "Tükendi"}
           </button>
         </div>
       </div>

@@ -13,6 +13,7 @@ import { ProductCard } from "@/components/product/ProductCard";
 import { tagLabel } from "@/components/ui/Badge";
 import { formatCompact } from "@/lib/format";
 import { site } from "@/lib/site";
+import { useCart } from "@/components/cart/CartProvider";
 
 const all = indexJson as ProductIndex[];
 const PAGE = 24;
@@ -39,6 +40,7 @@ export function Catalog({ fixedCategory, fixedSub }: { fixedCategory?: string; f
   const pathname = usePathname();
   const [drawer, setDrawer] = useState(false);
   const [brandQ, setBrandQ] = useState("");
+  const { showPrices } = useCart();
 
   const q = sp.get("q") ?? "";
   const cat = fixedCategory ?? sp.get("kategori") ?? "";
@@ -207,6 +209,7 @@ export function Catalog({ fixedCategory, fixedSub }: { fixedCategory?: string; f
         </ul>
       </Group>
 
+      {showPrices && (
       <Group title="Fiyat" open>
         <ul className="space-y-1">
           {PRICE_RANGES.map(([a, b]) => {
@@ -223,6 +226,7 @@ export function Catalog({ fixedCategory, fixedSub }: { fixedCategory?: string; f
         </ul>
         <PriceRange key={`${min}-${max}`} min={min} max={max} onApply={(a, b) => setParams({ min: a ? String(a) : null, max: b ? String(b) : null })} />
       </Group>
+      )}
 
       <Group title="Özellikler" open>
         <ul className="space-y-1">
@@ -247,10 +251,12 @@ export function Catalog({ fixedCategory, fixedSub }: { fixedCategory?: string; f
             <Star className="size-3.5 text-star" fill="currentColor" strokeWidth={0} /> 4 yıldız ve üzeri
           </span>
         </label>
+        {showPrices && (
         <label className="flex cursor-pointer items-center gap-2 py-0.5">
           <input type="checkbox" checked={freeShip} onChange={() => setParams({ kargo: freeShip ? null : "1" })} className={check} />
           <span className="text-ink-700">Kargo bedava</span>
         </label>
+        )}
         <label className="flex cursor-pointer items-center gap-2 py-0.5">
           <input type="checkbox" checked={stock} onChange={() => setParams({ stok: stock ? null : "1" })} className={check} />
           <span className="text-ink-700">Yalnızca stoktakiler</span>
@@ -297,7 +303,7 @@ export function Catalog({ fixedCategory, fixedSub }: { fixedCategory?: string; f
               { k: "etiket", v: "cok-satan", l: "Çok Satan" },
               { k: "kargo", v: "1", l: "Kargo Bedava" },
               { k: "puan", v: "4", l: "4★ ve üzeri" },
-            ].map(({ k, v, l }) => {
+            ].filter(({ k, v }) => showPrices || (k !== "kargo" && v !== "indirim")).map(({ k, v, l }) => {
               const on = k === "etiket" ? tags.includes(v as ProductTag) : sp.get(k) === v;
               const toggle = () => (k === "etiket" ? setParams({ etiket: on ? tags.filter((x) => x !== v) : [...tags, v] }) : setParams({ [k]: on ? null : v }));
               return (
@@ -312,7 +318,7 @@ export function Catalog({ fixedCategory, fixedSub }: { fixedCategory?: string; f
           </p>
           <div className="relative">
             <select value={sort} onChange={(e) => setParams({ sirala: e.target.value === "populer" ? null : e.target.value })} className="h-9 appearance-none rounded-md border border-ink-200 bg-white pl-3 pr-8 text-sm font-medium outline-none focus:border-orange-500">
-              {SORTS.map(([v, l]) => (
+              {SORTS.filter(([v]) => showPrices || !v.startsWith("fiyat")).map(([v, l]) => (
                 <option key={v} value={v}>
                   {l}
                 </option>

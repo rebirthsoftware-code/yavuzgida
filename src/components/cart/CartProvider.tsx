@@ -3,6 +3,7 @@
 import { createContext, useCallback, useContext, useMemo, useState, useSyncExternalStore, type ReactNode } from "react";
 import { cartCount, cartSubtotal, type CartItem } from "@/lib/cart";
 import { cartStore } from "@/lib/cart-store";
+import { modeStore, type CustomerMode } from "@/lib/mode-store";
 
 type Ctx = {
   items: CartItem[];
@@ -24,12 +25,20 @@ type Ctx = {
   qtyOf: (slug: string, variantId: string) => number;
   /** Son eklenen kalem (panelde vurgulamak için) */
   lastKey: string | null;
+  /** Müşteri modu */
+  mode: CustomerMode | null;
+  modeReady: boolean;
+  setMode: (m: CustomerMode | null) => void;
+  /** Mevcut müşteri modunda fiyatlar gizlenir */
+  showPrices: boolean;
 };
 
 const CartContext = createContext<Ctx | null>(null);
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const { items, ready } = useSyncExternalStore(cartStore.subscribe, cartStore.get, cartStore.getServer);
+  const { mode, ready: modeReady } = useSyncExternalStore(modeStore.subscribe, modeStore.get, modeStore.getServer);
+  const setMode = useCallback((m: CustomerMode | null) => modeStore.set(m), []);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [catsOpen, setCatsOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -62,8 +71,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const qtyOf = useCallback((slug: string, variantId: string) => items.find((x) => x.slug === slug && x.variantId === variantId)?.qty ?? 0, [items]);
 
   const value = useMemo<Ctx>(
-    () => ({ items, count: cartCount(items), subtotal: cartSubtotal(items), ready, sheetOpen, setSheetOpen, catsOpen, setCatsOpen, searchOpen, setSearchOpen, add, setQty, remove, clear, qtyOf, lastKey }),
-    [items, ready, sheetOpen, catsOpen, searchOpen, add, setQty, remove, clear, qtyOf, lastKey],
+    () => ({ items, count: cartCount(items), subtotal: cartSubtotal(items), ready, sheetOpen, setSheetOpen, catsOpen, setCatsOpen, searchOpen, setSearchOpen, add, setQty, remove, clear, qtyOf, lastKey, mode, modeReady, setMode, showPrices: mode !== "mevcut" }),
+    [items, ready, sheetOpen, catsOpen, searchOpen, add, setQty, remove, clear, qtyOf, lastKey, mode, modeReady, setMode],
   );
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

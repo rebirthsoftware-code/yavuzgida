@@ -8,6 +8,9 @@ import { PopularCategories } from "@/components/home/PopularCategories";
 import { BrandStrip } from "@/components/home/BrandStrip";
 import { ProductRail } from "@/components/product/ProductRail";
 import { SectionHeading } from "@/components/ui/SectionHeading";
+import { OnlyNew } from "@/components/cart/OnlyNew";
+import { ExistingCustomerBand } from "@/components/home/ExistingCustomerBand";
+import { BlendPromo } from "@/components/home/BlendPromo";
 import { bestSellers, newArrivals, discounted, categoryCounts, products, categories, brands } from "@/lib/catalog";
 import { toIndex } from "@/lib/index-of";
 
@@ -33,9 +36,15 @@ export default function HomePage() {
         <CategoryCircles />
       </section>
 
-      <FlashDeals items={discounted(12).map(toIndex)} />
+      <OnlyNew fallback={<ExistingCustomerBand />}>
+        <FlashDeals items={discounted(12).map(toIndex)} />
+      </OnlyNew>
 
-      <CampaignTiles />
+      <BlendPromo />
+
+      <OnlyNew>
+        <CampaignTiles />
+      </OnlyNew>
 
       <BestSellerTabs groups={groups} />
 

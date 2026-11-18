@@ -12,6 +12,7 @@ import { CategorySheet } from "@/components/layout/CategorySheet";
 import { SearchOverlay } from "@/components/search/SearchOverlay";
 import { WhatsAppButton } from "@/components/layout/WhatsAppButton";
 import { PackSprite } from "@/components/product/PackSprite";
+import { WelcomeGate } from "@/components/layout/WelcomeGate";
 
 const inter = Inter({ variable: "--font-inter", subsets: ["latin", "latin-ext"], display: "swap" });
 
@@ -50,6 +51,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <CategorySheet categories={categories} counts={counts} />
           <SearchOverlay />
           <WhatsAppButton />
+          <WelcomeGate />
         </CartProvider>
       </body>
     </html>

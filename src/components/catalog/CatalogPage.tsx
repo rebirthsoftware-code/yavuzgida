@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Catalog } from "./Catalog";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import type { Category } from "@/lib/types";
+import { Coffee, ArrowRight } from "lucide-react";
 
 export function CatalogPage({
   title,
@@ -36,6 +37,18 @@ export function CatalogPage({
             </Link>
           ))}
         </div>
+      )}
+      {fixedCategory === "kahve" && (
+        <Link href="/ozel-harman" className="mt-4 flex items-center gap-4 rounded-xl bg-coal-900 px-5 py-4 text-white transition hover:bg-coal-800">
+          <span className="grid size-11 shrink-0 place-items-center rounded-full bg-gold-500/15 text-gold-400">
+            <Coffee className="size-5" />
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block text-sm font-bold">Kendi markanızla espresso: Özel Harman</span>
+            <span className="block text-xs text-ink-300">Orijin oranlarını belirleyin, markanızın adıyla paketleyelim. Minimum 10 kg.</span>
+          </span>
+          <ArrowRight className="size-5 shrink-0 text-gold-400" />
+        </Link>
       )}
       <div className="mt-4">
         <Suspense fallback={<div className="h-96 animate-pulse rounded-lg bg-white" />}>

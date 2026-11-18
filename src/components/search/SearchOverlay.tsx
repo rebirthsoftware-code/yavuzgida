@@ -40,6 +40,7 @@ export function SearchOverlay() {
 }
 
 function Panel({ close }: { close: () => void }) {
+  const { showPrices } = useCart();
   const [q, setQ] = useState("");
   const ref = useRef<HTMLInputElement>(null);
   const router = useRouter();
@@ -106,7 +107,7 @@ function Panel({ close }: { close: () => void }) {
                     </span>
                     <span className="block text-xs text-ink-500">{categoryMap[r.category]?.name}</span>
                   </span>
-                  <span className="text-sm font-bold">{formatPrice(minPriceOf(r))}</span>
+                  {showPrices && <span className="text-sm font-bold">{formatPrice(minPriceOf(r))}</span>}
                 </Link>
               </li>
             ))}

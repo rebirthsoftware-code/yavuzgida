@@ -16,7 +16,7 @@ export function MobileSearchButton() {
 
 /** Mobil alt gezinme (uygulama gibi). */
 export function MobileNav() {
-  const { count, ready, setCatsOpen, catsOpen } = useCart();
+  const { count, ready, setCatsOpen, catsOpen, showPrices } = useCart();
   const pathname = usePathname();
   const item = "flex flex-1 flex-col items-center justify-center gap-0.5 py-2 text-[0.65rem] font-semibold";
   return (
@@ -33,7 +33,7 @@ export function MobileNav() {
             <ShoppingCart className="size-5" />
             {ready && count > 0 && <span className="absolute -right-2.5 -top-1.5 grid min-w-4 place-items-center rounded-full bg-orange-500 px-1 text-[0.6rem] leading-4 text-white">{count}</span>}
           </span>
-          Sepetim
+          {showPrices ? "Sepetim" : "Listem"}
         </Link>
         <Link href="/siparis-takip" onClick={() => setCatsOpen(false)} className={`${item} text-ink-500`}>
           <User className="size-5" /> Hesabım

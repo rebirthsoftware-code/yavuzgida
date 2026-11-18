@@ -11,6 +11,7 @@ import { categories, categoryMap } from "@/lib/categories";
 import { minPriceOf } from "@/lib/index-of";
 import { formatPrice } from "@/lib/format";
 import { PackArt } from "@/components/product/PackArt";
+import { useCart } from "@/components/cart/CartProvider";
 
 const index = indexJson as ProductIndex[];
 const popular = ["Espresso çekirdek", "Karamel şurubu", "Yulaf sütü", "Karton bardak 12 oz", "Sıcak çikolata", "Matcha", "V60 filtre kağıdı", "Stick şeker"];
@@ -21,6 +22,7 @@ export function SearchBox({ className = "" }: { className?: string }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const router = useRouter();
+  const { showPrices } = useCart();
   const results = useMemo(() => searchProducts(index, q, 6), [q]);
   const cats = useMemo(() => {
     const n = q.trim().toLocaleLowerCase("tr-TR");
@@ -107,7 +109,7 @@ export function SearchBox({ className = "" }: { className?: string }) {
                           </span>
                           <span className="block text-xs text-ink-500">{categoryMap[r.category]?.name}</span>
                         </span>
-                        <span className="text-sm font-bold text-ink-900">{formatPrice(minPriceOf(r))}</span>
+                        {showPrices && <span className="text-sm font-bold text-ink-900">{formatPrice(minPriceOf(r))}</span>}
                       </Link>
                     </li>
                   ))}

@@ -13,7 +13,7 @@ import { formatPrice, unitPrice, formatCompact } from "@/lib/format";
 import { site } from "@/lib/site";
 
 export function BuyBox({ product }: { product: Product }) {
-  const { add } = useCart();
+  const { add, showPrices } = useCart();
   const router = useRouter();
   const [vid, setVid] = useState(product.variants.find((v) => v.inStock)?.id ?? product.variants[0].id);
   const [qty, setQty] = useState(1);
@@ -32,6 +32,12 @@ export function BuyBox({ product }: { product: Product }) {
   return (
     <div className="space-y-5">
       {/* Fiyat */}
+      {!showPrices ? (
+        <div className="rounded-lg border border-gold-500/40 bg-gold-100/40 p-4 text-sm text-ink-800">
+          <p className="font-bold text-ink-900">Mevcut müşteri modu</p>
+          <p className="mt-1">Fiyatlar gösterilmez; anlaşmalı fiyatlarınız geçerlidir. Ürünleri listeye ekleyip WhatsApp&apos;tan gönderin.</p>
+        </div>
+      ) : (
       <div className="rounded-lg border border-ink-200 bg-white p-4">
         <div className="flex flex-wrap items-end gap-3">
           {pct > 0 && <span className="rounded bg-red-600 px-2 py-1 text-sm font-extrabold text-white">%{pct}</span>}
@@ -45,6 +51,7 @@ export function BuyBox({ product }: { product: Product }) {
         </div>
         {v.caseQty && <p className="mt-2 text-xs text-ink-500">Koli içi {v.caseQty} adet · koli alımında sepette kademeli indirim</p>}
       </div>
+      )}
 
       {/* Boy seçimi */}
       <div>
@@ -60,7 +67,7 @@ export function BuyBox({ product }: { product: Product }) {
               className={`rounded-lg border-2 px-3 py-2 text-left transition disabled:cursor-not-allowed disabled:opacity-40 ${x.id === vid ? "border-orange-500 bg-orange-50" : "border-ink-200 bg-white hover:border-ink-400"}`}
             >
               <span className="block text-sm font-bold text-ink-900">{x.label}</span>
-              <span className="block text-xs text-ink-600">{formatPrice(x.price)}</span>
+              {showPrices ? <span className="block text-xs text-ink-600">{formatPrice(x.price)}</span> : x.caseQty ? <span className="block text-xs text-ink-600">Koli: {x.caseQty}</span> : null}
             </button>
           ))}
         </div>
@@ -79,8 +86,9 @@ export function BuyBox({ product }: { product: Product }) {
         </div>
         <button onClick={addNow} disabled={!v.inStock} className={`inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-lg text-base font-bold text-white transition disabled:opacity-50 ${done ? "bg-green-600" : "bg-orange-500 hover:bg-orange-600"}`}>
           {done ? <Check className="size-5" /> : <ShoppingCart className="size-5" />}
-          {done ? "Sepete Eklendi" : v.inStock ? "Sepete Ekle" : "Tükendi"}
+          {done ? (showPrices ? "Sepete Eklendi" : "Listeye Eklendi") : v.inStock ? (showPrices ? "Sepete Ekle" : "Listeye Ekle") : "Tükendi"}
         </button>
+        {showPrices && (
         <button
           onClick={() => {
             add(toCartItem(product, v, qty));
@@ -91,6 +99,7 @@ export function BuyBox({ product }: { product: Product }) {
         >
           <Zap className="size-4" /> Şimdi Al
         </button>
+        )}
       </div>
 
       {/* Teslimat bilgileri */}
@@ -102,10 +111,12 @@ export function BuyBox({ product }: { product: Product }) {
             {beforeCutoff ? "bugün" : "yarın"} · Teslimat 1–3 iş günü
           </span>
         </li>
+        {showPrices && (
         <li className="flex items-center gap-3 px-4 py-2.5">
           <Truck className="size-4 shrink-0 text-ink-400" />
           <span>{freeShip ? <b className="text-green-600">Bu siparişte kargo bedava</b> : <>{formatCompact(site.commerce.freeShippingThreshold)} üzeri siparişlerde kargo bedava</>}</span>
         </li>
+        )}
         <li className="flex items-center gap-3 px-4 py-2.5">
           <RotateCcw className="size-4 shrink-0 text-ink-400" /> 14 gün içinde koşulsuz iade
         </li>

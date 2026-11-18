@@ -10,7 +10,7 @@ import { ButtonLink } from "@/components/ui/Button";
 
 /** Başlıktaki "Sepetim" düğmesi + üzerine gelince açılan mini sepet. */
 export function MiniCart() {
-  const { items, count, subtotal, ready, remove, lastKey } = useCart();
+  const { items, count, subtotal, ready, remove, lastKey, showPrices } = useCart();
   const [open, setOpen] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -41,14 +41,14 @@ export function MiniCart() {
           <ShoppingCart className="size-5 text-gold-400" />
           {ready && count > 0 && <span className="absolute -right-2 -top-2 grid min-w-[1.1rem] place-items-center rounded-full bg-orange-500 px-1 text-[0.65rem] font-bold leading-[1.1rem] text-white">{count}</span>}
         </span>
-        <span className="hidden lg:block">Sepetim</span>
+        <span className="hidden lg:block">{showPrices ? "Sepetim" : "Listem"}</span>
       </Link>
 
       {open && (
         <div className="absolute right-0 top-full z-50 mt-1.5 w-[22rem] overflow-hidden rounded-lg border border-ink-200 bg-white shadow-menu animate-slide-down">
           <div className="flex items-center justify-between border-b border-ink-100 px-4 py-2.5 text-sm">
-            <span className="font-bold text-ink-900">Sepetim ({count} Ürün)</span>
-            <span className="text-ink-500">Toplam {formatPrice(subtotal)}</span>
+            <span className="font-bold text-ink-900">{showPrices ? "Sepetim" : "Sipariş Listem"} ({count} Ürün)</span>
+            {showPrices && <span className="text-ink-500">Toplam {formatPrice(subtotal)}</span>}
           </div>
           {items.length === 0 ? (
             <p className="px-4 py-8 text-center text-sm text-ink-500">Sepetinizde ürün bulunmamaktadır.</p>
@@ -66,7 +66,7 @@ export function MiniCart() {
                     <span className="block text-[0.7rem] text-ink-500">
                       {it.variantLabel} · Adet: {it.qty}
                     </span>
-                    <span className="block text-sm font-bold text-orange-600">{formatPrice(it.price * it.qty)}</span>
+                    {showPrices && <span className="block text-sm font-bold text-orange-600">{formatPrice(it.price * it.qty)}</span>}
                   </span>
                   <button onClick={() => remove(it.slug, it.variantId)} aria-label="Kaldır" className="grid size-8 place-items-center rounded-md text-ink-400 hover:bg-paper-100 hover:text-red-600">
                     <Trash2 className="size-4" />
@@ -77,10 +77,10 @@ export function MiniCart() {
           )}
           <div className="grid grid-cols-2 gap-2 border-t border-ink-100 p-3">
             <ButtonLink href="/sepet" variant="outline" size="sm" onClick={() => setOpen(false)}>
-              Sepete Git
+              {showPrices ? "Sepete Git" : "Listeye Git"}
             </ButtonLink>
-            <ButtonLink href="/odeme" size="sm" onClick={() => setOpen(false)}>
-              Siparişi Tamamla
+            <ButtonLink href={showPrices ? "/odeme" : "/sepet"} size="sm" onClick={() => setOpen(false)}>
+              {showPrices ? "Siparişi Tamamla" : "WhatsApp'tan Gönder"}
             </ButtonLink>
           </div>
         </div>

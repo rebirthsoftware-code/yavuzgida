@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { CreditCard, Landmark, Building2, Info } from "lucide-react";
 import { PageShell, Field, inputCls } from "@/components/ui/PageShell";
 import { Button } from "@/components/ui/Button";
+import { ModeRedirect } from "@/components/cart/ModeRedirect";
 
 export const metadata: Metadata = { title: "Ödeme" };
 
@@ -9,6 +10,7 @@ export const metadata: Metadata = { title: "Ödeme" };
 export default function CheckoutPage() {
   return (
     <PageShell title="Ödeme" crumb="Ödeme" lead="Teslimat ve fatura bilgilerinizi girin, ödeme yöntemini seçin.">
+      <ModeRedirect />
       <div className="mb-6 flex items-start gap-3 rounded-xl border border-orange-100 bg-orange-50 px-4 py-3 text-sm text-orange-700">
         <Info className="mt-0.5 size-4 shrink-0" />
         Ön tasarım: Bu adım görsel taslaktır; sipariş kaydı ve kart ödemesi bir sonraki aşamada bağlanacaktır.

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { ChevronDown, Flame, Percent } from "lucide-react";
+import { ChevronDown, Flame, Percent, Coffee } from "lucide-react";
 import { categories } from "@/lib/categories";
 import { CategoryIcon } from "@/components/ui/CategoryIcon";
 
@@ -17,6 +17,9 @@ export function CategoryBar({ counts }: { counts: Record<string, number> }) {
         </Link>
         <Link href="/urunler?etiket=cok-satan&sirala=populer" className="flex shrink-0 items-center gap-1.5 whitespace-nowrap px-3 py-2.5 text-[0.85rem] font-bold text-ink-800 hover:bg-paper-100">
           <Flame className="size-3.5 text-orange-500" /> Çok Satanlar
+        </Link>
+        <Link href="/ozel-harman" className="flex shrink-0 items-center gap-1.5 whitespace-nowrap px-3 py-2.5 text-[0.85rem] font-bold text-gold-600 hover:bg-gold-100/40">
+          <Coffee className="size-3.5" /> Özel Harman
         </Link>
         {categories.map((c) => (
           <Link
