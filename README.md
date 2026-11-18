@@ -23,6 +23,7 @@ Bu sürüm **ön tasarımdır**: tüm sayfalar ve akışlar görsel olarak hazı
 
 ## Müşteri modları ve özel harman
 
+- **Üyelik yok:** hiçbir modda giriş/şifre bulunmaz; mevcut müşteri ayrımı yalnızca akış farkıdır.
 - **Giriş kapısı:** ilk ziyarette "Mevcut Müşteriyim / Yeni Müşteriyim" seçimi (`WelcomeGate`), tercih `localStorage`'da (`mode-store.ts`); üst şeritteki rozetten değiştirilir.
 - **Mevcut müşteri:** fiyatlar, indirim rozetleri, kargo eşiği ve fiyat filtreleri gizlenir; "Sepete Ekle" → "Listeye Ekle". Liste sayfasında firma/telefon girilir, **"Listeyi Onayla ve WhatsApp'tan Gönder"** `wa.me` bağlantısıyla hazır mesajı açar (`lib/whatsapp.ts`). Ödeme sayfası bu modda listeye yönlendirir.
 - **Yeni müşteri:** fiyatlı katalog, sepet, ödeme; ayrıca sepette WhatsApp ile sipariş seçeneği.

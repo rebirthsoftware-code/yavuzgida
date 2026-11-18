@@ -23,7 +23,7 @@ export function WelcomeGate() {
         <div className="mb-6 flex flex-col items-center text-center">
           <Logo size="lg" />
           <h1 className="mt-5 text-2xl font-extrabold text-white sm:text-3xl">Hoş geldiniz</h1>
-          <p className="mt-2 max-w-md text-sm text-ink-300">Size uygun deneyimi sunabilmemiz için lütfen seçim yapın. Bu tercihi daha sonra üst menüden değiştirebilirsiniz.</p>
+          <p className="mt-2 max-w-md text-sm text-ink-300">Üyelik veya şifre gerekmez. Size uygun deneyimi sunabilmemiz için seçim yapın; tercihi daha sonra üst menüden değiştirebilirsiniz.</p>
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
           <button onClick={() => setMode("mevcut")} className="group rounded-2xl border border-gold-500/40 bg-coal-900 p-6 text-left transition hover:border-gold-400 hover:bg-coal-800">

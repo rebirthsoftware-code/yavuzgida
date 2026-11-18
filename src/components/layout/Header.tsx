@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Phone, User, Heart, PackageSearch, Building2, HelpCircle, Search } from "lucide-react";
+import { Phone, Heart, PackageSearch, Building2, HelpCircle, Search } from "lucide-react";
 import { site } from "@/lib/site";
 import { Logo } from "@/components/ui/Logo";
 import { SearchBox } from "./SearchBox";
@@ -54,13 +54,9 @@ export function Header() {
             <ModeSwitch compact />
           </div>
           <MobileSearchButton />
-          <button className="hidden h-11 items-center gap-2 rounded-lg border border-transparent px-3 text-sm font-semibold text-white hover:border-white/15 lg:flex">
-            <User className="size-5 text-gold-400" />
-            <span className="text-left leading-tight">
-              Giriş Yap
-              <span className="block text-[0.65rem] font-normal text-ink-300">veya üye ol</span>
-            </span>
-          </button>
+          <Link href="/siparis-takip" className="hidden h-11 items-center gap-2 rounded-lg border border-transparent px-3 text-sm font-semibold text-white hover:border-white/15 lg:flex">
+            <PackageSearch className="size-5 text-gold-400" /> Sipariş Takip
+          </Link>
           <Link href="/urunler?etiket=cok-satan" className="hidden h-11 items-center gap-2 rounded-lg border border-transparent px-3 text-sm font-semibold text-white hover:border-white/15 lg:flex">
             <Heart className="size-5 text-gold-400" /> Favorilerim
           </Link>
