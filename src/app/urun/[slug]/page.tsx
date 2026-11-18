@@ -31,8 +31,8 @@ export default async function ProductPage({ params }: PageProps<"/urun/[slug]">)
   if (!p) notFound();
   const cat = categoryMap[p.category];
   const sub = cat.subcategories.find((s) => s.slug === p.subcategory);
-  const rel = related(p, 12).map(toIndex);
-  const others = products.filter((x) => x.brand === p.brand && x.slug !== p.slug).slice(0, 12).map(toIndex);
+  const rel = related(p, 8).map(toIndex);
+  const others = products.filter((x) => x.brand === p.brand && x.slug !== p.slug).slice(0, 8).map(toIndex);
 
   const jsonLd = {
     "@context": "https://schema.org",

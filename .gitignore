@@ -42,3 +42,6 @@ next-env.d.ts
 
 # yerel
 .env*.local
+public/sitemap.xml
+public/robots.txt
+out/

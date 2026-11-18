@@ -11,6 +11,7 @@ import { MobileNav } from "@/components/layout/MobileBits";
 import { CategorySheet } from "@/components/layout/CategorySheet";
 import { SearchOverlay } from "@/components/search/SearchOverlay";
 import { WhatsAppButton } from "@/components/layout/WhatsAppButton";
+import { PackSprite } from "@/components/product/PackSprite";
 
 const inter = Inter({ variable: "--font-inter", subsets: ["latin", "latin-ext"], display: "swap" });
 
@@ -35,6 +36,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="tr" className={`${inter.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col">
+        <PackSprite />
         <CartProvider>
           <a href="#icerik" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-white focus:px-4 focus:py-2 focus:shadow-menu">
             İçeriğe geç
