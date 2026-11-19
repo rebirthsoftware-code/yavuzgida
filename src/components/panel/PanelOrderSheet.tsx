@@ -22,7 +22,7 @@ export function PanelOrderSheet() {
   const [history, setHistory] = useState<PanelOrder[]>([]);
   const [pdf, setPdf] = useState<Blob | null>(null);
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
-  const [shareState, setShareState] = useState<"idle" | "sharing" | "fallback">("idle");
+  const [shareState, setShareState] = useState<"idle" | "sharing" | "shared" | "fallback">("idle");
 
   useEffect(() => {
     let cancelled = false;
@@ -100,15 +100,25 @@ export function PanelOrderSheet() {
     setTimeout(() => URL.revokeObjectURL(a.href), 10_000);
   };
 
-  /** PDF'i WhatsApp ile gönder: paylaşım menüsü destekliyorsa dosya olarak; değilse indir + metin/bağlantı ile WhatsApp. */
+  const waHref = whatsappLink(message);
+
+  /**
+   * PDF'i WhatsApp ile gönder (2 adım): 1) paylaşım menüsüyle PDF dosya olarak gider;
+   * WhatsApp dosya paylaşımında metni düşürdüğü için 2) paylaşım bitince sipariş mesajı
+   * otomatik WhatsApp'ta açılır. Paylaşım desteklenmiyorsa PDF indirilir + mesaj açılır.
+   */
   const shareViaWhatsApp = async () => {
     if (pdf && typeof navigator !== "undefined" && "canShare" in navigator) {
       const file = new File([pdf], fileName, { type: "application/pdf" });
       if (navigator.canShare({ files: [file] })) {
         try {
           setShareState("sharing");
-          await navigator.share({ files: [file], title: `Sipariş Fişi ${order.ref}`, text: `Yavuz Gıda sipariş fişi ${order.ref} · ${order.form.firm}` });
-          setShareState("idle");
+          await navigator.share({ files: [file], title: `Sipariş Fişi ${order.ref}`, text: message });
+          setShareState("shared");
+          // 2. adım: sipariş mesajı (paylaşımda metin iletilmez)
+          setTimeout(() => {
+            window.location.href = waHref;
+          }, 700);
           return;
         } catch (e) {
           setShareState("idle");
@@ -118,7 +128,7 @@ export function PanelOrderSheet() {
     }
     setShareState("fallback");
     downloadPdf();
-    window.open(whatsappLink(message), "_blank", "noopener");
+    window.open(waHref, "_blank", "noopener");
   };
 
   return (
@@ -209,14 +219,21 @@ export function PanelOrderSheet() {
           </p>
           <p className="mt-1 text-xs text-ink-700">Listeyi WhatsApp ile bize gönderin; ekibimiz teyit edip hazırlığa başlasın.</p>
         </div>
-        <button onClick={shareViaWhatsApp} disabled={shareState === "sharing"} className="flex h-12 w-full items-center justify-center gap-2 rounded-lg bg-[#25d366] text-base font-bold text-white hover:bg-[#1ebe5b] disabled:opacity-60">
-          {shareState === "sharing" ? <Loader2 className="size-5 animate-spin" /> : <MessageCircle className="size-5" />} PDF&apos;i WhatsApp ile Gönder
-        </button>
-        {shareState === "fallback" && (
-          <p className="rounded-lg bg-orange-50 p-3 text-xs text-ink-800">
-            Bu cihazda dosya paylaşımı desteklenmiyor: PDF indirildi ve WhatsApp açıldı. {pdfUrl ? "Mesajda PDF bağlantısı hazır." : "İndirilen PDF'i sohbete ataç olarak ekleyin."}
+        <div className="rounded-lg border border-ink-200 bg-white p-3">
+          <p className="mb-2 text-xs font-bold uppercase tracking-wider text-ink-400">WhatsApp ile gönderim · 2 adım</p>
+          <button onClick={shareViaWhatsApp} disabled={shareState === "sharing"} className={`flex h-12 w-full items-center justify-center gap-2 rounded-lg text-base font-bold text-white disabled:opacity-60 ${shareState === "shared" ? "bg-green-600" : "bg-[#25d366] hover:bg-[#1ebe5b]"}`}>
+            {shareState === "sharing" ? <Loader2 className="size-5 animate-spin" /> : shareState === "shared" ? <CheckCircle2 className="size-5" /> : <MessageCircle className="size-5" />}
+            {shareState === "shared" ? "1. PDF paylaşıldı" : "1. PDF'i WhatsApp ile paylaş"}
+          </button>
+          <a href={waHref} target="_blank" rel="noopener" className={`mt-2 flex h-11 w-full items-center justify-center gap-2 rounded-lg border text-sm font-bold ${shareState === "shared" ? "border-[#25d366] bg-[#25d366]/10 text-[#128c4a]" : "border-ink-200 text-ink-700 hover:bg-paper-100"}`}>
+            <Share2 className="size-4" /> 2. Sipariş mesajını gönder
+          </a>
+          <p className="mt-2 text-[0.7rem] leading-relaxed text-ink-500">
+            WhatsApp dosya paylaşırken yazılı mesajı iletmez; bu yüzden PDF paylaşımı bitince sipariş mesajı otomatik açılır. Açılmazsa 2. düğmeye dokunun.
+            {pdfUrl && " Mesajda PDF bağlantısı da yer alır."}
           </p>
-        )}
+          {shareState === "fallback" && <p className="mt-2 rounded-lg bg-orange-50 p-2.5 text-xs text-ink-800">Bu cihazda dosya paylaşımı desteklenmiyor: PDF indirildi ve WhatsApp mesajı açıldı. {pdfUrl ? "Mesajda PDF bağlantısı hazır." : "İndirilen PDF'i sohbete ataç olarak ekleyin."}</p>}
+        </div>
         {pdfUrl && (
           <a href={pdfUrl} target="_blank" rel="noopener" className="flex items-center gap-2 rounded-lg border border-ink-200 bg-white px-3 py-2 text-xs text-ink-600 hover:bg-paper-100">
             <Link2 className="size-3.5 shrink-0 text-sky-700" /> <span className="truncate">{pdfUrl}</span>
@@ -230,9 +247,6 @@ export function PanelOrderSheet() {
             <Printer className="size-4" /> Yazdır
           </button>
         </div>
-        <a href={whatsappLink(message)} target="_blank" rel="noopener" className="flex items-center justify-center gap-1.5 text-xs font-semibold text-ink-500 hover:text-[#128c4a]">
-          <Share2 className="size-3.5" /> Yalnızca metin olarak WhatsApp&apos;tan gönder
-        </a>
         <Link href="/panel/urunler" className="flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-coal-900 text-sm font-semibold text-white hover:bg-coal-800">
           Yeni sipariş listesi <ArrowRight className="size-4" />
         </Link>
