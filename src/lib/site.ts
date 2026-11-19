@@ -1,7 +1,7 @@
 const pick = (v: string | undefined, fallback: string) => (v && v.trim() ? v.trim() : fallback);
 
 const phone = pick(process.env.NEXT_PUBLIC_PHONE, "0500 000 00 00");
-const whatsappNumbers = pick(process.env.NEXT_PUBLIC_WHATSAPP, "905000000000").split(",").map((n) => n.replace(/\D/g, "")).filter(Boolean);
+const whatsappNumbers = pick(process.env.NEXT_PUBLIC_WHATSAPP, "905382120317").split(",").map((n) => n.replace(/\D/g, "")).filter(Boolean);
 const whatsapp = whatsappNumbers[0] ?? "";
 
 /** Site genel ayarları — gerçek bilgiler geldiğinde .env ile ezilir. */
