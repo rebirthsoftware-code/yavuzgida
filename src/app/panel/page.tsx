@@ -55,7 +55,7 @@ export default function PanelHome() {
                 <CategoryIcon name={c.icon} className="size-5" />
               </span>
               <span className="min-w-0">
-                <span className="block truncate text-sm font-bold text-ink-900 group-hover:text-orange-600">{c.name}</span>
+                <span className="line-clamp-2 text-sm font-bold leading-tight text-ink-900 group-hover:text-orange-600">{c.name}</span>
                 <span className="block text-xs text-ink-500">{counts[c.slug] ?? 0} ürün</span>
               </span>
             </Link>

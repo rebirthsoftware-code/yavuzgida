@@ -40,7 +40,7 @@ export function ProductDetail({ p, base = "" }: { p: Product; base?: string }) {
   };
 
   return (
-    <div className="mx-auto max-w-[1320px] px-4 pb-12 pt-3">
+    <div className="mx-auto max-w-[1320px] px-4 pb-24 pt-3 md:pb-12">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <Breadcrumbs home={home} items={[{ label: "Tüm Ürünler", href: `${base}/urunler` }, { label: cat.name, href: `${base}/kategori/${cat.slug}` }, ...(sub ? [{ label: sub.name, href: `${base}/kategori/${cat.slug}/${sub.slug}` }] : []), { label: p.name }]} />
 

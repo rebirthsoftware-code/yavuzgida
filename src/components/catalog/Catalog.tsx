@@ -292,8 +292,8 @@ export function Catalog({ fixedCategory, fixedSub }: { fixedCategory?: string; f
 
       <div className="min-w-0">
         {/* Üst çubuk */}
-        <div className="flex flex-wrap items-center gap-2 rounded-lg border border-ink-200 bg-white px-3 py-2">
-          <button onClick={() => setDrawer(true)} className="inline-flex h-9 items-center gap-1.5 rounded-md border border-ink-200 px-3 text-sm font-semibold lg:hidden">
+        <div className="flex items-center gap-2 rounded-lg border border-ink-200 bg-white px-2.5 py-2 sm:px-3 lg:flex-wrap">
+          <button onClick={() => setDrawer(true)} className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-md border border-ink-200 px-3 text-sm font-semibold lg:hidden">
             <SlidersHorizontal className="size-4" /> Filtrele
             {chips.length > 0 && <span className="rounded-full bg-orange-500 px-1.5 text-[0.65rem] text-white">{chips.length}</span>}
           </button>
@@ -313,11 +313,11 @@ export function Catalog({ fixedCategory, fixedSub }: { fixedCategory?: string; f
               );
             })}
           </div>
-          <p className="ml-auto text-xs text-ink-500">
+          <p className="ml-auto shrink-0 text-xs text-ink-500">
             <b className="text-ink-900">{filtered.length}</b> ürün
           </p>
-          <div className="relative">
-            <select value={sort} onChange={(e) => setParams({ sirala: e.target.value === "populer" ? null : e.target.value })} className="h-9 appearance-none rounded-md border border-ink-200 bg-white pl-3 pr-8 text-sm font-medium outline-none focus:border-orange-500">
+          <div className="relative min-w-0 max-w-[10.5rem] sm:max-w-none">
+            <select value={sort} onChange={(e) => setParams({ sirala: e.target.value === "populer" ? null : e.target.value })} className="h-9 w-full appearance-none truncate rounded-md border border-ink-200 bg-white pl-3 pr-8 text-sm font-medium outline-none focus:border-orange-500">
               {SORTS.filter(([v]) => showPrices || !v.startsWith("fiyat")).map(([v, l]) => (
                 <option key={v} value={v}>
                   {l}

@@ -67,12 +67,12 @@ export function ProductCard({ p, priority, compact }: { p: ProductIndex; priorit
           {!showPrices ? (
             <span className="text-xs font-semibold text-ink-500">Anlaşmalı fiyatınız geçerlidir</span>
           ) : v.oldPrice ? (
-            <div className="flex items-baseline gap-1.5">
-              <span className="text-xs text-ink-400 line-through">{formatPrice(v.oldPrice)}</span>
-              <span className="text-[1.05rem] font-extrabold text-orange-600">{formatPrice(v.price)}</span>
+            <div className="flex flex-wrap items-baseline gap-x-1.5">
+              <span className="whitespace-nowrap text-xs text-ink-400 line-through">{formatPrice(v.oldPrice)}</span>
+              <span className="whitespace-nowrap text-[1.05rem] font-extrabold text-orange-600">{formatPrice(v.price)}</span>
             </div>
           ) : (
-            <span className="text-[1.05rem] font-extrabold text-ink-900">{formatPrice(v.price)}</span>
+            <span className="whitespace-nowrap text-[1.05rem] font-extrabold text-ink-900">{formatPrice(v.price)}</span>
           )}
           <button
             onClick={addToCart}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 
 const noop = () => () => {};
 const useBeforeCutoff = () => useSyncExternalStore(noop, () => new Date().getHours() < 14, () => true);
@@ -13,7 +13,16 @@ import { formatPrice, unitPrice, formatCompact } from "@/lib/format";
 import { site } from "@/lib/site";
 
 export function BuyBox({ product }: { product: Product }) {
-  const { add, showPrices } = useCart();
+  const { add, showPrices, inPanel } = useCart();
+  const inlineRef = useRef<HTMLButtonElement>(null);
+  const [inlineVisible, setInlineVisible] = useState(true);
+  useEffect(() => {
+    const el = inlineRef.current;
+    if (!el || typeof IntersectionObserver === "undefined") return;
+    const io = new IntersectionObserver(([e]) => setInlineVisible(e.isIntersecting), { rootMargin: "-120px 0px 0px 0px" });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
   const router = useRouter();
   const [vid, setVid] = useState(product.variants.find((v) => v.inStock)?.id ?? product.variants[0].id);
   const [qty, setQty] = useState(1);
@@ -84,7 +93,7 @@ export function BuyBox({ product }: { product: Product }) {
             <Plus className="size-4" />
           </button>
         </div>
-        <button onClick={addNow} disabled={!v.inStock} className={`inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-lg text-base font-bold text-white transition disabled:opacity-50 ${done ? "bg-green-600" : "bg-orange-500 hover:bg-orange-600"}`}>
+        <button ref={inlineRef} onClick={addNow} disabled={!v.inStock} className={`inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-lg text-base font-bold text-white transition disabled:opacity-50 ${done ? "bg-green-600" : "bg-orange-500 hover:bg-orange-600"}`}>
           {done ? <Check className="size-5" /> : <ShoppingCart className="size-5" />}
           {done ? (showPrices ? "Sepete Eklendi" : "Listeye Eklendi") : v.inStock ? (showPrices ? "Sepete Ekle" : "Listeye Ekle") : "Tükendi"}
         </button>
@@ -100,6 +109,24 @@ export function BuyBox({ product }: { product: Product }) {
           <Zap className="size-4" /> Şimdi Al
         </button>
         )}
+      </div>
+
+      {/* Mobil yapışkan çubuk */}
+      <div id="mobil-satin-al" data-panel={inPanel ? "" : undefined} className={`fixed inset-x-0 z-30 [margin:0] border-t border-ink-200 bg-white/95 px-3 py-2 shadow-[0_-4px_16px_rgb(0_0_0/0.06)] backdrop-blur transition-transform duration-200 md:hidden print:hidden ${inPanel ? "bottom-0 pb-[calc(0.5rem+env(safe-area-inset-bottom))]" : "bottom-[calc(3.5rem+env(safe-area-inset-bottom))]"} ${inlineVisible ? "pointer-events-none translate-y-[200%] opacity-0" : "translate-y-0"}`}>
+        <div className="flex items-center gap-2">
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-[0.7rem] text-ink-500">{v.label}{qty > 1 ? ` × ${qty}` : ""}</p>
+            {showPrices ? (
+              <p className="text-lg font-extrabold leading-tight text-ink-900">{formatPrice(v.price * qty)}</p>
+            ) : (
+              <p className="text-xs font-semibold leading-tight text-ink-800">Anlaşmalı fiyatınız geçerlidir</p>
+            )}
+          </div>
+          <button onClick={addNow} disabled={!v.inStock} className={`inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-lg px-5 text-sm font-bold text-white transition disabled:opacity-50 ${done ? "bg-green-600" : "bg-orange-500"}`}>
+            {done ? <Check className="size-4" /> : <ShoppingCart className="size-4" />}
+            {done ? "Eklendi" : v.inStock ? (showPrices ? "Sepete Ekle" : "Listeye Ekle") : "Tükendi"}
+          </button>
+        </div>
       </div>
 
       {/* Teslimat bilgileri */}

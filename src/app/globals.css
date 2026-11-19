@@ -149,3 +149,21 @@ h1, h2, h3 {
     padding: 0;
   }
 }
+
+/* Ürün sayfasında mobil satın alma çubuğu varken WhatsApp düğmesini yukarı al */
+@media (max-width: 767px) {
+  body:has(#mobil-satin-al) .wa-fab {
+    bottom: calc(8.6rem + env(safe-area-inset-bottom));
+  }
+  body:has(#mobil-satin-al[data-panel]) .wa-fab {
+    bottom: calc(5.5rem + env(safe-area-inset-bottom));
+  }
+  /* Aşağı kaydırınca başlık yukarı kayar; yalnızca kategori şeridi görünür kalır */
+  .m-header {
+    transition: transform 0.25s ease;
+    will-change: transform;
+  }
+  html[data-compact] .m-header {
+    transform: translateY(calc(-1 * var(--m-collapse, 0px)));
+  }
+}

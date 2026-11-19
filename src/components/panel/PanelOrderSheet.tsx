@@ -149,9 +149,9 @@ export function PanelOrderSheet() {
   };
 
   return (
-    <div className="grid gap-5 lg:grid-cols-[1fr_340px] lg:items-start">
+    <div className="grid min-w-0 gap-5 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start">
       {/* Fiş (yazdırılır) */}
-      <div id="siparis-fisi" className="rounded-lg border border-ink-200 bg-white p-6 sm:p-8">
+      <div id="siparis-fisi" className="min-w-0 rounded-lg border border-ink-200 bg-white p-4 sm:p-8">
         <div className="flex flex-wrap items-start justify-between gap-4 border-b border-ink-200 pb-5">
           <div className="flex items-center gap-3">
             <span className="rounded-lg bg-coal-900 p-1.5">
@@ -162,7 +162,7 @@ export function PanelOrderSheet() {
               <p className="text-xs text-ink-500">{site.legal.companyName}</p>
             </div>
           </div>
-          <div className="text-right text-sm">
+          <div className="text-left text-sm sm:text-right">
             <p className="font-mono text-base font-bold text-ink-900">{order.ref}</p>
             <p className="text-xs text-ink-500">{formatDate(order.createdAt)}</p>
             <p className="mt-1 inline-flex items-center gap-1 rounded bg-gold-100 px-2 py-0.5 text-[0.7rem] font-bold text-gold-600">
@@ -190,33 +190,37 @@ export function PanelOrderSheet() {
             </div>
           )}
         </dl>
-        <table className="mt-4 w-full text-sm">
+        <table className="mt-4 w-full table-fixed text-sm sm:table-auto">
           <thead>
             <tr className="border-b border-ink-200 text-left text-xs font-bold uppercase tracking-wider text-ink-500">
-              <th className="py-2 pr-2">#</th>
+              <th className="w-6 py-2 pr-2">#</th>
               <th className="py-2 pr-2">Ürün</th>
-              <th className="py-2 pr-2">Ambalaj</th>
-              <th className="py-2 pr-2">Stok kodu</th>
-              <th className="py-2 text-right">Adet</th>
+              <th className="w-16 py-2 pr-2 sm:w-auto">Ambalaj</th>
+              <th className="hidden py-2 pr-2 sm:table-cell">Stok kodu</th>
+              <th className="w-12 py-2 text-right sm:w-auto">Adet</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-ink-100">
             {order.items.map((it, i) => (
               <tr key={`${it.slug}-${it.variantId}`}>
                 <td className="py-2 pr-2 text-ink-400">{i + 1}</td>
-                <td className="py-2 pr-2">
+                <td className="break-words py-2 pr-2">
                   <span className="font-semibold text-ink-900">{it.brand}</span> {it.name}
                   {it.custom && <span className="block text-xs text-ink-500">{it.custom}</span>}
+                  <span className="block font-mono text-[0.65rem] text-ink-400 sm:hidden">{it.sku}</span>
                 </td>
                 <td className="py-2 pr-2 text-ink-700">{it.variantLabel}</td>
-                <td className="py-2 pr-2 font-mono text-xs text-ink-500">{it.sku}</td>
+                <td className="hidden py-2 pr-2 font-mono text-xs text-ink-500 sm:table-cell">{it.sku}</td>
                 <td className="py-2 text-right font-bold text-ink-900">{it.qty}</td>
               </tr>
             ))}
           </tbody>
           <tfoot>
             <tr className="border-t border-ink-200">
-              <td colSpan={4} className="py-2 text-right text-xs font-bold uppercase tracking-wider text-ink-500">
+              <td colSpan={3} className="py-2 text-right sm:hidden">
+                Toplam
+              </td>
+              <td colSpan={4} className="hidden py-2 text-right sm:table-cell text-xs font-bold uppercase tracking-wider text-ink-500">
                 Toplam
               </td>
               <td className="py-2 text-right font-extrabold text-ink-900">
@@ -229,7 +233,7 @@ export function PanelOrderSheet() {
       </div>
 
       {/* Eylemler */}
-      <aside className="space-y-3 print:hidden">
+      <aside className="min-w-0 space-y-3 print:hidden">
         <div className="rounded-lg border border-green-100 bg-green-100/50 p-4">
           <p className="flex items-center gap-2 font-bold text-green-600">
             <CheckCircle2 className="size-5" /> Sipariş fişiniz hazır
@@ -249,18 +253,18 @@ export function PanelOrderSheet() {
           <p className="mt-2 text-[0.7rem] leading-relaxed text-ink-500">Paylaşım menüsünden WhatsApp seçilir; WhatsApp dosyayla birlikte metni almadığı için ardından sipariş mesajı otomatik açılır.</p>
           {shareState === "fallback" && <p className="mt-2 rounded-lg bg-orange-50 p-2.5 text-xs text-ink-800">Bu cihazda dosya paylaşımı desteklenmiyor: PDF indirildi ve WhatsApp mesajı açıldı.</p>}
         </details>
-        <a href={pdfUrl ?? sheetUrl} target="_blank" rel="noopener" className="flex items-center gap-2 rounded-lg border border-ink-200 bg-white px-3 py-2 text-xs text-ink-600 hover:bg-paper-100">
-          <Link2 className="size-3.5 shrink-0 text-sky-700" /> <span className="truncate">{pdfUrl ?? sheetUrl}</span>
+        <a href={pdfUrl ?? sheetUrl} target="_blank" rel="noopener" className="flex min-w-0 items-center gap-2 rounded-lg border border-ink-200 bg-white px-3 py-2 text-xs text-ink-600 hover:bg-paper-100">
+          <Link2 className="size-3.5 shrink-0 text-sky-700" /> <span className="min-w-0 truncate">{pdfUrl ?? sheetUrl}</span>
         </a>
-        <div className="grid grid-cols-3 gap-2">
-          <button onClick={downloadPdf} className="flex h-11 items-center justify-center gap-2 rounded-lg border border-ink-200 bg-white text-sm font-semibold text-ink-800 hover:bg-paper-100">
-            <FileDown className="size-4" /> PDF indir
+        <div className="grid grid-cols-3 gap-2 text-center">
+          <button onClick={downloadPdf} className="flex h-11 items-center justify-center gap-1.5 rounded-lg border border-ink-200 bg-white px-1 text-xs font-semibold text-ink-800 hover:bg-paper-100 sm:gap-2 sm:text-sm">
+            <FileDown className="size-4 shrink-0" /> PDF indir
           </button>
-          <button onClick={() => pdf && window.open(URL.createObjectURL(pdf), "_blank")} className="flex h-11 items-center justify-center gap-2 rounded-lg border border-ink-200 bg-white text-sm font-semibold text-ink-800 hover:bg-paper-100">
-            <Link2 className="size-4" /> PDF&apos;i aç
+          <button onClick={() => pdf && window.open(URL.createObjectURL(pdf), "_blank")} className="flex h-11 items-center justify-center gap-1.5 rounded-lg border border-ink-200 bg-white px-1 text-xs font-semibold text-ink-800 hover:bg-paper-100 sm:gap-2 sm:text-sm">
+            <Link2 className="size-4 shrink-0" /> PDF&apos;i aç
           </button>
-          <button onClick={() => window.print()} className="flex h-11 items-center justify-center gap-2 rounded-lg border border-ink-200 bg-white text-sm font-semibold text-ink-800 hover:bg-paper-100">
-            <Printer className="size-4" /> Yazdır
+          <button onClick={() => window.print()} className="flex h-11 items-center justify-center gap-1.5 rounded-lg border border-ink-200 bg-white px-1 text-xs font-semibold text-ink-800 hover:bg-paper-100 sm:gap-2 sm:text-sm">
+            <Printer className="size-4 shrink-0" /> Yazdır
           </button>
         </div>
         <Link href="/panel/urunler" className="flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-coal-900 text-sm font-semibold text-white hover:bg-coal-800">

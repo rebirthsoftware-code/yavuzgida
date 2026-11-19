@@ -5,14 +5,16 @@ import { Logo } from "@/components/ui/Logo";
 import { SearchBox } from "./SearchBox";
 import { MiniCart } from "./MiniCart";
 import { CategoryBar } from "./CategoryBar";
-import { MobileSearchButton } from "./MobileBits";
+import { MobileSearchBar } from "./MobileBits";
+import { ScrollCompact } from "./ScrollCompact";
 import { Store } from "lucide-react";
 import { categoryCounts } from "@/lib/catalog";
 
 export function Header() {
   const counts = categoryCounts();
   return (
-    <header className="sticky top-0 z-40 bg-coal-900 shadow-[0_1px_0_rgb(255_255_255/0.06)]">
+    <header className="m-header sticky top-0 z-40 bg-coal-900 shadow-[0_1px_0_rgb(255_255_255/0.06)]">
+      <ScrollCompact />
       {/* Üst bağlantılar */}
       <div className="hidden border-b border-white/5 bg-coal-950 text-xs text-ink-300 md:block">
         <div className="mx-auto flex h-8 max-w-[1320px] items-center justify-between px-4">
@@ -40,7 +42,7 @@ export function Header() {
       </div>
 
       {/* Ana satır */}
-      <div className="mx-auto flex h-16 max-w-[1320px] items-center gap-3 px-3 sm:px-4 md:h-[84px] lg:gap-8">
+      <div className="m-collapse mx-auto flex h-16 max-w-[1320px] items-center gap-3 px-3 sm:px-4 md:h-[84px] lg:gap-8">
         <div className="md:hidden">
           <Logo size="sm" />
         </div>
@@ -49,7 +51,9 @@ export function Header() {
         </div>
         <SearchBox className="hidden flex-1 md:block lg:max-w-2xl" />
         <div className="ml-auto flex items-center gap-1">
-          <MobileSearchButton />
+          <Link href="/panel" className="mr-1 flex h-9 items-center gap-1.5 rounded-full border border-gold-500/50 bg-gold-500/10 px-2.5 text-xs font-semibold text-gold-400 md:hidden">
+            <Store className="size-3.5" /> Panel
+          </Link>
           <Link href="/siparis-takip" className="hidden h-11 items-center gap-2 rounded-lg border border-transparent px-3 text-sm font-semibold text-white hover:border-white/15 lg:flex">
             <PackageSearch className="size-5 text-gold-400" /> Sipariş Takip
           </Link>
@@ -60,6 +64,7 @@ export function Header() {
         </div>
       </div>
 
+      <div className="m-collapse"><MobileSearchBar /></div>
       <CategoryBar counts={counts} />
     </header>
   );
