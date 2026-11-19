@@ -24,7 +24,6 @@ export function buildOrderMessage(items: CartItem[], form: OrderForm, withPrices
   }
   if (form.note) lines.push("", `Not: ${form.note}`);
   lines.push("", `Toplam ${items.reduce((s, i) => s + i.qty, 0)} adet · ${items.length} kalem`);
-  lines.push(`Gönderim: ${site.url}`);
   return lines.join("\n");
 }
 
