@@ -26,7 +26,7 @@ Bu sürüm **ön tasarımdır**: tüm sayfalar ve akışlar görsel olarak hazı
 
 - **Üyelik yok:** sitede giriş/şifre bulunmaz.
 - **Mağaza (`/`):** herkese açık e-ticaret; fiyatlar, sepet, PayTR / havale ile ödeme.
-- **Anlaşmalı Müşteri Paneli (`/panel`):** hâlihazırda çalışılan kafeler için ayrı kabuk (`src/app/panel`, `PanelHeader`). Aynı katalog fiyatsız gösterilir ("Listeye Ekle"); liste mağaza sepetinden bağımsızdır (`panelStore`). `/panel/sepet` sayfasında firma/telefon girilip **Siparişi Onayla** denince "Siparişiniz oluşturuluyor" ekranı, ardından numaralı **sipariş fişi** (`/panel/siparis?ref=YL-…`): WhatsApp'tan gönderme (hazır mesaj), **PDF olarak kaydet / Yazdır** (yalnızca fiş alanı basılır) ve önceki fişler. Fişler cihazda saklanır (`lib/panel-order.ts`); sunucu kaydı yoktur.
+- **Anlaşmalı Müşteri Paneli (`/panel`):** hâlihazırda çalışılan kafeler için ayrı kabuk (`src/app/panel`, `PanelHeader`). Aynı katalog fiyatsız gösterilir ("Listeye Ekle"); liste mağaza sepetinden bağımsızdır (`panelStore`). `/panel/sepet` sayfasında firma/telefon girilip **Siparişi Onayla** denince "Siparişiniz oluşturuluyor" ekranında gerçek bir **PDF fiş** üretilir (`lib/order-pdf.ts`, jsPDF + gömülü Roboto, Türkçe karakter destekli, ~70 KB) ve sunucu varsa `POST /api/fis` ile kaydedilir (`panel_orders` tablosu; `GET /api/fis/<ref>` PDF'i sunar). Ardından fiş sayfası (`/panel/siparis?ref=YL-…`): **PDF'i WhatsApp ile Gönder** (telefonda paylaşım menüsüyle dosya olarak; desteklenmeyen cihazda PDF indirilir ve WhatsApp mesajı PDF bağlantısıyla açılır), PDF indir, yazdır, yalnızca metin gönder, önceki fişler. Fişler cihazda da saklanır (`lib/panel-order.ts`).
 - Bağlantı ön eki: bileşenler `useCart().base` ("" | "/panel") ile doğru kabuğa bağlanır; `showPrices` panelde false.
 - **Özel harman (`/ozel-harman`):** 11 orijin için %5 adımlı oranlar (toplam %100), kavurma, öğütüm, ambalaj, etiket rengi, marka ve ürün adı; canlı paket önizlemesi ve tat profili; tahmini fiyat; sepete/listeye eklenir ve WhatsApp talebi oluşturur. Orijin fiyatları ve işçilik `BlendBuilder.tsx` içinde yer tutucudur.
 
@@ -54,7 +54,7 @@ Panelden: Hazırlanıyor → Kargoya verildi (kargo firması + takip no) → Tes
 
 ### API uç noktaları
 
-`POST /api/orders` · `POST /api/paytr/callback` · `POST /api/paytr/demo` · `GET /api/track?no=&phone=` · `POST /api/admin/login` · `GET /api/admin/orders` · `GET|PATCH /api/admin/orders/:no` · `GET /api/admin/stats` · `GET|POST|DELETE|PUT /api/admin/push` · `GET /api/health`
+`POST /api/orders` · `POST /api/fis` · `GET /api/fis/:ref` · `POST /api/paytr/callback` · `POST /api/paytr/demo` · `GET /api/track?no=&phone=` · `POST /api/admin/login` · `GET /api/admin/orders` · `GET|PATCH /api/admin/orders/:no` · `GET /api/admin/stats` · `GET|POST|DELETE|PUT /api/admin/push` · `GET /api/health`
 
 Yerel test: `mkdir data && DATABASE_URL=file:./data/yavuz.db ADMIN_PASSWORD=admin123 npm run build && npm start`
 

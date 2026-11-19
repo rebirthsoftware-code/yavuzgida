@@ -53,6 +53,16 @@ const SCHEMA = [
     value TEXT NOT NULL,
     updated_at TEXT NOT NULL
   )`,
+  `CREATE TABLE IF NOT EXISTS panel_orders (
+    ref TEXT PRIMARY KEY,
+    created_at TEXT NOT NULL,
+    firm TEXT NOT NULL,
+    name TEXT,
+    phone TEXT NOT NULL,
+    note TEXT,
+    items_json TEXT NOT NULL,
+    pdf_base64 TEXT NOT NULL
+  )`,
   `CREATE TABLE IF NOT EXISTS push_subscriptions (
     endpoint TEXT PRIMARY KEY,
     subscription_json TEXT NOT NULL,

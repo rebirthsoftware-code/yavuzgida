@@ -3,9 +3,11 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { CheckCircle2, Loader2, MessageCircle, FileDown, Printer, ArrowRight, Clock } from "lucide-react";
+import { CheckCircle2, Loader2, MessageCircle, FileDown, Printer, ArrowRight, Clock, Share2, Link2 } from "lucide-react";
 import { getPanelOrder, listPanelOrders, type PanelOrder } from "@/lib/panel-order";
 import { buildOrderMessage, whatsappLink } from "@/lib/whatsapp";
+import { buildOrderPdf, pdfFileName } from "@/lib/order-pdf";
+import { uploadFis } from "@/lib/fis-api";
 import { site } from "@/lib/site";
 import { formatDate } from "@/lib/format";
 import { LogoImage } from "@/components/ui/Logo";
@@ -16,16 +18,37 @@ export function PanelOrderSheet() {
   const ref = sp.get("ref") ?? "";
   const [order, setOrder] = useState<PanelOrder | null | undefined>(undefined);
   const [phase, setPhase] = useState<"creating" | "ready">("creating");
+  const [step, setStep] = useState("Sipariş fişiniz hazırlanıyor…");
   const [history, setHistory] = useState<PanelOrder[]>([]);
+  const [pdf, setPdf] = useState<Blob | null>(null);
+  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+  const [shareState, setShareState] = useState<"idle" | "sharing" | "fallback">("idle");
 
   useEffect(() => {
+    let cancelled = false;
     const o = ref ? getPanelOrder(ref) : null;
-    const t = setTimeout(() => {
+    (async () => {
+      let blob: Blob | null = null;
+      let url: string | null = null;
+      if (o) {
+        setStep("PDF oluşturuluyor…");
+        blob = await buildOrderPdf(o).catch(() => null);
+        if (blob) {
+          setStep("Fiş kaydediliyor…");
+          url = await uploadFis(o, blob);
+        }
+      }
+      await new Promise((r) => setTimeout(r, 500));
+      if (cancelled) return;
       setOrder(o);
+      setPdf(blob);
+      setPdfUrl(url);
       setHistory(listPanelOrders());
       setPhase("ready");
-    }, 1400);
-    return () => clearTimeout(t);
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, [ref]);
 
   if (phase === "creating") {
@@ -35,7 +58,7 @@ export function PanelOrderSheet() {
           <Loader2 className="size-9 animate-spin" />
         </span>
         <h1 className="mt-5 text-2xl font-extrabold text-ink-900">Siparişiniz oluşturuluyor…</h1>
-        <p className="mt-1 text-sm text-ink-500">Sipariş fişiniz hazırlanıyor, lütfen bekleyin.</p>
+        <p className="mt-1 text-sm text-ink-500">{step}</p>
       </div>
     );
   }
@@ -64,8 +87,39 @@ export function PanelOrderSheet() {
     );
   }
 
-  const message = `${buildOrderMessage(order.items, order.form, false)}\nFiş no: ${order.ref}`;
+  const fileName = pdfFileName(order.ref);
+  const message = `${buildOrderMessage(order.items, order.form, false)}\nFiş no: ${order.ref}${pdfUrl ? `\nPDF: ${pdfUrl}` : ""}`;
   const total = order.items.reduce((s, i) => s + i.qty, 0);
+
+  const downloadPdf = () => {
+    if (!pdf) return window.print();
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(pdf);
+    a.download = fileName;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 10_000);
+  };
+
+  /** PDF'i WhatsApp ile gönder: paylaşım menüsü destekliyorsa dosya olarak; değilse indir + metin/bağlantı ile WhatsApp. */
+  const shareViaWhatsApp = async () => {
+    if (pdf && typeof navigator !== "undefined" && "canShare" in navigator) {
+      const file = new File([pdf], fileName, { type: "application/pdf" });
+      if (navigator.canShare({ files: [file] })) {
+        try {
+          setShareState("sharing");
+          await navigator.share({ files: [file], title: `Sipariş Fişi ${order.ref}`, text: `Yavuz Gıda sipariş fişi ${order.ref} · ${order.form.firm}` });
+          setShareState("idle");
+          return;
+        } catch (e) {
+          setShareState("idle");
+          if ((e as Error).name === "AbortError") return;
+        }
+      }
+    }
+    setShareState("fallback");
+    downloadPdf();
+    window.open(whatsappLink(message), "_blank", "noopener");
+  };
 
   return (
     <div className="grid gap-5 lg:grid-cols-[1fr_340px] lg:items-start">
@@ -155,16 +209,30 @@ export function PanelOrderSheet() {
           </p>
           <p className="mt-1 text-xs text-ink-700">Listeyi WhatsApp ile bize gönderin; ekibimiz teyit edip hazırlığa başlasın.</p>
         </div>
-        <a href={whatsappLink(message)} target="_blank" rel="noopener" className="flex h-12 w-full items-center justify-center gap-2 rounded-lg bg-[#25d366] text-base font-bold text-white hover:bg-[#1ebe5b]">
-          <MessageCircle className="size-5" /> WhatsApp&apos;tan Gönder
+        <button onClick={shareViaWhatsApp} disabled={shareState === "sharing"} className="flex h-12 w-full items-center justify-center gap-2 rounded-lg bg-[#25d366] text-base font-bold text-white hover:bg-[#1ebe5b] disabled:opacity-60">
+          {shareState === "sharing" ? <Loader2 className="size-5 animate-spin" /> : <MessageCircle className="size-5" />} PDF&apos;i WhatsApp ile Gönder
+        </button>
+        {shareState === "fallback" && (
+          <p className="rounded-lg bg-orange-50 p-3 text-xs text-ink-800">
+            Bu cihazda dosya paylaşımı desteklenmiyor: PDF indirildi ve WhatsApp açıldı. {pdfUrl ? "Mesajda PDF bağlantısı hazır." : "İndirilen PDF'i sohbete ataç olarak ekleyin."}
+          </p>
+        )}
+        {pdfUrl && (
+          <a href={pdfUrl} target="_blank" rel="noopener" className="flex items-center gap-2 rounded-lg border border-ink-200 bg-white px-3 py-2 text-xs text-ink-600 hover:bg-paper-100">
+            <Link2 className="size-3.5 shrink-0 text-sky-700" /> <span className="truncate">{pdfUrl}</span>
+          </a>
+        )}
+        <div className="grid grid-cols-2 gap-2">
+          <button onClick={downloadPdf} className="flex h-11 items-center justify-center gap-2 rounded-lg border border-ink-200 bg-white text-sm font-semibold text-ink-800 hover:bg-paper-100">
+            <FileDown className="size-4" /> PDF indir
+          </button>
+          <button onClick={() => window.print()} className="flex h-11 items-center justify-center gap-2 rounded-lg border border-ink-200 bg-white text-sm font-semibold text-ink-800 hover:bg-paper-100">
+            <Printer className="size-4" /> Yazdır
+          </button>
+        </div>
+        <a href={whatsappLink(message)} target="_blank" rel="noopener" className="flex items-center justify-center gap-1.5 text-xs font-semibold text-ink-500 hover:text-[#128c4a]">
+          <Share2 className="size-3.5" /> Yalnızca metin olarak WhatsApp&apos;tan gönder
         </a>
-        <button onClick={() => window.print()} className="flex h-11 w-full items-center justify-center gap-2 rounded-lg border border-ink-200 bg-white text-sm font-semibold text-ink-800 hover:bg-paper-100">
-          <FileDown className="size-4" /> PDF olarak kaydet
-        </button>
-        <button onClick={() => window.print()} className="flex h-11 w-full items-center justify-center gap-2 rounded-lg border border-ink-200 bg-white text-sm font-semibold text-ink-800 hover:bg-paper-100">
-          <Printer className="size-4" /> Yazdır
-        </button>
-        <p className="text-[0.7rem] text-ink-400">PDF: açılan yazdırma penceresinde hedef olarak &quot;PDF olarak kaydet&quot; seçin.</p>
         <Link href="/panel/urunler" className="flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-coal-900 text-sm font-semibold text-white hover:bg-coal-800">
           Yeni sipariş listesi <ArrowRight className="size-4" />
         </Link>
