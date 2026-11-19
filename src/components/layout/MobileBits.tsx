@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, LayoutGrid, ShoppingCart, PackageSearch, Search } from "lucide-react";
+import { Home, LayoutGrid, ShoppingCart, Store, Search } from "lucide-react";
 import { useCart } from "@/components/cart/CartProvider";
 
 export function MobileSearchButton() {
@@ -35,8 +35,8 @@ export function MobileNav() {
           </span>
           {showPrices ? "Sepetim" : "Listem"}
         </Link>
-        <Link href="/siparis-takip" onClick={() => setCatsOpen(false)} className={`${item} text-ink-500`}>
-          <PackageSearch className="size-5" /> Takip
+        <Link href="/panel" onClick={() => setCatsOpen(false)} className={`${item} text-ink-500`}>
+          <Store className="size-5" /> Panel
         </Link>
       </div>
     </nav>

@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 
-export function Breadcrumbs({ items }: { items: { label: string; href?: string }[] }) {
+export function Breadcrumbs({ items, home = { label: "Anasayfa", href: "/" } }: { items: { label: string; href?: string }[]; home?: { label: string; href: string } }) {
   return (
     <nav aria-label="Konum" className="flex flex-wrap items-center gap-1 text-xs text-ink-500">
-      <Link href="/" className="hover:text-orange-600">
-        Anasayfa
+      <Link href={home.href} className="hover:text-orange-600">
+        {home.label}
       </Link>
       {items.map((it, i) => (
         <span key={i} className="flex items-center gap-1">

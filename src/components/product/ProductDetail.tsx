@@ -1,8 +1,7 @@
-import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
 import { Heart, Share2 } from "lucide-react";
-import { products, getProduct, related, minPrice } from "@/lib/catalog";
+import type { Product } from "@/lib/types";
+import { products, related, minPrice } from "@/lib/catalog";
 import { categoryMap } from "@/lib/categories";
 import { toIndex } from "@/lib/index-of";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
@@ -14,25 +13,13 @@ import { ProductRail } from "@/components/product/ProductRail";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { ProductTabs } from "@/components/product/ProductTabs";
 
-export function generateStaticParams() {
-  return products.map((p) => ({ slug: p.slug }));
-}
-
-export async function generateMetadata({ params }: PageProps<"/urun/[slug]">): Promise<Metadata> {
-  const { slug } = await params;
-  const p = getProduct(slug);
-  if (!p) return {};
-  return { title: `${p.brand} ${p.name} ${p.variants[0].label} Fiyatı`, description: p.description };
-}
-
-export default async function ProductPage({ params }: PageProps<"/urun/[slug]">) {
-  const { slug } = await params;
-  const p = getProduct(slug);
-  if (!p) notFound();
+/** Ürün detayı: mağaza ve anlaşmalı müşteri paneli ortak kullanır (base: "" | "/panel"). */
+export function ProductDetail({ p, base = "" }: { p: Product; base?: string }) {
   const cat = categoryMap[p.category];
   const sub = cat.subcategories.find((s) => s.slug === p.subcategory);
   const rel = related(p, 8).map(toIndex);
   const others = products.filter((x) => x.brand === p.brand && x.slug !== p.slug).slice(0, 8).map(toIndex);
+  const home = base ? { label: "Panel", href: base } : undefined;
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -55,7 +42,7 @@ export default async function ProductPage({ params }: PageProps<"/urun/[slug]">)
   return (
     <div className="mx-auto max-w-[1320px] px-4 pb-12 pt-3">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      <Breadcrumbs items={[{ label: "Tüm Ürünler", href: "/urunler" }, { label: cat.name, href: `/kategori/${cat.slug}` }, ...(sub ? [{ label: sub.name, href: `/kategori/${cat.slug}/${sub.slug}` }] : []), { label: p.name }]} />
+      <Breadcrumbs home={home} items={[{ label: "Tüm Ürünler", href: `${base}/urunler` }, { label: cat.name, href: `${base}/kategori/${cat.slug}` }, ...(sub ? [{ label: sub.name, href: `${base}/kategori/${cat.slug}/${sub.slug}` }] : []), { label: p.name }]} />
 
       <div className="mt-4 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
         <Gallery product={p} />
@@ -64,7 +51,7 @@ export default async function ProductPage({ params }: PageProps<"/urun/[slug]">)
           <div className="flex items-start justify-between gap-3">
             <div>
               <h1 className="text-xl leading-snug text-ink-900 sm:text-2xl">
-                <Link href={`/urunler?marka=${encodeURIComponent(p.brand)}`} className="text-orange-600 hover:underline">
+                <Link href={`${base}/urunler?marka=${encodeURIComponent(p.brand)}`} className="text-orange-600 hover:underline">
                   {p.brand}
                 </Link>{" "}
                 {p.name}
@@ -104,13 +91,13 @@ export default async function ProductPage({ params }: PageProps<"/urun/[slug]">)
 
       {rel.length > 0 && (
         <section className="mt-10">
-          <SectionHeading title="Benzer Ürünler" href={`/kategori/${cat.slug}${sub ? `/${sub.slug}` : ""}`} />
+          <SectionHeading title="Benzer Ürünler" href={`${base}/kategori/${cat.slug}${sub ? `/${sub.slug}` : ""}`} />
           <ProductRail items={rel} />
         </section>
       )}
       {others.length > 0 && (
         <section className="mt-10">
-          <SectionHeading title={`${p.brand} Markasının Diğer Ürünleri`} href={`/urunler?marka=${encodeURIComponent(p.brand)}`} />
+          <SectionHeading title={`${p.brand} Markasının Diğer Ürünleri`} href={`${base}/urunler?marka=${encodeURIComponent(p.brand)}`} />
           <ProductRail items={others} />
         </section>
       )}

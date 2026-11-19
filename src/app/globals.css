@@ -128,3 +128,24 @@ h1, h2, h3 {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Sipariş fişi yazdırma / PDF: yalnızca fiş alanı basılır */
+@media print {
+  body {
+    background: #fff;
+  }
+  body * {
+    visibility: hidden;
+  }
+  #siparis-fisi,
+  #siparis-fisi * {
+    visibility: visible;
+  }
+  #siparis-fisi {
+    position: absolute;
+    inset: 0 auto auto 0;
+    width: 100%;
+    border: 0;
+    padding: 0;
+  }
+}

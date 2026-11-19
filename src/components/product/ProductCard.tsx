@@ -12,7 +12,7 @@ import { site } from "@/lib/site";
 
 /** Pazar yeri ürün kartı: görsel, rozetler, marka + ad, puan, fiyat, sepete ekle. */
 export function ProductCard({ p, priority, compact }: { p: ProductIndex; priority?: boolean; compact?: boolean }) {
-  const { add, qtyOf, showPrices } = useCart();
+  const { add, qtyOf, showPrices, base } = useCart();
   const v = p.variants.find((x) => x.inStock) ?? p.variants[0];
   const inCart = qtyOf(p.slug, v.id);
   const [fav, setFav] = useState(false);
@@ -29,7 +29,7 @@ export function ProductCard({ p, priority, compact }: { p: ProductIndex; priorit
 
   return (
     <article className="group relative flex h-full flex-col overflow-hidden rounded-lg border border-ink-200 bg-white transition hover:border-orange-400 hover:shadow-hover">
-      <Link href={`/urun/${p.slug}`} className="relative block aspect-[4/5] overflow-hidden bg-paper-50" aria-label={p.name}>
+      <Link href={`${base}/urun/${p.slug}`} className="relative block aspect-[4/5] overflow-hidden bg-paper-50" aria-label={p.name}>
         <ProductImage name={p.name} brand={p.brand} art={p.art} hue={p.hue} image={p.image} label={v.label} priority={priority} className="transition-transform duration-500 group-hover:scale-[1.05]" />
         <span className="absolute left-2 top-2 flex flex-col gap-1">
           {showPrices && pct > 0 && <span className="rounded bg-red-600 px-1.5 py-0.5 text-[0.7rem] font-extrabold text-white">%{pct}</span>}
@@ -48,7 +48,7 @@ export function ProductCard({ p, priority, compact }: { p: ProductIndex; priorit
 
       <div className={`flex flex-1 flex-col ${compact ? "p-2.5" : "p-3"}`}>
         <h3 className="line-clamp-2 min-h-[2.5rem] text-[0.82rem] leading-snug text-ink-800">
-          <Link href={`/urun/${p.slug}`}>
+          <Link href={`${base}/urun/${p.slug}`}>
             <b className="font-bold text-ink-900">{p.brand}</b> {p.name} {v.label}
           </Link>
         </h3>

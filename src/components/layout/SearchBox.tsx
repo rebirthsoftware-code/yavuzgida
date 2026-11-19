@@ -22,7 +22,7 @@ export function SearchBox({ className = "" }: { className?: string }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const router = useRouter();
-  const { showPrices } = useCart();
+  const { showPrices, base } = useCart();
   const results = useMemo(() => searchProducts(index, q, 6), [q]);
   const cats = useMemo(() => {
     const n = q.trim().toLocaleLowerCase("tr-TR");
@@ -47,7 +47,7 @@ export function SearchBox({ className = "" }: { className?: string }) {
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          if (q.trim()) go(`/urunler?q=${encodeURIComponent(q.trim())}`);
+          if (q.trim()) go(`${base}/urunler?q=${encodeURIComponent(q.trim())}`);
         }}
         className="flex h-11 overflow-hidden rounded-lg border-2 border-gold-500 bg-white"
       >
@@ -76,7 +76,7 @@ export function SearchBox({ className = "" }: { className?: string }) {
               </p>
               <div className="mt-2.5 flex flex-wrap gap-1.5">
                 {popular.map((p) => (
-                  <button key={p} type="button" onClick={() => go(`/urunler?q=${encodeURIComponent(p)}`)} className="rounded-full border border-ink-200 px-3 py-1 text-sm text-ink-700 hover:border-orange-500 hover:text-orange-600">
+                  <button key={p} type="button" onClick={() => go(`${base}/urunler?q=${encodeURIComponent(p)}`)} className="rounded-full border border-ink-200 px-3 py-1 text-sm text-ink-700 hover:border-orange-500 hover:text-orange-600">
                     {p}
                   </button>
                 ))}
@@ -87,7 +87,7 @@ export function SearchBox({ className = "" }: { className?: string }) {
               {cats.length > 0 && (
                 <div className="flex flex-wrap gap-1.5 border-b border-ink-100 px-3 py-2">
                   {cats.map((c) => (
-                    <Link key={c.slug} href={`/kategori/${c.slug}`} onClick={() => setOpen(false)} className="inline-flex items-center gap-1 rounded-full bg-sky-50 px-2.5 py-1 text-xs font-semibold text-sky-700 hover:bg-sky-100">
+                    <Link key={c.slug} href={`${base}/kategori/${c.slug}`} onClick={() => setOpen(false)} className="inline-flex items-center gap-1 rounded-full bg-sky-50 px-2.5 py-1 text-xs font-semibold text-sky-700 hover:bg-sky-100">
                       {c.name} kategorisi <ArrowUpRight className="size-3" />
                     </Link>
                   ))}
@@ -99,7 +99,7 @@ export function SearchBox({ className = "" }: { className?: string }) {
                 <ul>
                   {results.map((r) => (
                     <li key={r.slug}>
-                      <Link href={`/urun/${r.slug}`} onClick={() => setOpen(false)} className="flex items-center gap-3 px-3 py-2 hover:bg-paper-50">
+                      <Link href={`${base}/urun/${r.slug}`} onClick={() => setOpen(false)} className="flex items-center gap-3 px-3 py-2 hover:bg-paper-50">
                         <span className="grid size-11 shrink-0 place-items-center rounded-md bg-paper-100">
                           <PackArt art={r.art} hue={r.hue} name={r.name} brand={r.brand} className="h-9" />
                         </span>
@@ -115,7 +115,7 @@ export function SearchBox({ className = "" }: { className?: string }) {
                   ))}
                 </ul>
               )}
-              <button type="button" onClick={() => go(`/urunler?q=${encodeURIComponent(q.trim())}`)} className="block w-full border-t border-ink-100 bg-paper-50 px-4 py-2.5 text-center text-sm font-semibold text-orange-600 hover:bg-orange-50">
+              <button type="button" onClick={() => go(`${base}/urunler?q=${encodeURIComponent(q.trim())}`)} className="block w-full border-t border-ink-100 bg-paper-50 px-4 py-2.5 text-center text-sm font-semibold text-orange-600 hover:bg-orange-50">
                 “{q}” için tüm sonuçları gör
               </button>
             </div>

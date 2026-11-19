@@ -11,7 +11,7 @@ Bu sürüm **ön tasarımdır**: tüm sayfalar ve akışlar görsel olarak hazı
 | Hazır | Sonraki aşama |
 |---|---|
 | **Sipariş sistemi:** siparişler veritabanına yazılır (libSQL/Turso), PayTR kart ödemesi (3D Secure) ve Havale/EFT, demo ödeme modu, `/siparis-takip` üyeliksiz takip, `/yonetim` paneli (durum, kargo takip no, not, anlık bildirim) | Yönetim panelinden fiyat/stok düzenleme (gerçek katalog sonrası) |
-| Referanslar bölümü (ana sayfa + kurumsal), müşteri modları, özel harman | Gerçek referans logoları |
+| Referanslar bölümü (ana sayfa + kurumsal), anlaşmalı müşteri paneli (WhatsApp + PDF fiş), özel harman | Gerçek referans logoları |
 | Ana sayfa, kategori / alt kategori, filtreli listeleme (sıralama, sayfalama), ürün sayfası (galeri, satın alma kutusu, sekmeler), sepet sayfası + mini sepet, arama (öneri paneli), kategori menüleri, mobil alt gezinme, üretilen ürün görselleri | Gerçek ürün listesi içe aktarma (Excel/CSV → `src/data/catalog.json`) |
 | Kurumsal, Hakkımızda, İletişim, SSS, Sipariş takip, yasal sayfa iskeletleri, sitemap, robots | Ürün fotoğrafları (jsDelivr CDN, umba ile aynı yöntem) |
 
@@ -22,13 +22,13 @@ Bu sürüm **ön tasarımdır**: tüm sayfalar ve akışlar görsel olarak hazı
 - **Renkler:** turuncu aksiyon (`orange-500`), açık mavi yüzey ve rozetler (`sky-50…200`), lacivert (`navy-900`), açık gri sayfa zemini (`paper-50`). Tanımlar `src/app/globals.css` içindeki `@theme` bloğunda.
 - **Yazı tipi:** Inter, `next/font/google`.
 
-## Müşteri modları ve özel harman
+## Mağaza, anlaşmalı müşteri paneli ve özel harman
 
-- **Üyelik yok:** hiçbir modda giriş/şifre bulunmaz; mevcut müşteri ayrımı yalnızca akış farkıdır.
-- **Giriş kapısı:** ilk ziyarette "Mevcut Müşteriyim / Yeni Müşteriyim" seçimi (`WelcomeGate`), tercih `localStorage`'da (`mode-store.ts`); üst şeritteki rozetten değiştirilir.
-- **Mevcut müşteri:** fiyatlar, indirim rozetleri, kargo eşiği ve fiyat filtreleri gizlenir; "Sepete Ekle" → "Listeye Ekle". Liste sayfasında firma/telefon girilir, **"Listeyi Onayla ve WhatsApp'tan Gönder"** `wa.me` bağlantısıyla hazır mesajı açar (`lib/whatsapp.ts`). Ödeme sayfası bu modda listeye yönlendirir.
-- **Yeni müşteri:** fiyatlı katalog, sepet, ödeme; ayrıca sepette WhatsApp ile sipariş seçeneği.
-- **Özel harman (`/ozel-harman`):** 11 orijin için %5 adımlı oranlar (toplam %100), kavurma, öğütüm, ambalaj, etiket rengi, marka ve ürün adı; canlı paket önizlemesi ve tat profili. Yeni müşteri modunda tahmini fiyat; her iki modda sepete/listeye eklenir ve WhatsApp talebi oluşturulur. Orijin fiyatları ve işçilik `BlendBuilder.tsx` içinde yer tutucudur.
+- **Üyelik yok:** sitede giriş/şifre bulunmaz.
+- **Mağaza (`/`):** herkese açık e-ticaret; fiyatlar, sepet, PayTR / havale ile ödeme.
+- **Anlaşmalı Müşteri Paneli (`/panel`):** hâlihazırda çalışılan kafeler için ayrı kabuk (`src/app/panel`, `PanelHeader`). Aynı katalog fiyatsız gösterilir ("Listeye Ekle"); liste mağaza sepetinden bağımsızdır (`panelStore`). `/panel/sepet` sayfasında firma/telefon girilip **Siparişi Onayla** denince "Siparişiniz oluşturuluyor" ekranı, ardından numaralı **sipariş fişi** (`/panel/siparis?ref=YL-…`): WhatsApp'tan gönderme (hazır mesaj), **PDF olarak kaydet / Yazdır** (yalnızca fiş alanı basılır) ve önceki fişler. Fişler cihazda saklanır (`lib/panel-order.ts`); sunucu kaydı yoktur.
+- Bağlantı ön eki: bileşenler `useCart().base` ("" | "/panel") ile doğru kabuğa bağlanır; `showPrices` panelde false.
+- **Özel harman (`/ozel-harman`):** 11 orijin için %5 adımlı oranlar (toplam %100), kavurma, öğütüm, ambalaj, etiket rengi, marka ve ürün adı; canlı paket önizlemesi ve tat profili; tahmini fiyat; sepete/listeye eklenir ve WhatsApp talebi oluşturur. Orijin fiyatları ve işçilik `BlendBuilder.tsx` içinde yer tutucudur.
 
 ## Yayın
 
@@ -48,7 +48,7 @@ Bu sürüm **ön tasarımdır**: tüm sayfalar ve akışlar görsel olarak hazı
 |---|---|---|
 | Kredi kartı | `odeme-bekliyor`; PayTR penceresi (veya demo) açılır | Bildirim gelince `onaylandi` |
 | Havale / EFT | `beklemede` | Dekont gelince panelden onay |
-| Mevcut müşteri (WhatsApp) | Sipariş kaydı yok; liste WhatsApp mesajı olarak firmaya düşer | Firma telefonla/WhatsApp'la teyit eder |
+| Anlaşmalı müşteri paneli | Sunucu kaydı yok; numaralı fiş oluşur, WhatsApp mesajı olarak firmaya düşer, PDF kaydedilir | Firma telefonla/WhatsApp'la teyit eder |
 
 Panelden: Hazırlanıyor → Kargoya verildi (kargo firması + takip no) → Teslim edildi; gerekirse İptal. Özel harman kalemleri katalog dışı olduğu için online ödemeye girmez; teklif süreci WhatsApp üzerinden yürür.
 
@@ -82,8 +82,8 @@ npm run lint && npx tsc --noEmit
 
 ```
 src/
-  app/            sayfalar (urunler, kategori/[slug]/[sub], urun/[slug], sepet, odeme, ozel-harman, siparis-takip, yonetim, kurumsal …) ve API (app/api)
-  components/     layout, home, catalog, product (kart, galeri, satın alma, PackArt), cart, checkout, order, admin, blend, search, ui
+  app/            (magaza) mağaza sayfaları · panel/ anlaşmalı müşteri paneli · api/ sipariş API'si
+  components/     layout, panel, home, catalog, product (kart, galeri, satın alma, PackArt, ProductDetail), cart, checkout, order, admin, blend, search, ui
   lib/            site ayarları, katalog, arama, sepet/mod depoları, sipariş şeması, API istemcisi, WhatsApp mesajı
   server/         veritabanı (libSQL/Turso), PayTR, sipariş mantığı, anlık bildirim
   data/           katalog JSON dosyaları

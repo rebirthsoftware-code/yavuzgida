@@ -40,7 +40,7 @@ export function SearchOverlay() {
 }
 
 function Panel({ close }: { close: () => void }) {
-  const { showPrices } = useCart();
+  const { showPrices, base } = useCart();
   const [q, setQ] = useState("");
   const ref = useRef<HTMLInputElement>(null);
   const router = useRouter();
@@ -57,7 +57,7 @@ function Panel({ close }: { close: () => void }) {
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          if (q.trim()) go(`/urunler?q=${encodeURIComponent(q.trim())}`);
+          if (q.trim()) go(`${base}/urunler?q=${encodeURIComponent(q.trim())}`);
         }}
         className="flex items-center gap-2 border-b border-ink-200 px-3 py-2"
       >
@@ -84,7 +84,7 @@ function Panel({ close }: { close: () => void }) {
             <ul className="mt-2 divide-y divide-ink-100">
               {categories.map((c) => (
                 <li key={c.slug}>
-                  <Link href={`/kategori/${c.slug}`} onClick={close} className="flex items-center justify-between py-2.5 text-sm">
+                  <Link href={`${base}/kategori/${c.slug}`} onClick={close} className="flex items-center justify-between py-2.5 text-sm">
                     {c.name} <ArrowRight className="size-4 text-ink-300" />
                   </Link>
                 </li>
@@ -97,7 +97,7 @@ function Panel({ close }: { close: () => void }) {
           <ul className="divide-y divide-ink-100">
             {results.map((r) => (
               <li key={r.slug}>
-                <Link href={`/urun/${r.slug}`} onClick={close} className="flex items-center gap-3 px-4 py-2.5">
+                <Link href={`${base}/urun/${r.slug}`} onClick={close} className="flex items-center gap-3 px-4 py-2.5">
                   <span className="grid size-12 shrink-0 place-items-center rounded-md bg-paper-100">
                     <PackArt art={r.art} hue={r.hue} name={r.name} brand={r.brand} className="h-10" />
                   </span>
@@ -112,7 +112,7 @@ function Panel({ close }: { close: () => void }) {
               </li>
             ))}
             <li>
-              <button onClick={() => go(`/urunler?q=${encodeURIComponent(q.trim())}`)} className="w-full bg-paper-50 px-4 py-3 text-center text-sm font-semibold text-orange-600">
+              <button onClick={() => go(`${base}/urunler?q=${encodeURIComponent(q.trim())}`)} className="w-full bg-paper-50 px-4 py-3 text-center text-sm font-semibold text-orange-600">
                 Tüm sonuçları gör
               </button>
             </li>

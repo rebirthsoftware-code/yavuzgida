@@ -6,8 +6,7 @@ import { SearchBox } from "./SearchBox";
 import { MiniCart } from "./MiniCart";
 import { CategoryBar } from "./CategoryBar";
 import { MobileSearchButton } from "./MobileBits";
-import { ModeSwitch } from "./ModeSwitch";
-import { OnlyNew } from "@/components/cart/OnlyNew";
+import { Store } from "lucide-react";
 import { categoryCounts } from "@/lib/catalog";
 
 export function Header() {
@@ -27,12 +26,12 @@ export function Header() {
             <Link href="/sss" className="flex items-center gap-1.5 hover:text-gold-400">
               <HelpCircle className="size-3.5" /> Yardım & Destek
             </Link>
+            <Link href="/panel" className="flex items-center gap-1.5 rounded-full border border-gold-500/50 bg-gold-500/10 px-2.5 py-0.5 font-semibold text-gold-400 hover:bg-gold-500/20">
+              <Store className="size-3.5" /> Anlaşmalı Müşteri Paneli
+            </Link>
           </nav>
           <div className="flex items-center gap-5">
-            <ModeSwitch />
-            <OnlyNew fallback={<span className="font-semibold text-gold-400">Anlaşmalı fiyatlarınız geçerlidir</span>}>
-              <span className="font-semibold text-gold-400">2.500 ₺ üzeri kargo bedava</span>
-            </OnlyNew>
+            <span className="font-semibold text-gold-400">2.500 ₺ üzeri kargo bedava</span>
             <a href={site.contact.phoneHref} className="flex items-center gap-1.5 font-semibold text-white">
               <Phone className="size-3.5 text-gold-400" /> {site.contact.phone}
             </a>
@@ -50,9 +49,6 @@ export function Header() {
         </div>
         <SearchBox className="hidden flex-1 md:block lg:max-w-2xl" />
         <div className="ml-auto flex items-center gap-1">
-          <div className="md:hidden">
-            <ModeSwitch compact />
-          </div>
           <MobileSearchButton />
           <Link href="/siparis-takip" className="hidden h-11 items-center gap-2 rounded-lg border border-transparent px-3 text-sm font-semibold text-white hover:border-white/15 lg:flex">
             <PackageSearch className="size-5 text-gold-400" /> Sipariş Takip

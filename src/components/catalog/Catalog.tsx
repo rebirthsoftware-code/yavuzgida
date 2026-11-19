@@ -40,7 +40,7 @@ export function Catalog({ fixedCategory, fixedSub }: { fixedCategory?: string; f
   const pathname = usePathname();
   const [drawer, setDrawer] = useState(false);
   const [brandQ, setBrandQ] = useState("");
-  const { showPrices } = useCart();
+  const { showPrices, base: linkBase } = useCart();
 
   const q = sp.get("q") ?? "";
   const cat = fixedCategory ?? sp.get("kategori") ?? "";
@@ -170,13 +170,13 @@ export function Catalog({ fixedCategory, fixedSub }: { fixedCategory?: string; f
         ) : (
           <ul className="space-y-1">
             <li>
-              <Link href={`/kategori/${cat}`} className={`block rounded px-1 py-1 ${!sub ? "font-bold text-orange-600" : "text-ink-700 hover:text-orange-600"}`}>
+              <Link href={`${linkBase}/kategori/${cat}`} className={`block rounded px-1 py-1 ${!sub ? "font-bold text-orange-600" : "text-ink-700 hover:text-orange-600"}`}>
                 Tüm {categoryMap[cat]?.name}
               </Link>
             </li>
             {subOptions.map((s) => (
               <li key={s.slug}>
-                <Link href={`/kategori/${cat}/${s.slug}`} className={`flex items-center justify-between rounded px-1 py-1 ${s.slug === sub ? "font-bold text-orange-600" : "text-ink-700 hover:text-orange-600"}`}>
+                <Link href={`${linkBase}/kategori/${cat}/${s.slug}`} className={`flex items-center justify-between rounded px-1 py-1 ${s.slug === sub ? "font-bold text-orange-600" : "text-ink-700 hover:text-orange-600"}`}>
                   {s.name}
                   <span className="text-xs text-ink-400">({s.count})</span>
                 </Link>
