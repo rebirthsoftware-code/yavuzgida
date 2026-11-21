@@ -1,4 +1,4 @@
-import { HeroBanners } from "@/components/home/HeroBanners";
+import { HeroSlider } from "@/components/home/HeroSlider";
 import { SideBanners } from "@/components/home/SideBanners";
 import { CategoryCircles } from "@/components/home/CategoryCircles";
 import { FlashDeals } from "@/components/home/FlashDeals";
@@ -22,12 +22,11 @@ export default function HomePage() {
   ];
   const samples: Record<string, ReturnType<typeof toIndex>[]> = {};
   for (const c of categories) samples[c.slug] = products.filter((p) => p.category === c.slug).slice(0, 3).map(toIndex);
-  const picks = discounted(9).map(toIndex);
 
   return (
     <div className="mx-auto max-w-[1320px] space-y-10 px-4 pb-10 pt-4">
-      <section className="grid gap-3 lg:grid-cols-[1fr_300px]">
-        <HeroBanners picks={picks} />
+      <section className="space-y-3">
+        <HeroSlider />
         <SideBanners />
       </section>
 
