@@ -119,7 +119,10 @@ export function Footer() {
       <div className="border-t border-white/5 bg-coal-950">
         <div className="mx-auto flex max-w-[1320px] flex-wrap items-center justify-between gap-3 px-4 py-4 text-xs text-ink-400">
           <p>
-            © <CopyrightYear /> {site.legal.companyName} · Tüm hakları saklıdır.
+            © <CopyrightYear /> {site.legal.companyName} · Tüm hakları saklıdır.{" "}
+            <Link href="/yonetim" className="ml-1 text-ink-500 hover:text-gold-400">
+              Yönetim
+            </Link>
           </p>
           <div className="flex items-center gap-1.5">
             {["VISA", "Mastercard", "Troy", "PayTR", "Havale/EFT"].map((p) => (

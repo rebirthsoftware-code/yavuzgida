@@ -7,7 +7,7 @@ import { CategoryIcon } from "@/components/ui/CategoryIcon";
 import type { Category } from "@/lib/types";
 
 export function CategorySheet({ categories, counts }: { categories: Category[]; counts: Record<string, number> }) {
-  const { catsOpen, setCatsOpen } = useCart();
+  const { catsOpen, setCatsOpen, base } = useCart();
   if (!catsOpen) return null;
   return (
     <div className="fixed inset-0 z-[45] flex flex-col bg-paper-50 pb-16 md:hidden" role="dialog" aria-label="Kategoriler">
@@ -20,7 +20,7 @@ export function CategorySheet({ categories, counts }: { categories: Category[]; 
       <div className="flex-1 overflow-y-auto p-3">
         <div className="grid grid-cols-3 gap-2">
           {categories.map((c) => (
-            <Link key={c.slug} href={`/kategori/${c.slug}`} onClick={() => setCatsOpen(false)} className="flex flex-col items-center rounded-lg bg-white p-3 text-center shadow-card">
+            <Link key={c.slug} href={`${base}/kategori/${c.slug}`} onClick={() => setCatsOpen(false)} className="flex flex-col items-center rounded-lg bg-white p-3 text-center shadow-card">
               <span className="grid size-11 place-items-center rounded-full" style={{ background: c.colorSoft, color: c.color }}>
                 <CategoryIcon name={c.icon} className="size-5" />
               </span>
@@ -40,7 +40,7 @@ export function CategorySheet({ categories, counts }: { categories: Category[]; 
                 <ul className="pb-2">
                   {c.subcategories.map((s) => (
                     <li key={s.slug}>
-                      <Link href={`/kategori/${c.slug}/${s.slug}`} onClick={() => setCatsOpen(false)} className="block px-6 py-1.5 text-sm text-ink-600">
+                      <Link href={`${base}/kategori/${c.slug}/${s.slug}`} onClick={() => setCatsOpen(false)} className="block px-6 py-1.5 text-sm text-ink-600">
                         {s.name}
                       </Link>
                     </li>

@@ -88,6 +88,9 @@ export async function db(): Promise<Client> {
       for (const sql of SCHEMA) await client.execute(sql);
       // Eski tablolara sonradan eklenen sütunlar
       await client.execute("ALTER TABLE orders ADD COLUMN discount REAL NOT NULL DEFAULT 0").catch(() => {});
+      await client.execute("ALTER TABLE panel_orders ADD COLUMN status TEXT NOT NULL DEFAULT 'yeni'").catch(() => {});
+      await client.execute("ALTER TABLE panel_orders ADD COLUMN admin_note TEXT").catch(() => {});
+      await client.execute("ALTER TABLE panel_orders ADD COLUMN updated_at TEXT").catch(() => {});
     })();
     globalThis.__yavuzDb = { client, ready };
   }

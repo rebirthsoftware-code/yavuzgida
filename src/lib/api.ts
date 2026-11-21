@@ -1,5 +1,6 @@
 import type { OrderRecord, PaymentMethod } from "./order";
 import { site } from "./site";
+import { demoAdmin } from "./admin-demo";
 
 /**
  * Sipariş API'si istemcisi (api/worker.js). Adres NEXT_PUBLIC_API_URL ile verilir.
@@ -79,8 +80,64 @@ export interface ApiOrder {
   events: OrderEvent[];
 }
 
+/* ------------------ Anlaşmalı müşteri fişleri (panel) ------------------ */
+
+export const panelStatuses = ["yeni", "onaylandi", "hazirlaniyor", "teslim-edildi", "iptal"] as const;
+export type PanelStatus = (typeof panelStatuses)[number];
+
+export const panelStatusLabels: Record<PanelStatus, string> = {
+  yeni: "Yeni",
+  onaylandi: "Onaylandı",
+  hazirlaniyor: "Hazırlanıyor",
+  "teslim-edildi": "Teslim edildi",
+  iptal: "İptal edildi",
+};
+
+export const panelStatusTone: Record<PanelStatus, string> = {
+  yeni: "bg-orange-100 text-orange-700",
+  onaylandi: "bg-green-100 text-green-600",
+  hazirlaniyor: "bg-[#e3ecf7] text-[#2a5a9a]",
+  "teslim-edildi": "bg-ink-900 text-white",
+  iptal: "bg-paper-100 text-ink-500",
+};
+
+export interface PanelApiItem {
+  slug: string;
+  variantId: string;
+  brand: string;
+  name: string;
+  variantLabel: string;
+  sku: string;
+  qty: number;
+  custom?: string;
+}
+
+export interface PanelApiOrder {
+  ref: string;
+  createdAt: string;
+  updatedAt: string;
+  status: PanelStatus;
+  firm: string;
+  name: string;
+  phone: string;
+  note: string;
+  adminNote: string;
+  items: PanelApiItem[];
+  totalQty: number;
+  pdfUrl: string | null;
+}
+
+export interface PanelStats {
+  byStatus: { status: PanelStatus; n: number }[];
+  today: number;
+  month: number;
+}
+
+/** GitHub Pages demosu: sunucu yok, yönetim paneli tarayıcı içi örnek veriyle çalışır. */
+export const DEMO_ADMIN = process.env.NEXT_PUBLIC_DEMO_ADMIN === "1";
+
 export function apiEnabled(): boolean {
-  return Boolean(site.api.url);
+  return DEMO_ADMIN || Boolean(site.api.url);
 }
 
 async function call<T>(path: string, init: RequestInit = {}, token?: string): Promise<T & { status: "success" | "failed"; reason?: string }> {
@@ -131,7 +188,11 @@ export function trackOrder(orderNo: string, phone: string) {
 
 /* -------------------------------- Yönetim --------------------------------- */
 
-export const admin = {
+export type AdminStats = { byStatus: { status: OrderStatus; n: number; sum: number }[]; today: { n: number; sum: number }; month: { n: number; sum: number } };
+export type AdminListParams = { status?: string; q?: string; page?: number };
+export type AdminPatch = { status?: OrderStatus; carrier?: string; trackingNo?: string; trackingUrl?: string; adminNote?: string; message?: string };
+
+const realAdmin = {
   login: (password: string) => call<object>("/admin/login", { method: "POST", body: JSON.stringify({ password }) }),
   stats: (token: string) =>
     call<{ byStatus: { status: OrderStatus; n: number; sum: number }[]; today: { n: number; sum: number }; month: { n: number; sum: number } }>("/admin/stats", {}, token),
@@ -143,6 +204,21 @@ export const admin = {
     return call<{ orders: ApiOrder[]; page: number; pages: number; total: number }>(`/admin/orders?${qs}`, {}, token);
   },
   get: (token: string, orderNo: string) => call<{ order: ApiOrder }>(`/admin/orders/${encodeURIComponent(orderNo)}`, {}, token),
-  update: (token: string, orderNo: string, patch: { status?: OrderStatus; carrier?: string; trackingNo?: string; trackingUrl?: string; adminNote?: string; message?: string }) =>
+  update: (token: string, orderNo: string, patch: AdminPatch) =>
     call<{ order: ApiOrder }>(`/admin/orders/${encodeURIComponent(orderNo)}`, { method: "PATCH", body: JSON.stringify(patch) }, token),
+  panelList: (token: string, params: AdminListParams) => {
+    const qs = new URLSearchParams();
+    if (params.status) qs.set("status", params.status);
+    if (params.q) qs.set("q", params.q);
+    if (params.page) qs.set("page", String(params.page));
+    return call<{ orders: PanelApiOrder[]; page: number; pages: number; total: number; stats: PanelStats }>(`/admin/panel-orders?${qs}`, {}, token);
+  },
+  panelGet: (token: string, ref: string) => call<{ order: PanelApiOrder }>(`/admin/panel-orders/${encodeURIComponent(ref)}`, {}, token),
+  panelUpdate: (token: string, ref: string, patch: { status?: PanelStatus; adminNote?: string }) =>
+    call<{ order: PanelApiOrder }>(`/admin/panel-orders/${encodeURIComponent(ref)}`, { method: "PATCH", body: JSON.stringify(patch) }, token),
 };
+
+export type AdminApi = typeof realAdmin;
+
+/** Demo modunda tarayıcı içi sahte arka uç; aksi hâlde gerçek API. */
+export const admin: AdminApi = DEMO_ADMIN ? (demoAdmin as AdminApi) : realAdmin;

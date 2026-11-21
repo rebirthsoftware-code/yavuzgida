@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, LayoutGrid, ShoppingCart, Store, Search } from "lucide-react";
+import { Home, LayoutGrid, ShoppingCart, Store, Search, ClipboardList, FileText } from "lucide-react";
 import { useCart } from "@/components/cart/CartProvider";
 
 export function MobileSearchBar({ placeholder = "Ürün, marka veya kategori ara" }: { placeholder?: string }) {
@@ -49,6 +49,39 @@ export function MobileNav() {
         </Link>
         <Link href="/panel" onClick={() => setCatsOpen(false)} className={`${item} text-ink-500`}>
           <Store className="size-5" /> Panel
+        </Link>
+      </div>
+    </nav>
+  );
+}
+
+/** Anlaşmalı müşteri paneli alt menüsü (mobil). */
+export function PanelMobileNav() {
+  const { count, ready, setCatsOpen, catsOpen } = useCart();
+  const pathname = usePathname();
+  const item = "flex flex-1 flex-col items-center justify-center gap-0.5 text-[0.65rem] font-semibold";
+  const on = (p: string) => (p === "/panel" ? pathname === "/panel" : pathname.startsWith(p)) && !catsOpen;
+  return (
+    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-ink-200 bg-white pb-[env(safe-area-inset-bottom)] md:hidden print:hidden" aria-label="Panel alt menüsü">
+      <div className="flex h-14">
+        <Link href="/panel" onClick={() => setCatsOpen(false)} className={`${item} ${on("/panel") ? "text-orange-600" : "text-ink-500"}`}>
+          <Home className="size-5" /> Panel
+        </Link>
+        <button onClick={() => setCatsOpen(!catsOpen)} className={`${item} ${catsOpen ? "text-orange-600" : "text-ink-500"}`}>
+          <LayoutGrid className="size-5" /> Kategoriler
+        </button>
+        <Link href="/panel/sepet" onClick={() => setCatsOpen(false)} className={`${item} ${on("/panel/sepet") ? "text-orange-600" : "text-ink-500"}`}>
+          <span className="relative">
+            <ClipboardList className="size-5" />
+            {ready && count > 0 && <span className="absolute -right-2.5 -top-1.5 grid min-w-4 place-items-center rounded-full bg-orange-500 px-1 text-[0.6rem] leading-4 text-white">{count}</span>}
+          </span>
+          Listem
+        </Link>
+        <Link href="/panel/fisler" onClick={() => setCatsOpen(false)} className={`${item} ${on("/panel/fisler") || on("/panel/siparis") ? "text-orange-600" : "text-ink-500"}`}>
+          <FileText className="size-5" /> Fişlerim
+        </Link>
+        <Link href="/" onClick={() => setCatsOpen(false)} className={`${item} text-ink-500`}>
+          <Store className="size-5" /> Mağaza
         </Link>
       </div>
     </nav>

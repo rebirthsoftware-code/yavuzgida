@@ -27,6 +27,8 @@ Bu sürüm **ön tasarımdır**: tüm sayfalar ve akışlar görsel olarak hazı
 - **Üyelik yok:** sitede giriş/şifre bulunmaz.
 - **Mağaza (`/`):** herkese açık e-ticaret; fiyatlar, sepet, PayTR / havale ile ödeme.
 - **Anlaşmalı Müşteri Paneli (`/panel`):** hâlihazırda çalışılan kafeler için ayrı kabuk (`src/app/panel`, `PanelHeader`). Aynı katalog fiyatsız gösterilir ("Listeye Ekle"); liste mağaza sepetinden bağımsızdır (`panelStore`). `/panel/sepet` sayfasında firma/telefon girilip **Siparişi Onayla** denince "Siparişiniz oluşturuluyor" ekranında gerçek bir **PDF fiş** üretilir (`lib/order-pdf.ts`, jsPDF + gömülü Roboto, Türkçe karakter destekli, ~70 KB) ve sunucu varsa `POST /api/fis` ile kaydedilir (`panel_orders` tablosu; `GET /api/fis/<ref>` PDF'i sunar). Ardından fiş sayfası (`/panel/siparis?ref=YL-…`): **PDF'i WhatsApp ile Gönder** (telefonda paylaşım menüsüyle dosya olarak; desteklenmeyen cihazda PDF indirilir ve WhatsApp mesajı PDF bağlantısıyla açılır), PDF indir, yazdır, yalnızca metin gönder, önceki fişler. Fişler cihazda da saklanır (`lib/panel-order.ts`).
+- **Yönetim paneli (`/yonetim`, `AdminPanel.tsx`):** şifreyle (`ADMIN_PASSWORD`) giriş; iki sekme: **E-Ticaret** (ödemeli siparişler: durum, kargo takip, iç not, geçmiş) ve **Anlaşmalı** (panel fişleri: Yeni → Onaylandı → Hazırlanıyor → Teslim edildi / İptal, iç not, PDF fiş, WhatsApp'tan bilgi ver). Mobilde kart listesi + tam ekran detay çekmecesi. Yeni panel fişi geldiğinde `NOTIFY_WEBHOOK` ve anlık bildirim (web push) tetiklenir. Kendi kabuğu vardır (`src/app/(yonetim)`), mağaza başlığı/alt menüsü görünmez.
+- **Demo modu:** `NEXT_PUBLIC_DEMO_ADMIN=1` ile (GitHub Pages derlemesinde açık) yönetim paneli sunucusuz çalışır: şifre `demo`; e-ticaret siparişleri örnek veridir, anlaşmalı fişler aynı tarayıcıda panelden oluşturulan gerçek fişlerdir; durum değişiklikleri tarayıcıda saklanır (`lib/admin-demo.ts`).
 - Bağlantı ön eki: bileşenler `useCart().base` ("" | "/panel") ile doğru kabuğa bağlanır; `showPrices` panelde false.
 - **Özel harman (`/ozel-harman`):** 11 orijin için %5 adımlı oranlar (toplam %100), kavurma, öğütüm, ambalaj, etiket rengi, marka ve ürün adı; canlı paket önizlemesi ve tat profili; tahmini fiyat; sepete/listeye eklenir ve WhatsApp talebi oluşturur. Orijin fiyatları ve işçilik `BlendBuilder.tsx` içinde yer tutucudur.
 
@@ -34,7 +36,7 @@ Bu sürüm **ön tasarımdır**: tüm sayfalar ve akışlar görsel olarak hazı
 
 İki hedef vardır:
 
-- **GitHub Pages (demo, statik):** `.github/workflows/pages.yml` her push'ta `GITHUB_PAGES=1` ile `output: export` derlemesi yapar; sunucu rotaları (`src/app/api`, `src/app/yonetim`) derleme öncesi çıkarılır. Sepet ve özel harman çalışır; sipariş kaydı ve kart ödemesi çalışmaz (havale seçilirse özet WhatsApp ile iletilir). Adres: https://rebirthsoftware-code.github.io/yavuzgida/
+- **GitHub Pages (demo, statik):** `.github/workflows/pages.yml` her push'ta `GITHUB_PAGES=1` ile `output: export` derlemesi yapar; sunucu rotaları (`src/app/api`) derleme öncesi çıkarılır. Sepet, özel harman, anlaşmalı panel (fiş cihazda) ve yönetim paneli (demo modu) çalışır; gerçek sipariş kaydı ve kart ödemesi çalışmaz (havale seçilirse özet WhatsApp ile iletilir). Adres: https://rebirthsoftware-code.github.io/yavuzgida/
 - **Vercel (canlı):** tam Next.js. Adımlar Umba ile aynı:
   1. Vercel'de projeyi depoya bağlayın (Framework: Next.js).
   2. Storage → **Turso** ekleyin (`TURSO_DATABASE_URL`, `TURSO_AUTH_TOKEN` otomatik gelir; tablolar ilk istekte oluşur).
@@ -48,13 +50,13 @@ Bu sürüm **ön tasarımdır**: tüm sayfalar ve akışlar görsel olarak hazı
 |---|---|---|
 | Kredi kartı | `odeme-bekliyor`; PayTR penceresi (veya demo) açılır | Bildirim gelince `onaylandi` |
 | Havale / EFT | `beklemede` | Dekont gelince panelden onay |
-| Anlaşmalı müşteri paneli | Sunucu kaydı yok; numaralı fiş oluşur, WhatsApp mesajı olarak firmaya düşer, PDF kaydedilir | Firma telefonla/WhatsApp'la teyit eder |
+| Anlaşmalı müşteri paneli | Numaralı fiş oluşur (`panel_orders`, durum `yeni`), WhatsApp mesajı PDF bağlantısıyla firmaya düşer | Yönetim → Anlaşmalı sekmesinden Onaylandı → Hazırlanıyor → Teslim edildi |
 
 Panelden: Hazırlanıyor → Kargoya verildi (kargo firması + takip no) → Teslim edildi; gerekirse İptal. Özel harman kalemleri katalog dışı olduğu için online ödemeye girmez; teklif süreci WhatsApp üzerinden yürür.
 
 ### API uç noktaları
 
-`POST /api/orders` · `POST /api/fis` · `GET /api/fis/:ref` · `POST /api/paytr/callback` · `POST /api/paytr/demo` · `GET /api/track?no=&phone=` · `POST /api/admin/login` · `GET /api/admin/orders` · `GET|PATCH /api/admin/orders/:no` · `GET /api/admin/stats` · `GET|POST|DELETE|PUT /api/admin/push` · `GET /api/health`
+`POST /api/orders` · `POST /api/fis` · `GET /api/fis/:ref` · `POST /api/paytr/callback` · `POST /api/paytr/demo` · `GET /api/track?no=&phone=` · `POST /api/admin/login` · `GET /api/admin/orders` · `GET|PATCH /api/admin/orders/:no` · `GET /api/admin/stats` · `GET /api/admin/panel-orders` · `GET|PATCH /api/admin/panel-orders/:ref` · `GET|POST|DELETE|PUT /api/admin/push` · `GET /api/health`
 
 Yerel test: `mkdir data && DATABASE_URL=file:./data/yavuz.db ADMIN_PASSWORD=admin123 npm run build && npm start`
 

@@ -28,11 +28,12 @@ jobs:
           enablement: true
       - run: npm ci
       # Statik demo: sunucu rotaları (API, yönetim) dışa aktarıma dahil edilmez
-      - run: rm -rf src/app/api src/app/yonetim
+      - run: rm -rf src/app/api
       - run: npm run build
         env:
           GITHUB_PAGES: "1"
           NEXT_PUBLIC_SITE_URL: https://rebirthsoftware-code.github.io/yavuzgida
+          NEXT_PUBLIC_DEMO_ADMIN: "1"
       - run: touch out/.nojekyll
       - uses: actions/upload-pages-artifact@v3
         with:
