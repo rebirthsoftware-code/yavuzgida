@@ -5,7 +5,9 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Search, Plus, Upload, Download, Loader2, ChevronLeft, ChevronRight, EyeOff, Trash2, RotateCcw, ImageIcon, X } from "lucide-react";
 import { admin, DEMO_ADMIN, type AdminProduct } from "@/lib/api";
 import type { Product, ProductTag, Variant } from "@/lib/types";
-import { categories } from "@/lib/categories";
+import { useCategories } from "@/components/config/ConfigProvider";
+import { allCategories } from "@/lib/content";
+import type { Category } from "@/lib/types";
 import { formatPrice, cn } from "@/lib/format";
 import { PackArt } from "@/components/product/PackArt";
 import { Drawer } from "./Drawer";
@@ -29,6 +31,11 @@ const FILTERS = [
 ];
 
 export function ProductsView({ token }: { token: string }) {
+  const published = useCategories();
+  const [categories, setCategories] = useState<Category[]>(published);
+  useEffect(() => {
+    admin.config(token).then((r) => r.status === "success" && setCategories(allCategories(r.config)));
+  }, [token]);
   const [q, setQ] = useState("");
   const [cat, setCat] = useState("");
   const [filter, setFilter] = useState("");
@@ -232,8 +239,8 @@ export function ProductsView({ token }: { token: string }) {
         </>
       )}
 
-      {selected && <ProductEditor token={token} slug={selected} onClose={() => setSelected(null)} onChanged={() => void load()} />}
-      {creating && <ProductEditor token={token} slug={null} onClose={() => setCreating(false)} onChanged={() => void load()} />}
+      {selected && <ProductEditor token={token} slug={selected} categories={categories} onClose={() => setSelected(null)} onChanged={() => void load()} />}
+      {creating && <ProductEditor token={token} slug={null} categories={categories} onClose={() => setCreating(false)} onChanged={() => void load()} />}
     </div>
   );
 }
@@ -252,6 +259,7 @@ async function downloadWithToken(e: React.MouseEvent<HTMLAnchorElement>, token: 
 }
 
 function Thumb({ p }: { p: Product }) {
+  void 0;
   return (
     <span className="relative grid size-11 shrink-0 place-items-center overflow-hidden rounded-lg border border-ink-100 bg-paper-50">
       {p.image ? <img src={p.image} alt="" className="h-full w-full object-cover" /> : <PackArt art={p.art} hue={p.hue} name={p.name} brand={p.brand} className="h-9 w-auto" />}
@@ -286,7 +294,7 @@ type Draft = {
 
 const emptyVariant = (k: number): Variant => ({ id: `v${k}`, label: "", sku: "", price: 0, amount: 1, amountUnit: "adet", inStock: true });
 
-function ProductEditor({ token, slug, onClose, onChanged }: { token: string; slug: string | null; onClose: () => void; onChanged: () => void }) {
+function ProductEditor({ token, slug, categories, onClose, onChanged }: { token: string; slug: string | null; categories: Category[]; onClose: () => void; onChanged: () => void }) {
   const isNew = slug === null;
   const [orig, setOrig] = useState<AdminProduct | null>(null);
   const [draft, setDraft] = useState<Draft | null>(isNew ? { name: "", brand: "", category: categories[0].slug, subcategory: categories[0].subcategories[0]?.slug ?? "", short: "", description: "", image: "", tags: [], hidden: false, variants: [emptyVariant(1)] } : null);

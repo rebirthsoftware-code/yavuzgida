@@ -6,8 +6,8 @@ import { useRouter } from "next/navigation";
 import { Search, X, ArrowRight } from "lucide-react";
 import { useCart } from "@/components/cart/CartProvider";
 import { searchProducts } from "@/lib/search";
-import { categoryMap, categories } from "@/lib/categories";
 import { useCatalogIndex } from "@/lib/use-catalog-index";
+import { useCategories, useCategoryMap } from "@/components/config/ConfigProvider";
 import { formatPrice } from "@/lib/format";
 import { minPriceOf } from "@/lib/index-of";
 import { PackArt } from "@/components/product/PackArt";
@@ -43,6 +43,8 @@ function Panel({ close }: { close: () => void }) {
   const ref = useRef<HTMLInputElement>(null);
   const router = useRouter();
   const index = useCatalogIndex();
+  const categories = useCategories();
+  const categoryMap = useCategoryMap();
   const results = useMemo(() => searchProducts(index, q, 12), [index, q]);
   useEffect(() => {
     ref.current?.focus();

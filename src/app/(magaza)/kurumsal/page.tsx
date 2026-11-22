@@ -3,23 +3,21 @@ import { Percent, Clock, FileText, Headset, Truck, CheckCircle2 } from "lucide-r
 import { PageShell, Field, inputCls } from "@/components/ui/PageShell";
 import { Button } from "@/components/ui/Button";
 import { References } from "@/components/home/References";
+import { getSiteConfig } from "@/lib/site-config";
+import { t } from "@/lib/content";
 
 export const metadata: Metadata = { title: "Kurumsal & Toptan Satış", description: "Restoran, kafe, otel ve marketler için toptan fiyat listesi, vade ve atanmış satış temsilcisi." };
 
-export default function Page() {
+export default async function Page() {
+  const config = await getSiteConfig();
+  const tx = (k: string) => t(config, k);
+  const icons = [Percent, Clock, FileText, Headset, Truck, CheckCircle2];
   return (
-    <PageShell title="Kurumsal & toptan satış" crumb="Kurumsal" lead="Kafe, otel ve zincir işletmeler için aylık alım hacmine göre kademeli fiyat, vade ve atanmış satış temsilcisi. Formu doldurun, 1 iş günü içinde fiyat listenizi gönderelim.">
+    <PageShell title={tx("corp.title")} crumb="Kurumsal" lead={tx("corp.lead")}>
       <div className="grid gap-8 lg:grid-cols-[1fr_1.1fr]">
         <div className="space-y-6">
           <ul className="grid gap-3 sm:grid-cols-2">
-            {[
-              { icon: Percent, t: "Kademeli fiyat", d: "Koli ve aylık hacme göre birim fiyat düşer." },
-              { icon: Clock, t: "Vadeli ödeme", d: "Onaylı hesaplara 30 güne kadar vade." },
-              { icon: FileText, t: "E-fatura & cari", d: "Tek faturada tüm kategoriler, cari hesap ekstresi." },
-              { icon: Headset, t: "Satış temsilcisi", d: "WhatsApp'tan sipariş, tek kişiden takip." },
-              { icon: Truck, t: "Araçla teslimat", d: "Bölgesel rotalarda kendi araçlarımızla teslim." },
-              { icon: CheckCircle2, t: "Numune & eğitim", d: "Şurup ve kahvede ücretsiz numune, barista eğitimi desteği." },
-            ].map(({ icon: I, t, d }) => (
+            {icons.map((I, i) => ({ icon: I, t: tx(`corp.f${i + 1}.t`), d: tx(`corp.f${i + 1}.d`) })).map(({ icon: I, t, d }) => (
               <li key={t} className="rounded-lg border border-ink-200 bg-white p-5">
                 <I className="size-5 text-orange-500" />
                 <p className="mt-3 font-semibold">{t}</p>
@@ -28,8 +26,8 @@ export default function Page() {
             ))}
           </ul>
           <div className="rounded-lg bg-navy-900 p-6 text-white">
-            <p className="text-xs font-bold uppercase tracking-[0.2em] text-orange-400">Kimler için?</p>
-            <p className="mt-2 text-lg font-semibold">Kafe, coffee shop zincirleri, restoran, otel, pastane, ofis ve catering firmaları.</p>
+            <p className="text-xs font-bold uppercase tracking-[0.2em] text-orange-400">{tx("corp.who.title")}</p>
+            <p className="mt-2 text-lg font-semibold">{tx("corp.who.text")}</p>
           </div>
         </div>
         <form className="rounded-lg border border-ink-200 bg-white p-6 sm:p-8">

@@ -2,20 +2,23 @@ import Link from "next/link";
 import { ArrowRight, ClipboardList, MessageCircle, FileDown, Coffee } from "lucide-react";
 import { categoryCounts, bestSellers, getCategories } from "@/lib/catalog";
 import { toIndex } from "@/lib/index-of";
+import { getSiteConfig } from "@/lib/site-config";
+import { t } from "@/lib/content";
 import { CategoryIcon } from "@/components/ui/CategoryIcon";
 import { ProductRail } from "@/components/product/ProductRail";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 
 export default async function PanelHome() {
-  const [counts, best, categories] = await Promise.all([categoryCounts(), bestSellers(12), getCategories()]);
+  const [counts, best, categories, config] = await Promise.all([categoryCounts(), bestSellers(12), getCategories(), getSiteConfig()]);
+  const tx = (k: string) => t(config, k);
   return (
     <div className="mx-auto max-w-[1320px] space-y-10 px-4 pb-10 pt-5">
       <section className="overflow-hidden rounded-xl bg-coal-900 text-white">
         <div className="grid gap-6 p-6 sm:p-8 lg:grid-cols-[1.2fr_1fr] lg:items-center">
           <div>
-            <p className="text-xs font-bold uppercase tracking-[0.2em] text-gold-400">Anlaşmalı müşteri paneli</p>
-            <h1 className="mt-2 text-2xl font-extrabold leading-tight sm:text-3xl">Hoş geldiniz. Siparişinizi üç adımda oluşturun.</h1>
-            <p className="mt-3 max-w-xl text-sm text-white/75">Bu panelde fiyat gösterilmez; anlaşmalı tarifeniz geçerlidir. Ürünleri listeye ekleyin, onaylayın; fişiniz WhatsApp ile bize ulaşsın, dilerseniz PDF olarak kaydedin.</p>
+            <p className="text-xs font-bold uppercase tracking-[0.2em] text-gold-400">{tx("panel.kicker")}</p>
+            <h1 className="mt-2 text-2xl font-extrabold leading-tight sm:text-3xl">{tx("panel.title")}</h1>
+            <p className="mt-3 max-w-xl text-sm text-white/75">{tx("panel.text")}</p>
             <div className="mt-5 flex flex-wrap gap-2">
               <Link href="/panel/urunler" className="inline-flex h-11 items-center gap-2 rounded-lg bg-gold px-5 text-sm font-bold text-coal-950 hover:brightness-105">
                 Kataloğa git <ArrowRight className="size-4" />
@@ -27,9 +30,9 @@ export default async function PanelHome() {
           </div>
           <ol className="grid gap-2 text-sm">
             {[
-              { icon: ClipboardList, t: "Ürünleri listeye ekleyin", d: "Boy ve adedi seçin; liste sağ üstte birikir." },
-              { icon: MessageCircle, t: "Onaylayın, WhatsApp'tan gönderin", d: "Firma adı ve telefonunuzla tek tıkla iletin." },
-              { icon: FileDown, t: "Fişi PDF olarak saklayın", d: "Sipariş fişi numaralı ve yazdırılabilir." },
+              { icon: ClipboardList, t: tx("panel.step1.title"), d: tx("panel.step1.text") },
+              { icon: MessageCircle, t: tx("panel.step2.title"), d: tx("panel.step2.text") },
+              { icon: FileDown, t: tx("panel.step3.title"), d: tx("panel.step3.text") },
             ].map(({ icon: I, t, d }, i) => (
               <li key={t} className="flex items-start gap-3 rounded-lg border border-white/10 bg-white/5 p-3">
                 <span className="grid size-8 shrink-0 place-items-center rounded-full bg-gold-500/15 text-xs font-bold text-gold-400">{i + 1}</span>

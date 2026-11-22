@@ -6,19 +6,20 @@ import { Minus, Plus, Trash2, ShoppingCart, ArrowRight, Truck, Tag, ShieldCheck,
 import { useCart } from "./CartProvider";
 import { formatPrice } from "@/lib/format";
 import { useSiteConfig } from "@/components/config/ConfigProvider";
+import { computeDiscount } from "@/lib/discount";
 import { ButtonLink } from "@/components/ui/Button";
 import { PackArt } from "@/components/product/PackArt";
 import { buildOrderMessage, whatsappLink, type OrderForm } from "@/lib/whatsapp";
 import { Field, inputCls } from "@/components/ui/PageShell";
 
 export function CartPage() {
-  const { commerce, contact } = useSiteConfig();
+  const { commerce, contact, discountTiers } = useSiteConfig();
   const { items, subtotal, count, setQty, remove, clear, ready, showPrices } = useCart();
   const [coupon, setCoupon] = useState("");
   const [form, setForm] = useState<OrderForm>({ firm: "", name: "", phone: "", note: "" });
   const [copied, setCopied] = useState(false);
   const shipping = subtotal >= commerce.freeShippingThreshold || subtotal === 0 ? 0 : commerce.shippingFee;
-  const discount = subtotal >= 5000 ? Math.round(subtotal * 0.04) : 0;
+  const discount = computeDiscount(subtotal, discountTiers).amount;
   const total = subtotal + shipping - discount;
   const remaining = Math.max(0, commerce.freeShippingThreshold - subtotal);
   const message = buildOrderMessage(items, form, showPrices);

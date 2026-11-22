@@ -41,10 +41,10 @@ export interface DiscountInfo {
   maxed: boolean;
 }
 
-export function computeDiscount(subtotal: number): DiscountInfo {
+export function computeDiscount(subtotal: number, tiers: DiscountTier[] = discountTiers): DiscountInfo {
   let current: DiscountTier | null = null;
   let next: DiscountTier | null = null;
-  for (const t of discountTiers) {
+  for (const t of [...tiers].sort((a, b) => a.min - b.min)) {
     if (subtotal >= t.min) current = t;
     else {
       next = t;
@@ -70,8 +70,8 @@ export function formatPct(pct: number): string {
 }
 
 /** Sepet için teşvik / bilgi cümlesi. */
-export function discountMessage(subtotal: number): string {
-  const d = computeDiscount(subtotal);
+export function discountMessage(subtotal: number, tiers?: DiscountTier[]): string {
+  const d = computeDiscount(subtotal, tiers);
   if (d.next) return `${formatPrice(d.next.missing)} daha ekleyin, ${formatPrice(d.next.amount)} indirim kazanın.`;
   if (d.amount > 0) return `Tebrikler! En yüksek indirimi kazandınız: ${formatPrice(d.amount)}.`;
   return "";

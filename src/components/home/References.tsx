@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useSiteConfig } from "@/components/config/ConfigProvider";
+import { useSiteConfig, useText } from "@/components/config/ConfigProvider";
 import { BadgeCheck, MapPin, ArrowRight } from "lucide-react";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 
@@ -16,9 +16,12 @@ const initials = (name: string) =>
 /** Çalıştığımız mağazalar: güven bölümü (logo yoksa monogram). */
 export function References({ compact = false }: { compact?: boolean }) {
   const { references, referenceStats: stats } = useSiteConfig();
+  const title = useText("home.refs.title");
+  const sub = useText("home.refs.sub");
+  const note = useText("home.refs.note");
   return (
     <section>
-      <SectionHeading title="Çalıştığımız Mağazalar" sub="Türkiye genelinde kafe, pastane, otel ve restoranların tedarik ortağıyız" href="/kurumsal" linkLabel="Siz de katılın" />
+      <SectionHeading title={title} sub={sub} href="/kurumsal" linkLabel="Siz de katılın" />
       <div className="overflow-hidden rounded-xl border border-ink-200 bg-white">
         <dl className="grid grid-cols-2 divide-x divide-ink-100 border-b border-ink-100 md:grid-cols-4">
           {stats.map((s) => (
@@ -52,7 +55,7 @@ export function References({ compact = false }: { compact?: boolean }) {
           ))}
         </ul>
         <div className="flex flex-wrap items-center justify-between gap-3 border-t border-ink-100 bg-paper-50 px-4 py-3 text-sm">
-          <p className="text-ink-600">Referans listemizin tamamı ve iletişim bilgileri talep üzerine paylaşılır.</p>
+          <p className="text-ink-600">{note}</p>
           <Link href="/kurumsal" className="inline-flex items-center gap-1 font-semibold text-orange-600 hover:underline">
             Kurumsal teklif alın <ArrowRight className="size-4" />
           </Link>

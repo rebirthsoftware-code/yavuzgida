@@ -5,8 +5,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Search, TrendingUp, ArrowUpRight } from "lucide-react";
 import { useCatalogIndex } from "@/lib/use-catalog-index";
+import { useCategories, useCategoryMap } from "@/components/config/ConfigProvider";
 import { searchProducts } from "@/lib/search";
-import { categories, categoryMap } from "@/lib/categories";
 import { minPriceOf } from "@/lib/index-of";
 import { formatPrice } from "@/lib/format";
 import { PackArt } from "@/components/product/PackArt";
@@ -22,12 +22,14 @@ export function SearchBox({ className = "" }: { className?: string }) {
   const router = useRouter();
   const { showPrices, base } = useCart();
   const index = useCatalogIndex();
+  const categories = useCategories();
+  const categoryMap = useCategoryMap();
   const results = useMemo(() => searchProducts(index, q, 6), [index, q]);
   const cats = useMemo(() => {
     const n = q.trim().toLocaleLowerCase("tr-TR");
     if (n.length < 2) return [];
     return categories.filter((c) => c.name.toLocaleLowerCase("tr-TR").includes(n) || c.subcategories.some((s) => s.name.toLocaleLowerCase("tr-TR").includes(n))).slice(0, 3);
-  }, [q]);
+  }, [q, categories]);
 
   useEffect(() => {
     if (!open) return;

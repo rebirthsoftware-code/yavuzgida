@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState, useSyncExternalStore, type FormEvent, type ReactNode } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Lock, Loader2, Search, RefreshCw, LogOut, Truck, ExternalLink, ChevronLeft, ChevronRight, Phone, Mail, MapPin, CreditCard, AlertCircle, Save, ShoppingBag, Store, FileText, MessageCircle, Printer, Info, Package, LayoutTemplate, Settings } from "lucide-react";
+import { Lock, Loader2, Search, RefreshCw, LogOut, Truck, ExternalLink, ChevronLeft, ChevronRight, Phone, Mail, MapPin, CreditCard, AlertCircle, Save, ShoppingBag, Store, FileText, MessageCircle, Printer, Info, Package, LayoutTemplate, Settings, FolderTree, Type } from "lucide-react";
 import {
   admin,
   apiEnabled,
@@ -32,6 +32,8 @@ import { Drawer, Card } from "./Drawer";
 import { ProductsView } from "./ProductsView";
 import { HomepageView } from "./HomepageView";
 import { SettingsView } from "./SettingsView";
+import { CategoriesView } from "./CategoriesView";
+import { TextsView } from "./TextsView";
 
 /* ------------------------------ Oturum deposu ------------------------------ */
 const KEY = "yavuz:admin";
@@ -124,15 +126,17 @@ export function AdminPanel() {
       </section>
     );
   }
-  const initialSection: Section = (["siparisler", "urunler", "anasayfa", "ayarlar"] as const).includes(params.get("bolum") as Section) ? (params.get("bolum") as Section) : "siparisler";
+  const initialSection: Section = (["siparisler", "urunler", "kategoriler", "anasayfa", "metinler", "ayarlar"] as const).includes(params.get("bolum") as Section) ? (params.get("bolum") as Section) : "siparisler";
   return token ? <Shell token={token} initialNo={initialNo} initialTab={initialTab} initialSection={initialSection} /> : <Login />;
 }
 
-type Section = "siparisler" | "urunler" | "anasayfa" | "ayarlar";
+type Section = "siparisler" | "urunler" | "kategoriler" | "anasayfa" | "metinler" | "ayarlar";
 const SECTIONS: { key: Section; label: string; icon: ReactNode; sub: string }[] = [
   { key: "siparisler", label: "Siparişler", icon: <ShoppingBag className="size-4" />, sub: "E-ticaret ve anlaşmalı" },
   { key: "urunler", label: "Ürünler", icon: <Package className="size-4" />, sub: "Fiyat, stok, görsel" },
+  { key: "kategoriler", label: "Kategoriler", icon: <FolderTree className="size-4" />, sub: "Ağaç, sıra, simge" },
   { key: "anasayfa", label: "Ana Sayfa", icon: <LayoutTemplate className="size-4" />, sub: "Slider, kampanya, referans" },
+  { key: "metinler", label: "Metinler", icon: <Type className="size-4" />, sub: "Başlıklar, sayfalar, SSS" },
   { key: "ayarlar", label: "Ayarlar", icon: <Settings className="size-4" />, sub: "İletişim, kargo, yasal" },
 ];
 
@@ -167,7 +171,9 @@ function Shell({ token, initialNo, initialTab, initialSection }: { token: string
       <div key={`${section}-${refreshKey}`}>
         {section === "siparisler" && <Dashboard token={token} initialNo={initialNo} initialTab={initialTab} />}
         {section === "urunler" && <ProductsView token={token} />}
+        {section === "kategoriler" && <CategoriesView token={token} />}
         {section === "anasayfa" && <HomepageView token={token} />}
+        {section === "metinler" && <TextsView token={token} />}
         {section === "ayarlar" && <SettingsView token={token} />}
       </div>
     </section>

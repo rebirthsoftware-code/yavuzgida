@@ -69,7 +69,7 @@ export async function computeOrder(items: { productSlug: string; variantId: stri
   const cod = 0;
   void paymentMethod;
   void codFee;
-  const discount = computeDiscount(subtotal).amount;
+  const discount = computeDiscount(subtotal, config.discountTiers).amount;
   const total = Math.round((subtotal - discount + shipping + cod) * 100) / 100;
   return { lines, subtotal, shipping, codFee: cod, discount, total };
 }

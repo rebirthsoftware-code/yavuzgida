@@ -8,13 +8,11 @@ import { ScrollCompact } from "@/components/layout/ScrollCompact";
 import { useCart, useHydrated } from "@/components/cart/CartProvider";
 import { Logo } from "@/components/ui/Logo";
 import { SearchBox } from "@/components/layout/SearchBox";
-import { categories as baseCategories } from "@/lib/categories";
-import { applyCategoryOverrides } from "@/lib/content";
-import { useSiteConfig } from "@/components/config/ConfigProvider";
+import { useCategories } from "@/components/config/ConfigProvider";
 
 /** Anlaşmalı müşteri paneli başlığı: fiyatsız katalog, sipariş listesi, mağazaya dönüş. */
 export function PanelHeader() {
-  const categories = applyCategoryOverrides(baseCategories, useSiteConfig().categories);
+  const categories = useCategories();
   const { count, ready: storeReady } = useCart();
   const ready = useHydrated() && storeReady;
   const pathname = usePathname();

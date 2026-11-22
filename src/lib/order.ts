@@ -95,14 +95,14 @@ export function generateOrderNo(date = new Date()): string {
 }
 
 /** Sepet kalemlerinden ön hesap (sunucu fiyatları yeniden hesaplar). Özel harman kalemleri katalog dışıdır, dahil edilmez. */
-export type CommerceRules = { freeShippingThreshold: number; shippingFee: number; cardPayments?: boolean };
+export type CommerceRules = { freeShippingThreshold: number; shippingFee: number; cardPayments?: boolean; discountTiers?: { min: number; amount: number }[] };
 export const defaultCommerce: CommerceRules = { freeShippingThreshold: site.commerce.freeShippingThreshold, shippingFee: site.commerce.shippingFee, cardPayments: site.commerce.cardPaymentsEnabled };
 
 export function computeCartTotals(items: CartItem[], commerce: CommerceRules = defaultCommerce) {
   const lines = items.filter((i) => !i.custom);
   const subtotal = Math.round(lines.reduce((s, i) => s + i.price * i.qty, 0) * 100) / 100;
   const shipping = subtotal === 0 || subtotal >= commerce.freeShippingThreshold ? 0 : commerce.shippingFee;
-  const discount = computeDiscount(subtotal).amount;
+  const discount = computeDiscount(subtotal, commerce.discountTiers).amount;
   const total = Math.round((subtotal - discount + shipping) * 100) / 100;
   return { subtotal, shipping, codFee: 0, discount, total, itemCount: lines.reduce((s, i) => s + i.qty, 0) };
 }

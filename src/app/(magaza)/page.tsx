@@ -12,9 +12,12 @@ import { BlendPromo } from "@/components/home/BlendPromo";
 import { References } from "@/components/home/References";
 import { bestSellers, newArrivals, discounted, categoryCounts, getProducts, getBrands, getCategories } from "@/lib/catalog";
 import { toIndex } from "@/lib/index-of";
+import { getSiteConfig } from "@/lib/site-config";
+import { t } from "@/lib/content";
 
 export default async function HomePage() {
-  const [counts, best, products, brands, deals, fresh, categories] = await Promise.all([categoryCounts(), bestSellers(60), getProducts(), getBrands(), discounted(12), newArrivals(12), getCategories()]);
+  const [counts, best, products, brands, deals, fresh, categories, config] = await Promise.all([categoryCounts(), bestSellers(60), getProducts(), getBrands(), discounted(12), newArrivals(12), getCategories(), getSiteConfig()]);
+  const tx = (k: string) => t(config, k);
   const groups = [
     { key: "all", label: "Tümü", items: best.slice(0, 12).map(toIndex) },
     ...categories.slice(0, 6).map((c) => ({ key: c.slug, label: c.name, items: best.filter((p) => p.category === c.slug).slice(0, 12).map(toIndex) })).filter((g) => g.items.length >= 4),
@@ -33,32 +36,32 @@ export default async function HomePage() {
         <CategoryCircles categories={categories} />
       </section>
 
-      <FlashDeals items={deals.map(toIndex)} />
+      <FlashDeals items={deals.map(toIndex)} title={tx("home.flash.title")} sub={tx("home.flash.sub")} />
 
       <BlendPromo />
 
       <CampaignTiles />
 
-      <BestSellerTabs groups={groups} />
+      <BestSellerTabs groups={groups} title={tx("home.best.title")} sub={tx("home.best.sub")} />
 
       <section>
-        <SectionHeading title="Popüler Kategoriler" href="/urunler" />
+        <SectionHeading title={tx("home.popular.title")} href="/urunler" />
         <PopularCategories samples={samples} counts={counts} categories={categories} />
       </section>
 
       <section>
-        <SectionHeading title="Yeni Gelenler" sub="Rafa bu ay eklenen ürünler" href="/urunler?etiket=yeni&sirala=yeni" />
+        <SectionHeading title={tx("home.new.title")} sub={tx("home.new.sub")} href="/urunler?etiket=yeni&sirala=yeni" />
         <ProductRail items={fresh.map(toIndex)} />
       </section>
 
       <section>
-        <SectionHeading title="Sizin İçin Seçtiklerimiz" href="/urunler?sirala=populer" />
+        <SectionHeading title={tx("home.picks.title")} href="/urunler?sirala=populer" />
         <ProductRail items={best.slice(12, 24).map(toIndex)} />
       </section>
 
       <References />
 
-      <BrandStrip brands={brands} />
+      <BrandStrip brands={brands} title={tx("home.brands.title")} />
     </div>
   );
 }

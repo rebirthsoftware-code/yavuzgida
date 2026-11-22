@@ -8,6 +8,7 @@ import { Suspense } from "react";
 import { categoryCounts, getCategories } from "@/lib/catalog";
 import { CartProvider } from "@/components/cart/CartProvider";
 import { getSiteConfig } from "@/lib/site-config";
+import { t } from "@/lib/content";
 import { site } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -29,7 +30,7 @@ export default async function PanelLayout({ children }: LayoutProps<"/panel">) {
           <p>
             {site.name} · Anlaşmalı müşteri paneli · {config.contact.phone}
           </p>
-          <p>Fiyatlar gösterilmez; anlaşmalı tarifeniz geçerlidir.</p>
+          <p>{t(config, "panel.footer")}</p>
         </div>
       </footer>
       <SearchOverlay />

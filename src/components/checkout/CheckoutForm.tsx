@@ -13,6 +13,7 @@ import { apiEnabled, createRemoteOrder } from "@/lib/api";
 import { whatsappUrl } from "@/lib/forms";
 import { formatPrice, cn } from "@/lib/format";
 import { site } from "@/lib/site";
+import { useSiteConfig } from "@/components/config/ConfigProvider";
 import { MessageCircle } from "lucide-react";
 
 type FormState = Omit<CheckoutInput, "items" | "acceptTerms" | "acceptKvkk"> & {
@@ -106,7 +107,9 @@ export function CheckoutForm() {
   const [submitting, setSubmitting] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
 
-  const totals = useMemo(() => computeCartTotals(lines), [lines]);
+  const { commerce, discountTiers } = useSiteConfig();
+  const rules = useMemo(() => ({ freeShippingThreshold: commerce.freeShippingThreshold, shippingFee: commerce.shippingFee, cardPayments: commerce.cardPayments, discountTiers }), [commerce, discountTiers]);
+  const totals = useMemo(() => computeCartTotals(lines, rules), [lines, rules]);
 
   const set = <K extends keyof FormState>(key: K, value: FormState[K]) => {
     setForm((f) => ({ ...f, [key]: value }));
@@ -130,7 +133,7 @@ export function CheckoutForm() {
       return;
     }
     setSubmitting(true);
-    const order = buildOrderRecord(parsed.data, cartItems);
+    const order = buildOrderRecord(parsed.data, cartItems, rules);
     if ("error" in order) {
       setServerError(order.error);
       setSubmitting(false);

@@ -5,18 +5,20 @@ import { site } from "@/lib/site";
 import { PackSprite } from "@/components/product/PackSprite";
 import { ConfigProvider } from "@/components/config/ConfigProvider";
 import { getSiteConfig } from "@/lib/site-config";
+import { t } from "@/lib/content";
 
 const inter = Inter({ variable: "--font-inter", subsets: ["latin", "latin-ext"], display: "swap" });
 
-export const metadata: Metadata = {
-  metadataBase: new URL(site.url),
-  title: {
-    default: `${site.name} | Kafe & Barista Ürünleri Toptan — Kahve, Şurup, Çay, Bardak`,
-    template: `%s | ${site.name}`,
-  },
-  description: site.description,
-  openGraph: { type: "website", locale: site.locale, siteName: site.name, title: `${site.name} — ${site.tagline}`, description: site.description, images: [{ url: "/brand/logo-dark.jpg", width: 1080, height: 807 }] },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const config = await getSiteConfig();
+  const tx = (k: string) => t(config, k);
+  return {
+    metadataBase: new URL(site.url),
+    title: { default: tx("seo.title"), template: `%s | ${site.name}` },
+    description: tx("seo.description"),
+    openGraph: { type: "website", locale: site.locale, siteName: site.name, title: `${site.name} — ${tx("site.tagline")}`, description: tx("seo.description"), images: [{ url: "/brand/logo-dark.jpg", width: 1080, height: 807 }] },
+  };
+}
 
 export const viewport: Viewport = {
   themeColor: "#141414",

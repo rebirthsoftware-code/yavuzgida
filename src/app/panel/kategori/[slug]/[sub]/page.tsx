@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
-import { categories, getSubcategory } from "@/lib/categories";
+import { categories } from "@/lib/categories";
 import { countIn, getCategoryBySlug } from "@/lib/catalog";
 import { CatalogPage } from "@/components/catalog/CatalogPage";
 
@@ -11,7 +11,7 @@ export function generateStaticParams() {
 async function Content({ params }: Pick<PageProps<"/panel/kategori/[slug]/[sub]">, "params">) {
   const { slug, sub } = await params;
   const c = await getCategoryBySlug(slug);
-  const s = getSubcategory(slug, sub);
+  const s = c?.subcategories.find((x) => x.slug === sub);
   if (!c || !s) notFound();
   return <CatalogPage base="/panel" title={s.name} count={await countIn(c.slug, s.slug)} crumbs={[{ label: "Tüm Ürünler", href: "/panel/urunler" }, { label: c.name, href: `/panel/kategori/${c.slug}` }, { label: s.name }]} fixedCategory={c.slug} fixedSub={s.slug} category={c} />;
 }

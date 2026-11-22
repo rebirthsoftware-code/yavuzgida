@@ -3,7 +3,7 @@
 import type { ReactNode } from "react";
 import { useSiteConfig } from "./ConfigProvider";
 import type { SiteConfig } from "@/lib/content";
-import { telHrefFor, whatsappHrefFor } from "@/lib/content";
+import { telHrefFor, whatsappHrefFor, t } from "@/lib/content";
 
 type Path = "contact.phone" | "contact.email" | "contact.address" | "contact.workingHours" | "legal.companyName" | "social.instagram" | "social.facebook" | "announcement.text";
 
@@ -16,6 +16,11 @@ function read(c: SiteConfig, path: Path): string {
 /** Sunucu bileşenlerinde ayar metni göstermek için (demoda tarayıcıdaki düzenlemeyi de yansıtır). */
 export function ConfigValue({ path }: { path: Path }) {
   return <>{read(useSiteConfig(), path)}</>;
+}
+
+/** Serbest metin (lib/texts.ts anahtarları) */
+export function TextValue({ k }: { k: string }) {
+  return <>{t(useSiteConfig(), k)}</>;
 }
 
 export function ConfigLink({ kind, className, children }: { kind: "tel" | "mail" | "whatsapp" | "instagram" | "facebook" | "announcement"; className?: string; children?: ReactNode }) {

@@ -1,6 +1,6 @@
 import type { Product, ProductIndex } from "./types";
 import { categories, categoryMap } from "./categories";
-import { mergeCatalog, applyCategoryOverrides } from "./content";
+import { mergeCatalog, effectiveCategories } from "./content";
 import type { Category } from "./types";
 import { toIndex } from "./index-of";
 import { loadContent } from "@/server/content-cache";
@@ -23,8 +23,8 @@ export type Catalog = {
 
 export async function getCatalog(): Promise<Catalog> {
   const { patches, customs, config } = await loadContent();
-  const hiddenCats = new Set(Object.entries(config.categories).filter(([, o]) => o.hidden).map(([k]) => k));
-  const products = mergeCatalog(baseProducts, patches, customs).filter((p) => !hiddenCats.has(p.category));
+  const visible = new Set(effectiveCategories(config).map((c) => c.slug));
+  const products = mergeCatalog(baseProducts, patches, customs).filter((p) => visible.has(p.category));
   const counts: Record<string, number> = {};
   for (const p of products) counts[p.category] = (counts[p.category] ?? 0) + 1;
   return {
@@ -86,7 +86,7 @@ export async function getBrands(): Promise<string[]> {
 /** Yönetim ayarları uygulanmış kategori listesi (gizliler hariç, adlar güncel). */
 export async function getCategories(): Promise<Category[]> {
   const { config } = await loadContent();
-  return applyCategoryOverrides(categories, config.categories);
+  return effectiveCategories(config);
 }
 
 export async function getCategoryBySlug(slug: string): Promise<Category | undefined> {

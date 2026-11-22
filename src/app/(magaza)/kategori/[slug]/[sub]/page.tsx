@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { categories, getSubcategory } from "@/lib/categories";
+import { categories } from "@/lib/categories";
 import { countIn, getCategoryBySlug } from "@/lib/catalog";
 import { CatalogPage } from "@/components/catalog/CatalogPage";
 
@@ -12,7 +12,7 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: PageProps<"/kategori/[slug]/[sub]">): Promise<Metadata> {
   const { slug, sub } = await params;
   const c = await getCategoryBySlug(slug);
-  const s = getSubcategory(slug, sub);
+  const s = c?.subcategories.find((x) => x.slug === sub);
   if (!c || !s) return {};
   return { title: `${s.name} Fiyatları — ${c.name}`, description: `${c.name} › ${s.name}: toptan fiyatlarla, farklı ambalaj boylarında.` };
 }
@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: PageProps<"/kategori/[slug]/[
 async function Content({ params }: Pick<PageProps<"/kategori/[slug]/[sub]">, "params">) {
   const { slug, sub } = await params;
   const c = await getCategoryBySlug(slug);
-  const s = getSubcategory(slug, sub);
+  const s = c?.subcategories.find((x) => x.slug === sub);
   if (!c || !s) notFound();
   return <CatalogPage title={s.name} count={await countIn(c.slug, s.slug)} crumbs={[{ label: "Tüm Ürünler", href: "/urunler" }, { label: c.name, href: `/kategori/${c.slug}` }, { label: s.name }]} fixedCategory={c.slug} fixedSub={s.slug} category={c} />;
 }

@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { admin, DEMO_ADMIN } from "@/lib/api";
 import { legalTitles, type SiteConfig, type LegalKey } from "@/lib/content";
-import { categories } from "@/lib/categories";
 import { demoReset } from "@/lib/demo-content";
 import { Field, Input, TextArea, Toggle, NumberInput, Section, SaveButton, ErrorNote, useSaver } from "./fields";
 
@@ -24,12 +23,12 @@ export function SettingsView({ token }: { token: string }) {
     <div className="mt-4 space-y-5">
       <div>
         <h1 className="text-2xl font-semibold text-ink-900 sm:text-3xl">Ayarlar</h1>
-        <p className="text-xs text-ink-500">İletişim, kargo kuralları, banka bilgileri, kategoriler ve yasal metinler. Her bölüm ayrı kaydedilir.</p>
+        <p className="text-xs text-ink-500">İletişim, kargo kuralları, sepet indirimi, banka bilgileri ve yasal metinler. Her bölüm ayrı kaydedilir.</p>
       </div>
       <ContactSection token={token} initial={cfg} />
       <CommerceSection token={token} initial={cfg.commerce} />
       <BankSection token={token} initial={cfg.bank} legal={cfg.legal} />
-      <CategoriesSection token={token} initial={cfg.categories} />
+      <DiscountSection token={token} initial={cfg.discountTiers} />
       <BlendSection token={token} initial={cfg.blend} />
       <LegalSection token={token} initial={cfg.legal.texts} legal={cfg.legal} />
       {DEMO_ADMIN && (
@@ -157,29 +156,32 @@ function BankSection({ token, initial, legal }: { token: string; initial: SiteCo
   );
 }
 
-function CategoriesSection({ token, initial }: { token: string; initial: SiteConfig["categories"] }) {
-  const [v, setV] = useState(initial);
+function DiscountSection({ token, initial }: { token: string; initial: SiteConfig["discountTiers"] }) {
+  const [tiers, setTiers] = useState(initial);
   const { state, error, run } = useSaver();
-  const upd = (slug: string, patch: { hidden?: boolean; name?: string; description?: string }) => setV((s) => ({ ...s, [slug]: { ...(s[slug] ?? {}), ...patch } }));
+  const upd = (i: number, patch: Partial<SiteConfig["discountTiers"][number]>) => setTiers((s) => s.map((x, k) => (k === i ? { ...x, ...patch } : x)));
   return (
     <form
       onSubmit={(e) => {
         e.preventDefault();
-        void run(() => admin.saveConfig(token, { categories: v }));
+        void run(() => admin.saveConfig(token, { discountTiers: tiers.filter((t) => t.min > 0 && t.amount >= 0).sort((a, b) => a.min - b.min) }));
       }}
     >
-      <Section title="Kategoriler" desc="Kategori adını ve açıklamasını değiştirin veya kategoriyi geçici olarak gizleyin. Boş bırakılan alanlar varsayılanı kullanır." footer={<><ErrorNote text={error} /><SaveButton state={state} /></>}>
-        <div className="divide-y divide-ink-100 overflow-hidden rounded-xl border border-ink-200">
-          {categories.map((c) => {
-            const o = v[c.slug] ?? {};
-            return (
-              <div key={c.slug} className="grid gap-2 p-3 sm:grid-cols-[12rem_1fr_1.6fr] sm:items-center">
-                <Toggle checked={!o.hidden} onChange={(on) => upd(c.slug, { hidden: !on })} label={c.name} />
-                <Input value={o.name ?? ""} onChange={(e) => upd(c.slug, { name: e.target.value })} placeholder={`Görünen ad (${c.name})`} />
-                <Input value={o.description ?? ""} onChange={(e) => upd(c.slug, { description: e.target.value })} placeholder="Açıklama (SEO ve kategori başlığı)" />
-              </div>
-            );
-          })}
+      <Section title="Sepet indirimi kademeleri" desc="Sepet ara toplamı eşiği geçince sabit TL indirim uygulanır. Boş liste = indirim yok." footer={<><ErrorNote text={error} /><button type="button" onClick={() => setTiers((t) => [...t, { min: (t[t.length - 1]?.min ?? 0) + 500, amount: (t[t.length - 1]?.amount ?? 0) + 50 }])} className="inline-flex h-10 items-center gap-1.5 rounded-lg border border-ink-200 px-3 text-sm font-semibold hover:bg-paper-100">Kademe ekle</button><SaveButton state={state} /></>}>
+        <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+          {tiers.map((t, i) => (
+            <div key={i} className="flex items-center gap-2 rounded-lg border border-ink-200 p-2">
+              <Field label="Eşik (₺)" className="flex-1">
+                <NumberInput value={t.min} onChange={(n) => upd(i, { min: n ?? 0 })} min={0} />
+              </Field>
+              <Field label="İndirim (₺)" className="flex-1">
+                <NumberInput value={t.amount} onChange={(n) => upd(i, { amount: n ?? 0 })} min={0} />
+              </Field>
+              <button type="button" onClick={() => setTiers((s) => s.filter((_, k) => k !== i))} aria-label="Sil" className="mt-4 grid size-9 shrink-0 place-items-center rounded-lg text-red-600 hover:bg-red-100">
+                ×
+              </button>
+            </div>
+          ))}
         </div>
       </Section>
     </form>

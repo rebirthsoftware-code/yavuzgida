@@ -3,14 +3,15 @@ import { MapPin, Phone, Mail, Clock, MessageCircle } from "lucide-react";
 import { PageShell, Field, inputCls } from "@/components/ui/PageShell";
 import { Button } from "@/components/ui/Button";
 import { getSiteConfig } from "@/lib/site-config";
-import { telHrefFor, whatsappHrefFor } from "@/lib/content";
+import { telHrefFor, whatsappHrefFor, t } from "@/lib/content";
 
 export const metadata: Metadata = { title: "İletişim" };
 
 export default async function Page() {
-  const { contact } = await getSiteConfig();
+  const config = await getSiteConfig();
+  const { contact } = config;
   return (
-    <PageShell title="İletişim" crumb="İletişim" lead="Sipariş, teklif ve tedarik soruları için bize ulaşın.">
+    <PageShell title="İletişim" crumb="İletişim" lead={t(config, "contact.lead")}>
       <div className="grid gap-6 lg:grid-cols-[1fr_1.2fr]">
         <div className="space-y-4">
           {[

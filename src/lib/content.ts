@@ -2,7 +2,9 @@
  * Yönetim panelinden düzenlenen site içeriği: tipler, varsayılanlar ve birleştirme kuralları.
  * Saf modül (sunucu + istemci). Veritabanı erişimi `server/content.ts`, demo deposu `lib/demo-content.ts` içindedir.
  */
-import type { Product, Variant, ProductTag } from "./types";
+import type { Product, Variant, ProductTag, Category } from "./types";
+import { categories as baseCategories } from "./categories";
+import { textOf } from "./texts";
 import { site } from "./site";
 import { references as defaultReferences, referenceStats as defaultReferenceStats } from "./references";
 
@@ -55,9 +57,44 @@ export type SiteConfig = {
   references: ReferenceCfg[];
   referenceStats: { value: string; label: string }[];
   blend: { minKg: number; leadTime: string; note: string };
-  /** Kategori başına ek ayar: gizle / ad / açıklama */
+  /** Kategori başına ek ayar: gizle / ad / açıklama (eski biçim; categoryTree varsa onun üstüne uygulanır) */
   categories: Record<string, { hidden?: boolean; name?: string; description?: string }>;
+  /** Yönetimden düzenlenen tam kategori ağacı; yoksa koddaki varsayılan liste kullanılır */
+  categoryTree?: Category[];
+  /** Serbest metinler (bkz. lib/texts.ts) */
+  texts: Record<string, string>;
+  /** Sık sorulan sorular */
+  faq: { q: string; a: string }[];
+  /** Sepet tutarına göre indirim kademeleri (₺) */
+  discountTiers: { min: number; amount: number }[];
 };
+
+export type FaqItem = { q: string; a: string };
+export type DiscountTierCfg = { min: number; amount: number };
+
+export const defaultFaq: FaqItem[] = [
+  { q: "Minimum sipariş tutarı var mı?", a: "Bireysel siparişlerde minimum tutar yoktur. Kurumsal fiyat listesi aylık alım hacmine göre düzenlenir." },
+  { q: "Kargo ücreti ne kadar?", a: "2.500 ₺ ve üzeri siparişlerde kargo ücretsizdir; altında 149 ₺ kargo ücreti uygulanır." },
+  { q: "Siparişim ne zaman kargoya verilir?", a: "Hafta içi 14:00'a kadar verilen siparişler aynı gün kargoya teslim edilir; teslimat 1–3 iş günüdür." },
+  { q: "Koli alımında fiyat düşer mi?", a: "Evet. Her ürünün ambalaj boylarında birim fiyat büyüdükçe düşer; ayrıca sepet tutarına göre kademeli indirim uygulanır." },
+  { q: "Numune alabilir miyim?", a: "Kurumsal müşterilerimize şurup, kahve ve toz içeceklerde ücretsiz numune gönderiyoruz; teklif formundan talep edebilirsiniz." },
+  { q: "Kurumsal fatura kesiyor musunuz?", a: "Evet, e-fatura mükellefiyiz. Ödeme adımında kurumsal fatura bilgilerinizi girebilirsiniz." },
+  { q: "İade koşulları nedir?", a: "Açılmamış ve ambalajı bozulmamış ürünler 14 gün içinde iade edilebilir." },
+];
+
+const baseDiscount: DiscountTierCfg[] = [
+  { min: 2000, amount: 50 },
+  { min: 2400, amount: 70 },
+  { min: 2900, amount: 140 },
+  { min: 3500, amount: 200 },
+  { min: 4100, amount: 246 },
+  { min: 4700, amount: 329 },
+  { min: 5300, amount: 424 },
+  { min: 5900, amount: 531 },
+  { min: 6500, amount: 650 },
+];
+for (let min = 7100, amount = 710; min <= 20000; min += 600, amount += 60) baseDiscount.push({ min, amount });
+export const defaultDiscountTiers: DiscountTierCfg[] = baseDiscount;
 
 export const defaultHero: HeroSlideCfg[] = [
   { id: "kahve", enabled: true, image: "kahve", tab: "Kahve", tabSub: "Taze kavrum çekirdekler", kicker: "Kahve · siparişe özel kavrum", title: "Kavurma tazeliğinde *espresso* çekirdekleri", text: "Tek orijinler ve imza harmanlar siparişinizle kavrulur, 48 saat içinde kapınızda. Koli alımında birim fiyat düşer.", chips: ["66 çeşit kahve", "48 saatte teslim", "Kolide %6–14 avantaj"], ctaLabel: "Kahveleri Keşfet", ctaHref: "/kategori/kahve", altLabel: "Çok satanlar", altHref: "/urunler?etiket=cok-satan", accent: "gold" },
@@ -93,6 +130,9 @@ export const defaultConfig: SiteConfig = {
   referenceStats: defaultReferenceStats,
   blend: { minKg: 10, leadTime: "7–10 iş günü", note: "Orijin fiyatları ve işçilik; kesin fiyat teklifle netleşir." },
   categories: {},
+  texts: {},
+  faq: defaultFaq,
+  discountTiers: defaultDiscountTiers,
 };
 
 /** Kayıtlı (kısmi) yapılandırmayı varsayılanların üstüne bindirir; eksik alanlar varsayılandan tamamlanır. */
@@ -114,6 +154,10 @@ export function mergeConfig(saved: unknown): SiteConfig {
     referenceStats: arr(defaultConfig.referenceStats, s.referenceStats),
     blend: obj(defaultConfig.blend, s.blend),
     categories: obj(defaultConfig.categories, s.categories),
+    categoryTree: Array.isArray(s.categoryTree) ? (s.categoryTree as Category[]) : undefined,
+    texts: obj(defaultConfig.texts, s.texts),
+    faq: arr(defaultConfig.faq, s.faq),
+    discountTiers: arr(defaultConfig.discountTiers, s.discountTiers),
   };
 }
 
@@ -200,10 +244,40 @@ export function mergeCatalog(base: Product[], patches: Record<string, ProductPat
   return out;
 }
 
+/** Metin anahtarı (bkz. lib/texts.ts) */
+export const t = (config: SiteConfig, key: string) => textOf(config.texts, key);
+
+/** Yayınlanan kategori ağacı: yönetimden düzenlenen ağaç (yoksa varsayılan) + eski ayarlar; gizliler düşer, sıraya dizilir. */
+export function effectiveCategories(config: SiteConfig, base: Category[] = baseCategories): Category[] {
+  const tree = config.categoryTree?.length ? config.categoryTree : base;
+  return applyCategoryOverrides(tree, config.categories)
+    .filter((c) => !c.hidden)
+    .slice()
+    .sort((a, b) => a.order - b.order);
+}
+
+/** Yönetim için tüm kategoriler (gizliler dâhil), sıralı. */
+export function allCategories(config: SiteConfig, base: Category[] = baseCategories): Category[] {
+  const tree = config.categoryTree?.length ? config.categoryTree : base;
+  return applyCategoryOverrides(tree, config.categories, true)
+    .slice()
+    .sort((a, b) => a.order - b.order);
+}
+
+/** Açık renkli arka plan: ana rengin çok açık tonu. */
+export function softColor(hex: string): string {
+  const m = /^#?([0-9a-f]{6})$/i.exec(hex.trim());
+  if (!m) return "#f3f4f6";
+  const n = parseInt(m[1], 16);
+  const r = (n >> 16) & 255, g = (n >> 8) & 255, b = n & 255;
+  const mix = (c: number) => Math.round(c + (255 - c) * 0.86);
+  return `#${[mix(r), mix(g), mix(b)].map((c) => c.toString(16).padStart(2, "0")).join("")}`;
+}
+
 /** Kategori ad/açıklama/gizleme ayarlarını uygular; gizli kategoriler listeden düşer. */
-export function applyCategoryOverrides<T extends { slug: string; name: string; description: string }>(cats: T[], overrides: SiteConfig["categories"]): T[] {
+export function applyCategoryOverrides<T extends { slug: string; name: string; description: string }>(cats: T[], overrides: SiteConfig["categories"], keepHidden = false): T[] {
   return cats
-    .filter((c) => !overrides[c.slug]?.hidden)
+    .filter((c) => keepHidden || !overrides[c.slug]?.hidden)
     .map((c) => {
       const o = overrides[c.slug];
       if (!o) return c;

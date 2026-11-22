@@ -1,8 +1,7 @@
 import Link from "next/link";
 import { Heart, Share2 } from "lucide-react";
 import type { Product } from "@/lib/types";
-import { getProducts, related, minPrice } from "@/lib/catalog";
-import { categoryMap } from "@/lib/categories";
+import { getProducts, related, minPrice, getCategories } from "@/lib/catalog";
 import { toIndex } from "@/lib/index-of";
 import { Breadcrumbs } from "@/components/ui/Breadcrumbs";
 import { Stars } from "@/components/ui/Stars";
@@ -15,9 +14,9 @@ import { ProductTabs } from "@/components/product/ProductTabs";
 
 /** Ürün detayı: mağaza ve anlaşmalı müşteri paneli ortak kullanır (base: "" | "/panel"). */
 export async function ProductDetail({ p, base = "" }: { p: Product; base?: string }) {
-  const cat = categoryMap[p.category];
+  const [relRaw, products, cats] = await Promise.all([related(p, 8), getProducts(), getCategories()]);
+  const cat = cats.find((c) => c.slug === p.category) ?? { slug: p.category, name: p.category, subcategories: [] as { slug: string; name: string }[] };
   const sub = cat.subcategories.find((s) => s.slug === p.subcategory);
-  const [relRaw, products] = await Promise.all([related(p, 8), getProducts()]);
   const rel = relRaw.map(toIndex);
   const others = products.filter((x) => x.brand === p.brand && x.slug !== p.slug).slice(0, 8).map(toIndex);
   const home = base ? { label: "Panel", href: base } : undefined;

@@ -28,10 +28,10 @@ function Countdown() {
   );
 }
 
-export function FlashDeals({ items }: { items: ProductIndex[] }) {
+export function FlashDeals({ items , title = "⚡ Flaş Ürünler", sub = "Gün sonuna kadar geçerli fiyatlar" }: { items: ProductIndex[] ; title?: string; sub?: string }) {
   return (
     <section className="rounded-xl border border-orange-100 bg-gradient-to-b from-orange-50 to-white p-4 sm:p-5">
-      <SectionHeading title="⚡ Flaş Ürünler" sub="Gün sonuna kadar geçerli fiyatlar" href="/urunler?etiket=indirim&sirala=populer">
+      <SectionHeading title={title} sub={sub} href="/urunler?etiket=indirim&sirala=populer">
         <span className="hidden items-center gap-2 text-xs font-semibold text-ink-600 sm:flex">
           <Zap className="size-4 text-orange-500" /> Bitimine
           <Countdown />

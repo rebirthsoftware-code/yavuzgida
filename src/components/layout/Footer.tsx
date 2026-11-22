@@ -1,8 +1,7 @@
 import Link from "next/link";
 import { Phone, Mail, MapPin, Clock, ShieldCheck, Truck, RotateCcw, Headset } from "lucide-react";
-import { site } from "@/lib/site";
 import { getCategories } from "@/lib/catalog";
-import { ConfigLink, ConfigValue } from "@/components/config/ConfigValue";
+import { ConfigLink, ConfigValue, TextValue } from "@/components/config/ConfigValue";
 import { Logo } from "@/components/ui/Logo";
 import { CopyrightYear } from "./CopyrightYear";
 import { InstagramIcon, FacebookIcon } from "@/components/ui/SocialIcons";
@@ -35,12 +34,12 @@ export async function Footer() {
       <div className="border-b border-white/5 bg-coal-950">
         <div className="mx-auto grid max-w-[1320px] grid-cols-2 gap-4 px-4 py-6 md:grid-cols-4">
           {[
-            { icon: Truck, t: "Aynı gün kargo", d: "14:00 öncesi siparişlerde" },
-            { icon: ShieldCheck, t: "Güvenli ödeme", d: "256-bit SSL · 3D Secure" },
-            { icon: RotateCcw, t: "14 gün iade", d: "Açılmamış ürünlerde" },
-            { icon: Headset, t: "Destek hattı", d: <ConfigValue path="contact.workingHours" /> },
-          ].map(({ icon: I, t, d }) => (
-            <div key={t} className="flex items-center gap-3">
+            { icon: Truck, t: <TextValue k="footer.strip1.title" />, d: <TextValue k="footer.strip1.text" />, key: "1" },
+            { icon: ShieldCheck, t: <TextValue k="footer.strip2.title" />, d: <TextValue k="footer.strip2.text" />, key: "2" },
+            { icon: RotateCcw, t: <TextValue k="footer.strip3.title" />, d: <TextValue k="footer.strip3.text" />, key: "3" },
+            { icon: Headset, t: <TextValue k="footer.strip4.title" />, d: <ConfigValue path="contact.workingHours" />, key: "4" },
+          ].map(({ icon: I, t, d, key }) => (
+            <div key={key} className="flex items-center gap-3">
               <span className="grid size-10 shrink-0 place-items-center rounded-full bg-white/5 text-gold-400">
                 <I className="size-5" />
               </span>
@@ -56,7 +55,7 @@ export async function Footer() {
       <div className="mx-auto grid max-w-[1320px] gap-8 px-4 py-10 md:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr_1.3fr]">
         <div>
           <Logo size="lg" />
-          <p className="mt-3 text-sm leading-relaxed text-ink-400">{site.description}</p>
+          <p className="mt-3 text-sm leading-relaxed text-ink-400"><TextValue k="footer.about" /></p>
           <div className="mt-4 flex gap-2">
             <ConfigLink kind="instagram" className="grid size-9 place-items-center rounded-full bg-white/5 text-ink-300 hover:bg-white/10 hover:text-gold-400">
               <InstagramIcon className="size-4" />

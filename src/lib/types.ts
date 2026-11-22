@@ -81,6 +81,8 @@ export type Category = {
   colorSoft: string;
   order: number;
   subcategories: Subcategory[];
+  /** Yönetimden gizlendi (mağazada görünmez) */
+  hidden?: boolean;
 };
 
 export type Brand = { slug: string; name: string };
