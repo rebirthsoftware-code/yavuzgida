@@ -1,17 +1,16 @@
 import type { Metadata } from "next";
 import { PageShell } from "@/components/ui/PageShell";
-import { site } from "@/lib/site";
+import { LegalText } from "@/components/ui/LegalText";
+import { legalTitles } from "@/lib/content";
+import { getSiteConfig } from "@/lib/site-config";
 
-export const metadata: Metadata = { title: "Teslimat ve Kargo" };
+export const metadata: Metadata = { title: legalTitles.teslimat };
 
-export default function Page() {
+export default async function Page() {
+  const { legal } = await getSiteConfig();
   return (
-    <PageShell title="Teslimat ve Kargo" crumb="Teslimat ve Kargo" narrow>
-      <div className="rounded-lg border border-ink-200 bg-white p-6 sm:p-8">
-        <p className="text-sm leading-relaxed text-ink-600">
-          Bu sayfa yer tutucudur. {site.legal.companyName} için hazırlanacak “Teslimat ve Kargo” metni hukuk danışmanı onayından sonra buraya eklenecektir.
-        </p>
-      </div>
+    <PageShell title={legalTitles.teslimat} crumb={legalTitles.teslimat} narrow>
+      <LegalText text={legal.texts.teslimat} />
     </PageShell>
   );
 }

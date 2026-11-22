@@ -1,7 +1,6 @@
 "use client";
 
 import { createContext, useCallback, useContext, useMemo, useState, useSyncExternalStore, type ReactNode } from "react";
-import { usePathname } from "next/navigation";
 import { cartCount, cartSubtotal, type CartItem } from "@/lib/cart";
 import { cartStore, panelStore } from "@/lib/cart-store";
 
@@ -32,9 +31,16 @@ type Ctx = {
 
 const CartContext = createContext<Ctx | null>(null);
 
-export function CartProvider({ children }: { children: ReactNode }) {
-  const pathname = usePathname();
-  const inPanel = pathname === PANEL_BASE || pathname.startsWith(PANEL_BASE + "/");
+const noopSub = () => () => {};
+/**
+ * Bu alt ağaç sunucu HTML'iyle eşleştirildi mi? Geç hidrate olan (Suspense içindeki) bileşenler
+ * sepet rozetini ancak bundan sonra çizer; aksi hâlde sunucu/istemci uyuşmazlığı oluşur.
+ */
+export function useHydrated(): boolean {
+  return useSyncExternalStore(noopSub, () => true, () => false);
+}
+
+export function CartProvider({ children, inPanel = false }: { children: ReactNode; inPanel?: boolean }) {
   const store = inPanel ? panelStore : cartStore;
   const { items, ready } = useSyncExternalStore(store.subscribe, store.get, store.getServer);
   const [catsOpen, setCatsOpen] = useState(false);

@@ -4,8 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Search, TrendingUp, ArrowUpRight } from "lucide-react";
-import indexJson from "@/data/catalog-index.json";
-import type { ProductIndex } from "@/lib/types";
+import { useCatalogIndex } from "@/lib/use-catalog-index";
 import { searchProducts } from "@/lib/search";
 import { categories, categoryMap } from "@/lib/categories";
 import { minPriceOf } from "@/lib/index-of";
@@ -13,7 +12,6 @@ import { formatPrice } from "@/lib/format";
 import { PackArt } from "@/components/product/PackArt";
 import { useCart } from "@/components/cart/CartProvider";
 
-const index = indexJson as ProductIndex[];
 const popular = ["Espresso çekirdek", "Karamel şurubu", "Yulaf sütü", "Karton bardak 12 oz", "Sıcak çikolata", "Matcha", "V60 filtre kağıdı", "Stick şeker"];
 
 /** Masaüstü arama kutusu: yazarken açılır öneri paneli, Enter ile listeye gider. */
@@ -23,7 +21,8 @@ export function SearchBox({ className = "" }: { className?: string }) {
   const ref = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const { showPrices, base } = useCart();
-  const results = useMemo(() => searchProducts(index, q, 6), [q]);
+  const index = useCatalogIndex();
+  const results = useMemo(() => searchProducts(index, q, 6), [index, q]);
   const cats = useMemo(() => {
     const n = q.trim().toLocaleLowerCase("tr-TR");
     if (n.length < 2) return [];

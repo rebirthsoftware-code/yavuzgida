@@ -10,12 +10,11 @@ import { ProductRail } from "@/components/product/ProductRail";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { BlendPromo } from "@/components/home/BlendPromo";
 import { References } from "@/components/home/References";
-import { bestSellers, newArrivals, discounted, categoryCounts, products, categories, brands } from "@/lib/catalog";
+import { bestSellers, newArrivals, discounted, categoryCounts, getProducts, getBrands, getCategories } from "@/lib/catalog";
 import { toIndex } from "@/lib/index-of";
 
-export default function HomePage() {
-  const counts = categoryCounts();
-  const best = bestSellers(60);
+export default async function HomePage() {
+  const [counts, best, products, brands, deals, fresh, categories] = await Promise.all([categoryCounts(), bestSellers(60), getProducts(), getBrands(), discounted(12), newArrivals(12), getCategories()]);
   const groups = [
     { key: "all", label: "Tümü", items: best.slice(0, 12).map(toIndex) },
     ...categories.slice(0, 6).map((c) => ({ key: c.slug, label: c.name, items: best.filter((p) => p.category === c.slug).slice(0, 12).map(toIndex) })).filter((g) => g.items.length >= 4),
@@ -31,10 +30,10 @@ export default function HomePage() {
       </section>
 
       <section>
-        <CategoryCircles />
+        <CategoryCircles categories={categories} />
       </section>
 
-      <FlashDeals items={discounted(12).map(toIndex)} />
+      <FlashDeals items={deals.map(toIndex)} />
 
       <BlendPromo />
 
@@ -44,12 +43,12 @@ export default function HomePage() {
 
       <section>
         <SectionHeading title="Popüler Kategoriler" href="/urunler" />
-        <PopularCategories samples={samples} counts={counts} />
+        <PopularCategories samples={samples} counts={counts} categories={categories} />
       </section>
 
       <section>
         <SectionHeading title="Yeni Gelenler" sub="Rafa bu ay eklenen ürünler" href="/urunler?etiket=yeni&sirala=yeni" />
-        <ProductRail items={newArrivals(12).map(toIndex)} />
+        <ProductRail items={fresh.map(toIndex)} />
       </section>
 
       <section>

@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { Phone, Mail, MapPin, Clock, ShieldCheck, Truck, RotateCcw, Headset } from "lucide-react";
 import { site } from "@/lib/site";
-import { categories } from "@/lib/categories";
+import { getCategories } from "@/lib/catalog";
+import { ConfigLink, ConfigValue } from "@/components/config/ConfigValue";
 import { Logo } from "@/components/ui/Logo";
 import { CopyrightYear } from "./CopyrightYear";
 import { InstagramIcon, FacebookIcon } from "@/components/ui/SocialIcons";
@@ -26,7 +27,8 @@ const cols = {
   ],
 };
 
-export function Footer() {
+export async function Footer() {
+  const categories = await getCategories();
   return (
     <footer className="mt-16 bg-coal-900 pb-20 text-ink-300 md:pb-0">
       {/* Güven şeridi */}
@@ -36,7 +38,7 @@ export function Footer() {
             { icon: Truck, t: "Aynı gün kargo", d: "14:00 öncesi siparişlerde" },
             { icon: ShieldCheck, t: "Güvenli ödeme", d: "256-bit SSL · 3D Secure" },
             { icon: RotateCcw, t: "14 gün iade", d: "Açılmamış ürünlerde" },
-            { icon: Headset, t: "Destek hattı", d: site.contact.workingHours },
+            { icon: Headset, t: "Destek hattı", d: <ConfigValue path="contact.workingHours" /> },
           ].map(({ icon: I, t, d }) => (
             <div key={t} className="flex items-center gap-3">
               <span className="grid size-10 shrink-0 place-items-center rounded-full bg-white/5 text-gold-400">
@@ -56,12 +58,12 @@ export function Footer() {
           <Logo size="lg" />
           <p className="mt-3 text-sm leading-relaxed text-ink-400">{site.description}</p>
           <div className="mt-4 flex gap-2">
-            <a href={site.social.instagram} target="_blank" rel="noopener" aria-label="Instagram" className="grid size-9 place-items-center rounded-full bg-white/5 text-ink-300 hover:bg-white/10 hover:text-gold-400">
+            <ConfigLink kind="instagram" className="grid size-9 place-items-center rounded-full bg-white/5 text-ink-300 hover:bg-white/10 hover:text-gold-400">
               <InstagramIcon className="size-4" />
-            </a>
-            <a href={site.social.facebook} target="_blank" rel="noopener" aria-label="Facebook" className="grid size-9 place-items-center rounded-full bg-white/5 text-ink-300 hover:bg-white/10 hover:text-gold-400">
+            </ConfigLink>
+            <ConfigLink kind="facebook" className="grid size-9 place-items-center rounded-full bg-white/5 text-ink-300 hover:bg-white/10 hover:text-gold-400">
               <FacebookIcon className="size-4" />
-            </a>
+            </ConfigLink>
           </div>
         </div>
         {Object.entries(cols).map(([t, items]) => (
@@ -83,21 +85,21 @@ export function Footer() {
           <ul className="mt-3 space-y-2.5">
             <li className="flex gap-2">
               <Phone className="mt-0.5 size-4 shrink-0 text-orange-500" />
-              <a href={site.contact.phoneHref} className="font-semibold text-white">
-                {site.contact.phone}
-              </a>
+              <ConfigLink kind="tel" className="font-semibold text-white">
+                <ConfigValue path="contact.phone" />
+              </ConfigLink>
             </li>
             <li className="flex gap-2">
               <Mail className="mt-0.5 size-4 shrink-0 text-orange-500" />
-              {site.contact.email}
+              <ConfigValue path="contact.email" />
             </li>
             <li className="flex gap-2">
               <MapPin className="mt-0.5 size-4 shrink-0 text-orange-500" />
-              {site.contact.address}
+              <ConfigValue path="contact.address" />
             </li>
             <li className="flex gap-2">
               <Clock className="mt-0.5 size-4 shrink-0 text-orange-500" />
-              {site.contact.workingHours}
+              <ConfigValue path="contact.workingHours" />
             </li>
           </ul>
         </div>
@@ -119,7 +121,7 @@ export function Footer() {
       <div className="border-t border-white/5 bg-coal-950">
         <div className="mx-auto flex max-w-[1320px] flex-wrap items-center justify-between gap-3 px-4 py-4 text-xs text-ink-400">
           <p>
-            © <CopyrightYear /> {site.legal.companyName} · Tüm hakları saklıdır.{" "}
+            © <CopyrightYear /> <ConfigValue path="legal.companyName" /> · Tüm hakları saklıdır.{" "}
             <Link href="/yonetim" className="ml-1 text-ink-500 hover:text-gold-400">
               Yönetim
             </Link>

@@ -2,8 +2,9 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { site } from "@/lib/site";
-import { CartProvider } from "@/components/cart/CartProvider";
 import { PackSprite } from "@/components/product/PackSprite";
+import { ConfigProvider } from "@/components/config/ConfigProvider";
+import { getSiteConfig } from "@/lib/site-config";
 
 const inter = Inter({ variable: "--font-inter", subsets: ["latin", "latin-ext"], display: "swap" });
 
@@ -23,12 +24,13 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const config = await getSiteConfig();
   return (
     <html lang="tr" className={`${inter.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col">
         <PackSprite />
-        <CartProvider>{children}</CartProvider>
+        <ConfigProvider config={config}>{children}</ConfigProvider>
       </body>
     </html>
   );

@@ -27,6 +27,6 @@ export function buildOrderMessage(items: CartItem[], form: OrderForm, withPrices
   return lines.join("\n");
 }
 
-export function whatsappLink(message: string): string {
-  return `https://wa.me/${site.contact.whatsapp}?text=${encodeURIComponent(message)}`;
+export function whatsappLink(message: string, number: string = site.contact.whatsapp): string {
+  return `https://wa.me/${number.replace(/\D/g, "")}?text=${encodeURIComponent(message)}`;
 }

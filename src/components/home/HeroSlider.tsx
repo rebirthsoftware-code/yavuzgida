@@ -2,7 +2,9 @@
 
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
-import { useCallback, useEffect, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from "react";
+import { splitHighlight, type HeroAccent, type HeroSlideCfg } from "@/lib/content";
+import { useSiteConfig } from "@/components/config/ConfigProvider";
 import { ChevronLeft, ChevronRight, ArrowRight, Coffee, BadgePercent, CakeSlice, Sparkles, Store, Truck, Clock, Package, FileText, MessageCircle, Leaf, Snowflake } from "lucide-react";
 
 const BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
@@ -21,141 +23,72 @@ type Slide = {
   chips: { icon: ReactNode; text: string }[];
   cta: { label: string; href: string };
   alt2?: { label: string; href: string };
-  accent: string; // vurgu metin rengi
+  accent: string;
   ctaCls: string;
-  pos?: string; // masaüstü object-position
+  pos?: string;
 };
 
-const slides: Slide[] = [
-  {
-    key: "kahve",
-    img: "kahve",
-    alt: "Çuvalda taze kavrulmuş kahve çekirdekleri",
-    icon: <Coffee className="size-4" />,
-    tab: "Kahve",
-    tabSub: "Taze kavrum çekirdekler",
-    kicker: "Kahve · siparişe özel kavrum",
+const ACCENT: Record<HeroAccent, { text: string; cta: string }> = {
+  gold: { text: "text-gold-400", cta: "bg-gold text-coal-950 hover:brightness-105" },
+  orange: { text: "text-orange-400", cta: "bg-orange-500 text-white hover:bg-orange-600" },
+  pink: { text: "text-pink-300", cta: "bg-white text-ink-900 hover:bg-pink-50" },
+  sky: { text: "text-sky-300", cta: "bg-white text-ink-900 hover:bg-sky-50" },
+};
+const ICONS: Record<string, ReactNode> = {
+  kahve: <Coffee className="size-4" />,
+  firsat: <BadgePercent className="size-4" />,
+  pasta: <CakeSlice className="size-4" />,
+  harman: <Sparkles className="size-4" />,
+  panel: <Store className="size-4" />,
+};
+const CHIP_ICONS = [<Coffee key="a" className="size-3.5" />, <Clock key="b" className="size-3.5" />, <BadgePercent key="c" className="size-3.5" />, <Truck key="d" className="size-3.5" />, <Package key="e" className="size-3.5" />, <Snowflake key="f" className="size-3.5" />, <Leaf key="g" className="size-3.5" />, <FileText key="h" className="size-3.5" />, <MessageCircle key="i" className="size-3.5" />];
+const POS: Record<string, string> = { kahve: "center 60%", firsat: "center 40%", pasta: "center 45%", harman: "center 50%", panel: "center 55%" };
+
+const chipIcon = (text: string, k: number) => {
+  const t = text.toLowerCase();
+  if (/kargo|teslim/.test(t)) return <Truck className="size-3.5" />;
+  if (/saat|gün|hızlı/.test(t)) return <Clock className="size-3.5" />;
+  if (/%|indirim|avantaj|fiyat/.test(t)) return <BadgePercent className="size-3.5" />;
+  if (/koli|kg|paket|adet/.test(t)) return <Package className="size-3.5" />;
+  if (/soğuk|dondur/.test(t)) return <Snowflake className="size-3.5" />;
+  if (/whatsapp|mesaj/.test(t)) return <MessageCircle className="size-3.5" />;
+  if (/pdf|fiş|belge/.test(t)) return <FileText className="size-3.5" />;
+  if (/katkısız|organik|doğal/.test(t)) return <Leaf className="size-3.5" />;
+  if (/kahve|orijin|kavur/.test(t)) return <Coffee className="size-3.5" />;
+  return CHIP_ICONS[k % CHIP_ICONS.length];
+};
+
+const imageSrc = (image: string, variant: "" | "-m" | "-t") => (/^(https?:)?\/\//.test(image) || image.startsWith("/") ? image : `${BASE}/hero/${image}${variant}.webp`);
+
+function toSlide(c: HeroSlideCfg): Slide {
+  const a = ACCENT[c.accent] ?? ACCENT.gold;
+  return {
+    key: c.id,
+    img: c.image,
+    alt: c.tab,
+    icon: ICONS[c.image] ?? <Sparkles className="size-4" />,
+    tab: c.tab,
+    tabSub: c.tabSub,
+    kicker: c.kicker,
     title: (
       <>
-        Kavurma tazeliğinde <em className="not-italic text-gold-400">espresso</em> çekirdekleri
+        {splitHighlight(c.title).map((part, i) => (part.accent ? <em key={i} className={`not-italic ${a.text}`}>{part.text}</em> : <span key={i}>{part.text}</span>))}
       </>
     ),
-    text: "Tek orijinler ve imza harmanlar siparişinizle kavrulur, 48 saat içinde kapınızda. Koli alımında birim fiyat düşer.",
-    chips: [
-      { icon: <Coffee className="size-3.5" />, text: "66 çeşit kahve" },
-      { icon: <Clock className="size-3.5" />, text: "48 saatte teslim" },
-      { icon: <BadgePercent className="size-3.5" />, text: "Kolide %6–14 avantaj" },
-    ],
-    cta: { label: "Kahveleri Keşfet", href: "/kategori/kahve" },
-    alt2: { label: "Çok satanlar", href: "/urunler?etiket=cok-satan" },
-    accent: "text-gold-400",
-    ctaCls: "bg-gold text-coal-950 hover:brightness-105",
-    pos: "center 60%",
-  },
-  {
-    key: "firsat",
-    img: "firsat",
-    alt: "Kafede latte bardaklarıyla kadeh kaldıran eller",
-    icon: <BadgePercent className="size-4" />,
-    tab: "Haftanın Fırsatları",
-    tabSub: "%25'e varan indirim",
-    kicker: "Haftanın fırsatları",
-    title: (
-      <>
-        Şurup, sos ve sıcak çikolatada <em className="not-italic text-orange-400">%25&apos;e varan</em> indirim
-      </>
-    ),
-    text: "Kış barı için stok yenileme zamanı: karamel, fındık, beyaz çikolata ve chai şurupları fırsat fiyatıyla. Stoklarla sınırlıdır.",
-    chips: [
-      { icon: <BadgePercent className="size-3.5" />, text: "Sepette ek %4 (5.000 ₺ üzeri)" },
-      { icon: <Truck className="size-3.5" />, text: "2.500 ₺ üzeri kargo bedava" },
-      { icon: <Clock className="size-3.5" />, text: "14:00'a kadar aynı gün kargo" },
-    ],
-    cta: { label: "Fırsatları Gör", href: "/urunler?etiket=indirim" },
-    alt2: { label: "Tüm şuruplar", href: "/kategori/surup-sos" },
-    accent: "text-orange-400",
-    ctaCls: "bg-orange-500 text-white hover:bg-orange-600",
-    pos: "center 40%",
-  },
-  {
-    key: "pasta",
-    img: "pasta",
-    alt: "Çikolata soslu, kremalı bütün pasta",
-    icon: <CakeSlice className="size-4" />,
-    tab: "Pasta & Tatlı",
-    tabSub: "180'den fazla çeşit",
-    kicker: "Pasta & Tatlı · 180+ çeşit",
-    title: (
-      <>
-        Vitrininizi dolduran <em className="not-italic text-pink-300">pastalar</em>, dilim dilim
-      </>
-    ),
-    text: "Bütün pasta, dilim ve tepsi tatlılar soğuk zincirle gelir; çözündür, servis et. Kafe vitrini için tasarlanmış porsiyonlar.",
-    chips: [
-      { icon: <Snowflake className="size-3.5" />, text: "Soğuk zincir sevkiyat" },
-      { icon: <Package className="size-3.5" />, text: "12'li kolide avantaj" },
-      { icon: <Leaf className="size-3.5" />, text: "Katkısız seçenekler" },
-    ],
-    cta: { label: "Pastaları İncele", href: "/kategori/pasta-tatli" },
-    alt2: { label: "Dilim pastalar", href: "/kategori/pasta-tatli/dilim-pastalar" },
-    accent: "text-pink-300",
-    ctaCls: "bg-white text-ink-900 hover:bg-pink-50",
-    pos: "center 45%",
-  },
-  {
-    key: "harman",
-    img: "harman",
-    alt: "Yakın plan kavrulmuş kahve çekirdekleri",
-    icon: <Sparkles className="size-4" />,
-    tab: "Özel Harman",
-    tabSub: "Kendi markanızla espresso",
-    kicker: "Private label · Özel harman",
-    title: (
-      <>
-        Kendi markanızla <em className="not-italic text-gold-400">espresso harmanı</em> oluşturun
-      </>
-    ),
-    text: "Orijin oranlarını belirleyin, kavurma derecesini seçin, markanızın adını yazın. Yavuz Gıda kavursun, etiketlesin, göndersin.",
-    chips: [
-      { icon: <Coffee className="size-3.5" />, text: "11 orijin, 3 kavurma derecesi" },
-      { icon: <Store className="size-3.5" />, text: "Markanızın adıyla etiket" },
-      { icon: <Package className="size-3.5" />, text: "Minimum 10 kg" },
-    ],
-    cta: { label: "Harmanınızı Oluşturun", href: "/ozel-harman" },
-    alt2: { label: "Nasıl çalışır?", href: "/ozel-harman#nasil" },
-    accent: "text-gold-400",
-    ctaCls: "bg-gold text-coal-950 hover:brightness-105",
-    pos: "center 50%",
-  },
-  {
-    key: "panel",
-    img: "panel",
-    alt: "Modern bir kafenin iç mekânı",
-    icon: <Store className="size-4" />,
-    tab: "Anlaşmalı Müşteri",
-    tabSub: "Fiyatsız sipariş paneli",
-    kicker: "Anlaşmalı müşteriler için",
-    title: (
-      <>
-        Listele, onayla; siparişiniz <em className="not-italic text-sky-300">WhatsApp&apos;a</em> düşsün
-      </>
-    ),
-    text: "Çalıştığımız kafeler için üyeliksiz sipariş paneli: ürünleri listeye ekleyin, firma adınızla onaylayın; numaralı PDF fiş saniyeler içinde bize ulaşsın.",
-    chips: [
-      { icon: <MessageCircle className="size-3.5" />, text: "Tek tıkla WhatsApp" },
-      { icon: <FileText className="size-3.5" />, text: "Numaralı PDF fiş" },
-      { icon: <Store className="size-3.5" />, text: "Üyelik ve şifre yok" },
-    ],
-    cta: { label: "Panele Gir", href: "/panel" },
-    alt2: { label: "Kurumsal satış", href: "/kurumsal" },
-    accent: "text-sky-300",
-    ctaCls: "bg-white text-ink-900 hover:bg-sky-50",
-    pos: "center 55%",
-  },
-];
+    text: c.text,
+    chips: c.chips.filter(Boolean).map((t, k) => ({ icon: chipIcon(t, k), text: t })),
+    cta: { label: c.ctaLabel, href: c.ctaHref || "/" },
+    alt2: c.altLabel ? { label: c.altLabel, href: c.altHref || "/" } : undefined,
+    accent: a.text,
+    ctaCls: a.cta,
+    pos: POS[c.image],
+  };
+}
 
 export function HeroSlider() {
-  const n = slides.length;
+  const cfg = useSiteConfig().hero;
+  const slides = useMemo(() => cfg.filter((c) => c.enabled !== false).map(toSlide), [cfg]);
+  const n = Math.max(1, slides.length);
   const [i, setI] = useState(0);
   const [paused, setPaused] = useState(false);
   const [dragging, setDragging] = useState(false);
@@ -182,7 +115,8 @@ export function HeroSlider() {
     setDragging(false);
   };
   const running = !(paused || dragging);
-  const s = slides[i];
+  const s = slides[Math.min(i, slides.length - 1)];
+  if (!s) return null;
 
   return (
     <section
@@ -209,10 +143,10 @@ export function HeroSlider() {
       {slides.map((sl, k) => (
         <div key={sl.key} className={`absolute inset-0 transition-opacity duration-[1100ms] ease-out ${k === i ? "opacity-100" : "opacity-0"}`} aria-hidden={k !== i}>
           <picture>
-            <source media="(max-width: 639px)" srcSet={`${BASE}/hero/${sl.img}-m.webp`} />
+            <source media="(max-width: 639px)" srcSet={imageSrc(sl.img, "-m")} />
             <img
               key={k === i ? `kb-${i}` : sl.key}
-              src={`${BASE}/hero/${sl.img}.webp`}
+              src={imageSrc(sl.img, "")}
               alt={sl.alt}
               className={`h-full w-full object-cover ${k === i && running ? "hero-kb" : ""}`}
               style={{ objectPosition: sl.pos }}
@@ -277,7 +211,7 @@ export function HeroSlider() {
         <div className="flex gap-2 overflow-x-auto no-scrollbar">
           {slides.map((sl, k) => (
             <button key={sl.key} onClick={() => go(k)} aria-label={`Slayt ${k + 1}: ${sl.tab}`} className={`relative flex min-w-[170px] flex-1 items-center gap-2.5 overflow-hidden rounded-xl border px-2.5 py-2 text-left backdrop-blur transition ${k === i ? "border-white/40 bg-white/15" : "border-white/10 bg-black/25 hover:bg-white/10"}`}>
-              <img src={`${BASE}/hero/${sl.img}-t.webp`} alt="" className={`h-10 w-14 shrink-0 rounded-md object-cover transition ${k === i ? "" : "opacity-70"}`} draggable={false} />
+              <img src={imageSrc(sl.img, "-t")} alt="" className={`h-10 w-14 shrink-0 rounded-md object-cover transition ${k === i ? "" : "opacity-70"}`} draggable={false} />
               <span className="min-w-0">
                 <span className={`block truncate text-[0.8rem] font-bold ${k === i ? "text-white" : "text-white/85"}`}>{sl.tab}</span>
                 <span className="block truncate text-[0.68rem] text-white/60">{sl.tabSub}</span>

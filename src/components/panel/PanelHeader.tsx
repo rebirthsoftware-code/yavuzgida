@@ -5,14 +5,18 @@ import { usePathname } from "next/navigation";
 import { ClipboardList, Store, ArrowLeft } from "lucide-react";
 import { MobileSearchBar } from "@/components/layout/MobileBits";
 import { ScrollCompact } from "@/components/layout/ScrollCompact";
-import { useCart } from "@/components/cart/CartProvider";
+import { useCart, useHydrated } from "@/components/cart/CartProvider";
 import { Logo } from "@/components/ui/Logo";
 import { SearchBox } from "@/components/layout/SearchBox";
-import { categories } from "@/lib/categories";
+import { categories as baseCategories } from "@/lib/categories";
+import { applyCategoryOverrides } from "@/lib/content";
+import { useSiteConfig } from "@/components/config/ConfigProvider";
 
 /** Anlaşmalı müşteri paneli başlığı: fiyatsız katalog, sipariş listesi, mağazaya dönüş. */
 export function PanelHeader() {
-  const { count, ready } = useCart();
+  const categories = applyCategoryOverrides(baseCategories, useSiteConfig().categories);
+  const { count, ready: storeReady } = useCart();
+  const ready = useHydrated() && storeReady;
   const pathname = usePathname();
   return (
     <header className="m-header sticky top-0 z-40 bg-coal-900 text-white shadow-[0_1px_0_rgb(255_255_255/0.06)]">

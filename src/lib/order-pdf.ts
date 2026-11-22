@@ -19,7 +19,7 @@ const fmtDate = (iso: string) => new Date(iso).toLocaleString("tr-TR", { day: "2
  * Sipariş fişini gerçek PDF dosyası olarak üretir (A4, Türkçe karakter destekli Roboto gömülü).
  * jsPDF yalnızca tarayıcıda, ihtiyaç anında yüklenir.
  */
-export async function buildOrderPdf(order: PanelOrder): Promise<Blob> {
+export async function buildOrderPdf(order: PanelOrder, supplier: { phone: string; email: string; companyName: string } = { phone: site.contact.phone, email: site.contact.email, companyName: site.legal.companyName }): Promise<Blob> {
   const [{ jsPDF }, { default: autoTable }, regular, bold, logo] = await Promise.all([
     import("jspdf"),
     import("jspdf-autotable"),
@@ -68,7 +68,7 @@ export async function buildOrderPdf(order: PanelOrder): Promise<Blob> {
     });
   };
   block(M, "Müşteri", [order.form.firm, order.form.name, order.form.phone].filter(Boolean));
-  block(W / 2 + 4, "Tedarikçi", [site.name, site.contact.phone, site.contact.email, site.legal.companyName]);
+  block(W / 2 + 4, "Tedarikçi", [site.name, supplier.phone, supplier.email, supplier.companyName]);
   y += 30;
   if (order.form.note) {
     doc.setFont("Roboto", "bold");

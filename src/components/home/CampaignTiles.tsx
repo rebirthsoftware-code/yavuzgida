@@ -1,26 +1,31 @@
+"use client";
+
 import Link from "next/link";
-import { Truck, Boxes, BadgePercent, Building2 } from "lucide-react";
+import { useSiteConfig } from "@/components/config/ConfigProvider";
+import { Truck, Boxes, BadgePercent, Building2, Store, Coffee } from "lucide-react";
+import type { TileIcon, TileStyle } from "@/lib/content";
+
+const ICONS: Record<TileIcon, typeof Truck> = { truck: Truck, percent: BadgePercent, boxes: Boxes, building: Building2, store: Store, coffee: Coffee };
+export const TILE_STYLES: Record<TileStyle, string> = { green: "banner-d text-white", orange: "banner-b text-white", blue: "banner-a text-white", white: "bg-white border border-ink-200 text-ink-900", coal: "bg-coal-900 text-white" };
 
 export function CampaignTiles() {
-  const tiles = [
-    { icon: Truck, t: "2.500 ₺ üzeri kargo bedava", d: "Türkiye geneli 81 il", cls: "banner-d text-white", href: "/teslimat-ve-kargo" },
-    { icon: BadgePercent, t: "Sepette ek indirim", d: "5.000 ₺ üzeri alışverişte %4", cls: "banner-b text-white", href: "/urunler" },
-    { icon: Boxes, t: "Koli fiyatı avantajı", d: "6'lı ve 12'li kolide birim fiyat düşer", cls: "banner-a text-white", href: "/urunler" },
-    { icon: Building2, t: "Kurumsal vade", d: "Onaylı hesaplara 30 gün", cls: "bg-white border border-ink-200 text-ink-900", href: "/kurumsal" },
-  ];
+  const tiles = useSiteConfig().tiles;
   return (
     <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-      {tiles.map(({ icon: I, t, d, cls, href }) => (
-        <Link key={t} href={href} className={`flex items-center gap-3 rounded-xl p-4 transition hover:-translate-y-0.5 hover:shadow-hover ${cls}`}>
-          <span className="grid size-11 shrink-0 place-items-center rounded-full bg-white/20">
-            <I className="size-5" />
-          </span>
-          <span>
-            <span className="block text-sm font-bold leading-tight">{t}</span>
-            <span className="block text-xs opacity-80">{d}</span>
-          </span>
-        </Link>
-      ))}
+      {tiles.map((t) => {
+        const I = ICONS[t.icon] ?? Truck;
+        return (
+          <Link key={t.id} href={t.href || "/"} className={`flex items-center gap-3 rounded-xl p-4 transition hover:-translate-y-0.5 hover:shadow-hover ${TILE_STYLES[t.style] ?? TILE_STYLES.white}`}>
+            <span className="grid size-11 shrink-0 place-items-center rounded-full bg-white/20">
+              <I className="size-5" />
+            </span>
+            <span>
+              <span className="block text-sm font-bold leading-tight">{t.title}</span>
+              <span className="block text-xs opacity-80">{t.text}</span>
+            </span>
+          </Link>
+        );
+      })}
     </div>
   );
 }

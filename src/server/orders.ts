@@ -1,7 +1,8 @@
 import type { InValue, Row } from "@libsql/client";
 import { db } from "./db";
 import { getPaytrToken, paymentDemoMode, paytrTestMode } from "./paytr";
-import { products } from "@/lib/catalog";
+import { getProducts } from "@/lib/catalog";
+import { getSiteConfig } from "@/lib/site-config";
 import { site } from "@/lib/site";
 import { computeDiscount } from "@/lib/discount";
 import { sendPushToAdmins } from "./push";
@@ -42,7 +43,8 @@ export interface ComputedOrder {
 }
 
 /** Sepeti katalog fiyatlarıyla yeniden hesaplar (istemciden gelen fiyatlara güvenilmez). */
-export function computeOrder(items: { productSlug: string; variantId: string; quantity: number }[], paymentMethod: PaymentMethod): ComputedOrder {
+export async function computeOrder(items: { productSlug: string; variantId: string; quantity: number }[], paymentMethod: PaymentMethod): Promise<ComputedOrder> {
+  const [products, config] = await Promise.all([getProducts(), getSiteConfig()]);
   const lines: OrderLine[] = [];
   for (const it of items) {
     const product = products.find((p) => p.slug === it.productSlug);
@@ -61,7 +63,8 @@ export function computeOrder(items: { productSlug: string; variantId: string; qu
     });
   }
   const subtotal = Math.round(lines.reduce((s, l) => s + l.lineTotal, 0) * 100) / 100;
-  const { freeShippingThreshold, shippingFee, codFee } = site.commerce;
+  const { freeShippingThreshold, shippingFee } = config.commerce;
+  const codFee = 0;
   const shipping = subtotal === 0 || subtotal >= freeShippingThreshold ? 0 : shippingFee;
   const cod = 0;
   void paymentMethod;
@@ -140,7 +143,7 @@ export async function createOrder(body: CreateOrderBody, userIp: string): Promis
   if (!email.includes("@") || phone.length < 10 || !c.fullName || !c.address || !c.city) return { ok: false, status: 400, reason: "Müşteri bilgileri eksik" };
   const demo = paymentMethod === "kart" && paymentDemoMode();
 
-  const order = computeOrder(body.items ?? [], paymentMethod);
+  const order = await computeOrder(body.items ?? [], paymentMethod);
   if (order.lines.length === 0 || order.total <= 0) return { ok: false, status: 400, reason: "Sepet boş veya ürünler stokta değil" };
 
   const orderNo = generateOrderNo();

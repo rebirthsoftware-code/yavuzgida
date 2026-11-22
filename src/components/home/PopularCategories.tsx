@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import type { ProductIndex } from "@/lib/types";
-import { categories } from "@/lib/categories";
+import type { Category } from "@/lib/types";
 import { PackArt } from "@/components/product/PackArt";
 
-export function PopularCategories({ samples, counts }: { samples: Record<string, ProductIndex[]>; counts: Record<string, number> }) {
+export function PopularCategories({ samples, counts , categories }: { samples: Record<string, ProductIndex[]>; counts: Record<string, number> ; categories: Category[] }) {
   const picks = categories.slice(0, 8);
   return (
     <div className="grid grid-cols-2 gap-3 md:grid-cols-4">

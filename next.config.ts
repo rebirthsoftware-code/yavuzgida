@@ -16,7 +16,7 @@ const nextConfig: NextConfig = {
   env: { NEXT_PUBLIC_BASE_PATH: basePath },
   images: {
     unoptimized: pages,
-    remotePatterns: [{ protocol: "https", hostname: "cdn.jsdelivr.net" }, { protocol: "https", hostname: "wsrv.nl" }],
+    remotePatterns: [{ protocol: "https", hostname: "**" }],
   },
   turbopack: {
     rules: {

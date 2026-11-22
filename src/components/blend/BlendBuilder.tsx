@@ -7,6 +7,7 @@ import { PackArt } from "@/components/product/PackArt";
 import { formatPrice } from "@/lib/format";
 import { whatsappLink } from "@/lib/whatsapp";
 import { site } from "@/lib/site";
+import { useSiteConfig } from "@/components/config/ConfigProvider";
 import { inputCls } from "@/components/ui/PageShell";
 
 type Origin = { id: string; name: string; country: string; species: "arabica" | "robusta"; price: number; notes: string; body: number; acidity: number; sweet: number };
@@ -70,6 +71,8 @@ function Bar({ label, v }: { label: string; v: number }) {
 const ROAST_LABOR_PER_KG = 140; // kavurma + markalama işçiliği (yer tutucu)
 
 export function BlendBuilder() {
+  const { contact: siteContact, blend: blendCfg } = useSiteConfig();
+  void blendCfg;
   const { add, showPrices } = useCart();
   const [mix, setMix] = useState<Record<string, number>>(PRESETS[1].mix);
   const [roast, setRoast] = useState("orta");
@@ -306,7 +309,7 @@ export function BlendBuilder() {
             {done ? <Check className="size-5" /> : <ShoppingCart className="size-5" />}
             {done ? "Eklendi" : showPrices ? "Sepete Ekle" : "Listeye Ekle"}
           </button>
-          <a href={valid ? whatsappLink(waMessage) : undefined} onClick={(e) => !valid && e.preventDefault()} target="_blank" rel="noopener" className={`mt-2 flex h-11 w-full items-center justify-center gap-2 rounded-lg border text-sm font-semibold ${valid ? "border-[#25d366] text-[#128c4a] hover:bg-[#25d366]/10" : "cursor-not-allowed border-ink-200 text-ink-400"}`}>
+          <a href={valid ? whatsappLink(waMessage, siteContact.whatsapp) : undefined} onClick={(e) => !valid && e.preventDefault()} target="_blank" rel="noopener" className={`mt-2 flex h-11 w-full items-center justify-center gap-2 rounded-lg border text-sm font-semibold ${valid ? "border-[#25d366] text-[#128c4a] hover:bg-[#25d366]/10" : "cursor-not-allowed border-ink-200 text-ink-400"}`}>
             <MessageCircle className="size-4" /> WhatsApp&apos;tan talep gönder
           </a>
           {!valid && <p className="mt-2 text-center text-[0.7rem] text-ink-400">{total !== 100 ? "Oranların toplamı %100 olmalı." : brand.trim().length < 2 ? "Marka adını yazın." : `Minimum ${MIN_KG} kg.`}</p>}

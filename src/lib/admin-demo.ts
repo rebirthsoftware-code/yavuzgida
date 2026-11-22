@@ -9,6 +9,10 @@
 import type { ApiOrder, OrderStatus, OrderEvent, PanelApiOrder, PanelStatus, PanelStats, AdminStats, AdminListParams, AdminPatch } from "./api";
 import type { ProductIndex } from "./types";
 import { listPanelOrders } from "./panel-order";
+import { applyPatch, CUSTOM_PREFIX, slugify, type ProductPatch, type SiteConfig } from "./content";
+import { readDemoContent, demoSaveConfig, demoSavePatch, demoSaveCustom, demoRemoveProduct } from "./demo-content";
+import { parseCsv, rowsToImport } from "./csv";
+import type { Product } from "./types";
 
 export const DEMO_PASSWORD = "demo";
 const ORDERS_KEY = "yavuz-demo-orders-v1";
@@ -191,7 +195,85 @@ function allPanelOrders(): PanelApiOrder[] {
 
 const paginate = <T,>(arr: T[], page = 1, size = 30) => ({ page, pages: Math.max(1, Math.ceil(arr.length / size)), total: arr.length, slice: arr.slice((page - 1) * size, page * size) });
 
+type AdminProduct = Product & { hidden: boolean; custom: boolean; patched: boolean };
+let baseCache: Product[] | null = null;
+async function baseProducts(): Promise<Product[]> {
+  if (!baseCache) baseCache = (await import("@/data/catalog.json")).default as unknown as Product[];
+  return baseCache;
+}
+async function adminProducts(): Promise<AdminProduct[]> {
+  const { patches, customs } = readDemoContent();
+  const out: AdminProduct[] = [];
+  const push = (p: Product, custom: boolean) => {
+    const patch = patches[p.slug];
+    const applied = applyPatch(p, patch ? { ...patch, hidden: false } : undefined) ?? p;
+    out.push({ ...applied, hidden: Boolean(patch?.hidden), custom, patched: Boolean(patch) });
+  };
+  for (const p of await baseProducts()) push(p, false);
+  for (const c of customs) push(c, true);
+  return out;
+}
+
 export const demoAdmin = {
+  async products(_t: string, params: { q?: string; kategori?: string; filtre?: string; page?: number }) {
+    await delay(120);
+    let items = await adminProducts();
+    if (params.kategori) items = items.filter((p) => p.category === params.kategori);
+    if (params.filtre === "gizli") items = items.filter((p) => p.hidden);
+    if (params.filtre === "stoksuz") items = items.filter((p) => !p.variants.some((v) => v.inStock));
+    if (params.filtre === "duzenlenen") items = items.filter((p) => p.patched || p.custom);
+    if (params.filtre === "yeni") items = items.filter((p) => p.custom);
+    const q = params.q?.trim().toLowerCase();
+    if (q) items = items.filter((p) => [p.name, p.brand, p.slug, ...p.variants.map((v) => v.sku)].some((s) => s.toLowerCase().includes(q)));
+    const p = paginate(items, params.page, 40);
+    return ok({ products: p.slice, total: p.total, page: p.page, pages: p.pages });
+  },
+  async product(_t: string, slug: string) {
+    const p = (await adminProducts()).find((x) => x.slug === slug);
+    return p ? ok({ product: p }) : failed("Ürün bulunamadı");
+  },
+  async createProduct(_t: string, body: Partial<Product>) {
+    if (!body.name || !body.category || !body.variants?.length) return failed("Ad, kategori ve en az bir varyant gerekli");
+    const slug = CUSTOM_PREFIX + slugify(body.slug || `${body.brand ?? ""} ${body.name}`);
+    const product: Product = { slug, name: body.name, brand: body.brand || "Yavuz Gıda", art: body.art ?? "box", rating: 0, reviews: 0, sold: 0, category: body.category, subcategory: body.subcategory ?? "", short: body.short || body.name, description: body.description || body.short || body.name, tags: body.tags ?? [], variants: body.variants.map((v, k) => ({ id: v.id || `v${k + 1}`, label: v.label || `Seçenek ${k + 1}`, sku: v.sku || `YVZ-${slugify(body.name!).toUpperCase().slice(0, 9)}-${k + 1}`, price: Number(v.price) || 0, oldPrice: v.oldPrice ? Number(v.oldPrice) : undefined, amount: Number(v.amount) || 1, amountUnit: v.amountUnit ?? "adet", inStock: v.inStock !== false, caseQty: v.caseQty ? Number(v.caseQty) : undefined })), specs: body.specs ?? [], hue: typeof body.hue === "number" ? body.hue : 30, popularity: 50, createdAt: new Date().toISOString().slice(0, 10), ...(body.image ? { image: body.image } : {}) };
+    demoSaveCustom(product);
+    return ok({ product });
+  },
+  async patchProduct(_t: string, slug: string, patch: ProductPatch & { full?: Product }) {
+    const existing = (await adminProducts()).find((x) => x.slug === slug);
+    if (!existing) return failed("Ürün bulunamadı");
+    if (existing.custom && patch.full) {
+      demoSaveCustom({ ...patch.full, slug });
+      if (patch.hidden !== undefined) demoSavePatch(slug, { hidden: patch.hidden });
+    } else {
+      const { full: _f, ...rest } = patch;
+      void _f;
+      demoSavePatch(slug, rest);
+    }
+    const updated = (await adminProducts()).find((x) => x.slug === slug);
+    return ok({ product: updated });
+  },
+  async resetProduct(_t: string, slug: string) {
+    demoRemoveProduct(slug);
+    return ok({});
+  },
+  async config() {
+    return ok({ config: readDemoContent().config });
+  },
+  async saveConfig(_t: string, partial: Partial<SiteConfig>) {
+    await delay(120);
+    return ok({ config: demoSaveConfig(partial) });
+  },
+  async importCsv(_t: string, csv: string) {
+    const rows = parseCsv(csv);
+    if (!rows.length) return failed("Satır bulunamadı; ilk satır başlık olmalı");
+    const known = new Set((await adminProducts()).map((p) => p.slug));
+    const { patches, customs, errors } = rowsToImport(rows, known);
+    for (const c of customs) demoSaveCustom(c);
+    for (const [slug, patch] of Object.entries(patches)) demoSavePatch(slug, patch);
+    return ok({ updated: Object.keys(patches).length, created: customs.length, errors });
+  },
+  exportUrl: () => "",
   async login(password: string) {
     await delay();
     return password === DEMO_PASSWORD ? ok({}) : failed("Şifre hatalı (demo şifresi: demo)");

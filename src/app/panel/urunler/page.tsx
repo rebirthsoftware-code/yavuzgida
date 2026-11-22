@@ -1,6 +1,7 @@
 import { CatalogPage } from "@/components/catalog/CatalogPage";
-import { products } from "@/lib/catalog";
+import { getProducts } from "@/lib/catalog";
 
-export default function Page() {
+export default async function Page() {
+  const products = await getProducts();
   return <CatalogPage base="/panel" title="Tüm Ürünler" count={products.length} crumbs={[{ label: "Tüm Ürünler" }]} />;
 }

@@ -5,23 +5,24 @@ import { useState } from "react";
 import { Minus, Plus, Trash2, ShoppingCart, ArrowRight, Truck, Tag, ShieldCheck, MessageCircle, Copy, Check, ClipboardList } from "lucide-react";
 import { useCart } from "./CartProvider";
 import { formatPrice } from "@/lib/format";
-import { site } from "@/lib/site";
+import { useSiteConfig } from "@/components/config/ConfigProvider";
 import { ButtonLink } from "@/components/ui/Button";
 import { PackArt } from "@/components/product/PackArt";
 import { buildOrderMessage, whatsappLink, type OrderForm } from "@/lib/whatsapp";
 import { Field, inputCls } from "@/components/ui/PageShell";
 
 export function CartPage() {
+  const { commerce, contact } = useSiteConfig();
   const { items, subtotal, count, setQty, remove, clear, ready, showPrices } = useCart();
   const [coupon, setCoupon] = useState("");
   const [form, setForm] = useState<OrderForm>({ firm: "", name: "", phone: "", note: "" });
   const [copied, setCopied] = useState(false);
-  const shipping = subtotal >= site.commerce.freeShippingThreshold || subtotal === 0 ? 0 : site.commerce.shippingFee;
+  const shipping = subtotal >= commerce.freeShippingThreshold || subtotal === 0 ? 0 : commerce.shippingFee;
   const discount = subtotal >= 5000 ? Math.round(subtotal * 0.04) : 0;
   const total = subtotal + shipping - discount;
-  const remaining = Math.max(0, site.commerce.freeShippingThreshold - subtotal);
+  const remaining = Math.max(0, commerce.freeShippingThreshold - subtotal);
   const message = buildOrderMessage(items, form, showPrices);
-  const waHref = whatsappLink(message);
+  const waHref = whatsappLink(message, contact.whatsapp);
   const formOk = form.firm.trim().length > 1 && form.phone.replace(/\D/g, "").length >= 10;
 
   const copy = async () => {

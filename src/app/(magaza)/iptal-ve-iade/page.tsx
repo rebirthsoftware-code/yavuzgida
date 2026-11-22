@@ -1,17 +1,16 @@
 import type { Metadata } from "next";
 import { PageShell } from "@/components/ui/PageShell";
-import { site } from "@/lib/site";
+import { LegalText } from "@/components/ui/LegalText";
+import { legalTitles } from "@/lib/content";
+import { getSiteConfig } from "@/lib/site-config";
 
-export const metadata: Metadata = { title: "İptal ve İade Koşulları" };
+export const metadata: Metadata = { title: legalTitles.iade };
 
-export default function Page() {
+export default async function Page() {
+  const { legal } = await getSiteConfig();
   return (
-    <PageShell title="İptal ve İade Koşulları" crumb="İptal ve İade Koşulları" narrow>
-      <div className="rounded-lg border border-ink-200 bg-white p-6 sm:p-8">
-        <p className="text-sm leading-relaxed text-ink-600">
-          Bu sayfa yer tutucudur. {site.legal.companyName} için hazırlanacak “İptal ve İade Koşulları” metni hukuk danışmanı onayından sonra buraya eklenecektir.
-        </p>
-      </div>
+    <PageShell title={legalTitles.iade} crumb={legalTitles.iade} narrow>
+      <LegalText text={legal.texts.iade} />
     </PageShell>
   );
 }

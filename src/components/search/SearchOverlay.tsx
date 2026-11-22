@@ -7,13 +7,11 @@ import { Search, X, ArrowRight } from "lucide-react";
 import { useCart } from "@/components/cart/CartProvider";
 import { searchProducts } from "@/lib/search";
 import { categoryMap, categories } from "@/lib/categories";
-import type { ProductIndex } from "@/lib/types";
-import indexJson from "@/data/catalog-index.json";
+import { useCatalogIndex } from "@/lib/use-catalog-index";
 import { formatPrice } from "@/lib/format";
 import { minPriceOf } from "@/lib/index-of";
 import { PackArt } from "@/components/product/PackArt";
 
-const index = indexJson as ProductIndex[];
 const popular = ["Espresso", "Karamel şurubu", "Yulaf sütü", "Karton bardak", "Salep", "Matcha", "Tamper", "Stick şeker"];
 
 export function SearchOverlay() {
@@ -44,7 +42,8 @@ function Panel({ close }: { close: () => void }) {
   const [q, setQ] = useState("");
   const ref = useRef<HTMLInputElement>(null);
   const router = useRouter();
-  const results = useMemo(() => searchProducts(index, q, 12), [q]);
+  const index = useCatalogIndex();
+  const results = useMemo(() => searchProducts(index, q, 12), [index, q]);
   useEffect(() => {
     ref.current?.focus();
   }, []);

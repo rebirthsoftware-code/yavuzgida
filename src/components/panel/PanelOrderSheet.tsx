@@ -5,11 +5,10 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { CheckCircle2, Loader2, MessageCircle, FileDown, Printer, ArrowRight, Clock, Share2, Link2 } from "lucide-react";
 import { getPanelOrder, listPanelOrders, savePanelOrder, encodePanelOrder, decodePanelOrder, type PanelOrder } from "@/lib/panel-order";
-import indexJson from "@/data/catalog-index.json";
+import { useCatalogIndex } from "@/lib/use-catalog-index";
 import type { ProductIndex } from "@/lib/types";
 
-const index = indexJson as ProductIndex[];
-const lookup = (slug: string, variantId: string) => {
+const lookupIn = (index: ProductIndex[]) => (slug: string, variantId: string) => {
   const p = index.find((x) => x.slug === slug);
   const v = p?.variants.find((x) => x.id === variantId);
   if (!p || !v) return null;
@@ -19,11 +18,14 @@ import { buildOrderMessage, whatsappLink } from "@/lib/whatsapp";
 import { buildOrderPdf, pdfFileName } from "@/lib/order-pdf";
 import { uploadFis } from "@/lib/fis-api";
 import { site } from "@/lib/site";
+import { useSiteConfig } from "@/components/config/ConfigProvider";
 import { formatDate } from "@/lib/format";
 import { LogoImage } from "@/components/ui/Logo";
 
 /** "Siparişiniz oluşturuluyor" → sipariş fişi: WhatsApp gönderimi ve PDF (yazdır) çıktısı. */
 export function PanelOrderSheet() {
+  const config = useSiteConfig();
+  const index = useCatalogIndex();
   const sp = useSearchParams();
   const ref = sp.get("ref") ?? "";
   const packed = sp.get("d") ?? "";
@@ -40,7 +42,7 @@ export function PanelOrderSheet() {
     let o = ref ? getPanelOrder(ref) : null;
     if (!o && packed) {
       // Bağlantıyla açıldı (firma tarafı): fişi bağlantıdan kur ve bu cihaza da kaydet
-      o = decodePanelOrder(packed, lookup);
+      o = decodePanelOrder(packed, lookupIn(index));
       if (o) savePanelOrder(o);
     }
     (async () => {
@@ -48,7 +50,7 @@ export function PanelOrderSheet() {
       let url: string | null = null;
       if (o) {
         setStep("PDF oluşturuluyor…");
-        blob = await buildOrderPdf(o).catch(() => null);
+        blob = await buildOrderPdf(o, { phone: config.contact.phone, email: config.contact.email, companyName: config.legal.companyName }).catch(() => null);
         if (blob) {
           setStep("Fiş kaydediliyor…");
           url = await uploadFis(o, blob);
@@ -65,6 +67,7 @@ export function PanelOrderSheet() {
     return () => {
       cancelled = true;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- dizin ve tedarikçi bilgisi fiş oluşturulurken bir kez okunur
   }, [ref, packed]);
 
   if (phase === "creating") {
@@ -117,7 +120,7 @@ export function PanelOrderSheet() {
     setTimeout(() => URL.revokeObjectURL(a.href), 10_000);
   };
 
-  const waHref = whatsappLink(message);
+  const waHref = whatsappLink(message, config.contact.whatsapp);
 
   /**
    * PDF'i WhatsApp ile gönder (2 adım): 1) paylaşım menüsüyle PDF dosya olarak gider;
@@ -159,7 +162,7 @@ export function PanelOrderSheet() {
             </span>
             <div>
               <p className="text-lg font-extrabold text-ink-900">Sipariş Fişi</p>
-              <p className="text-xs text-ink-500">{site.legal.companyName}</p>
+              <p className="text-xs text-ink-500">{config.legal.companyName}</p>
             </div>
           </div>
           <div className="text-left text-sm sm:text-right">
@@ -180,8 +183,8 @@ export function PanelOrderSheet() {
           <div>
             <dt className="text-xs font-bold uppercase tracking-wider text-ink-400">Tedarikçi</dt>
             <dd className="font-semibold text-ink-900">{site.name}</dd>
-            <dd className="text-ink-700">{site.contact.phone}</dd>
-            <dd className="text-ink-700">{site.contact.email}</dd>
+            <dd className="text-ink-700">{config.contact.phone}</dd>
+            <dd className="text-ink-700">{config.contact.email}</dd>
           </div>
           {order.form.note && (
             <div className="sm:col-span-2">

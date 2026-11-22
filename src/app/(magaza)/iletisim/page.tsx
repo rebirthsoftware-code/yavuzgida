@@ -2,21 +2,23 @@ import type { Metadata } from "next";
 import { MapPin, Phone, Mail, Clock, MessageCircle } from "lucide-react";
 import { PageShell, Field, inputCls } from "@/components/ui/PageShell";
 import { Button } from "@/components/ui/Button";
-import { site } from "@/lib/site";
+import { getSiteConfig } from "@/lib/site-config";
+import { telHrefFor, whatsappHrefFor } from "@/lib/content";
 
 export const metadata: Metadata = { title: "İletişim" };
 
-export default function Page() {
+export default async function Page() {
+  const { contact } = await getSiteConfig();
   return (
     <PageShell title="İletişim" crumb="İletişim" lead="Sipariş, teklif ve tedarik soruları için bize ulaşın.">
       <div className="grid gap-6 lg:grid-cols-[1fr_1.2fr]">
         <div className="space-y-4">
           {[
-            { icon: Phone, t: "Telefon", v: site.contact.phone, href: site.contact.phoneHref },
-            { icon: MessageCircle, t: "WhatsApp", v: "Hızlı sipariş hattı", href: site.contact.whatsappHref },
-            { icon: Mail, t: "E-posta", v: site.contact.email, href: `mailto:${site.contact.email}` },
-            { icon: MapPin, t: "Adres", v: site.contact.address },
-            { icon: Clock, t: "Çalışma saatleri", v: site.contact.workingHours },
+            { icon: Phone, t: "Telefon", v: contact.phone, href: telHrefFor(contact.phone) },
+            { icon: MessageCircle, t: "WhatsApp", v: "Hızlı sipariş hattı", href: whatsappHrefFor(contact.whatsapp) },
+            { icon: Mail, t: "E-posta", v: contact.email, href: `mailto:${contact.email}` },
+            { icon: MapPin, t: "Adres", v: contact.address },
+            { icon: Clock, t: "Çalışma saatleri", v: contact.workingHours },
           ].map(({ icon: I, t, v, href }) => (
             <div key={t} className="flex items-center gap-4 rounded-lg border border-ink-200 bg-white p-5">
               <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-orange-50 text-orange-600">

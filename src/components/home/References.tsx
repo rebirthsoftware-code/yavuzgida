@@ -1,6 +1,8 @@
+"use client";
+
 import Link from "next/link";
+import { useSiteConfig } from "@/components/config/ConfigProvider";
 import { BadgeCheck, MapPin, ArrowRight } from "lucide-react";
-import { references, referenceStats } from "@/lib/references";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 
 const initials = (name: string) =>
@@ -13,12 +15,13 @@ const initials = (name: string) =>
 
 /** Çalıştığımız mağazalar: güven bölümü (logo yoksa monogram). */
 export function References({ compact = false }: { compact?: boolean }) {
+  const { references, referenceStats: stats } = useSiteConfig();
   return (
     <section>
       <SectionHeading title="Çalıştığımız Mağazalar" sub="Türkiye genelinde kafe, pastane, otel ve restoranların tedarik ortağıyız" href="/kurumsal" linkLabel="Siz de katılın" />
       <div className="overflow-hidden rounded-xl border border-ink-200 bg-white">
         <dl className="grid grid-cols-2 divide-x divide-ink-100 border-b border-ink-100 md:grid-cols-4">
-          {referenceStats.map((s) => (
+          {stats.map((s) => (
             <div key={s.label} className="px-4 py-4 text-center">
               <dt className="text-2xl font-extrabold text-ink-900 sm:text-3xl">{s.value}</dt>
               <dd className="text-xs text-ink-500">{s.label}</dd>

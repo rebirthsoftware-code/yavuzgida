@@ -7,12 +7,13 @@ import { useSearchParams } from "next/navigation";
 import { CheckCircle2, Copy, Mail, MessageCircle, Printer, Send } from "lucide-react";
 import { paymentLabels, orderToText } from "@/lib/order";
 import { formatPrice, formatDate } from "@/lib/format";
-import { site } from "@/lib/site";
+import { useSiteConfig } from "@/components/config/ConfigProvider";
 import { mailtoUrl } from "@/lib/forms";
 import { WhatsAppLink } from "@/components/ui/WhatsAppLink";
 import { apiEnabled } from "@/lib/api";
 
 export function OrderSuccess() {
+  const { bank, commerce, contact } = useSiteConfig();
   const params = useSearchParams();
   const no = params.get("no");
   const stored = useLastOrder();
@@ -26,7 +27,7 @@ export function OrderSuccess() {
 
   const copyIban = async () => {
     try {
-      await navigator.clipboard.writeText(site.bank.iban.replace(/\s/g, ""));
+      await navigator.clipboard.writeText(bank.iban.replace(/\s/g, ""));
       setCopied(true);
       window.setTimeout(() => setCopied(false), 1500);
     } catch {
@@ -64,7 +65,7 @@ export function OrderSuccess() {
           <h2 className="mt-1 text-2xl font-semibold text-ink-900">Siparişinizi bize iletin</h2>
           <p className="mt-2 text-sm leading-relaxed text-ink-700">
             Sipariş özetiniz hazır mesaj olarak hazırlandı. Aşağıdaki butona basın, açılan mesajı göndermeniz yeterli.
-            Siparişiniz bize ulaştığında {site.commerce.deliveryEstimate} içinde kargoya verilir.
+            Siparişiniz bize ulaştığında {commerce.deliveryEstimate} içinde kargoya verilir.
           </p>
           <div className="mt-4 flex flex-wrap gap-3">
             <WhatsAppLink text={waText} className="inline-flex h-13 items-center gap-2 rounded-full bg-[#25D366] px-7 text-base font-bold text-white hover:brightness-95">
@@ -90,16 +91,16 @@ export function OrderSuccess() {
           <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
             <div>
               <dt className="text-xs font-semibold uppercase tracking-wider text-ink-500">Banka</dt>
-              <dd className="font-semibold text-ink-900">{site.bank.bankName}</dd>
+              <dd className="font-semibold text-ink-900">{bank.bankName}</dd>
             </div>
             <div>
               <dt className="text-xs font-semibold uppercase tracking-wider text-ink-500">Hesap sahibi</dt>
-              <dd className="font-semibold text-ink-900">{site.bank.holder}</dd>
+              <dd className="font-semibold text-ink-900">{bank.holder}</dd>
             </div>
             <div className="sm:col-span-2">
               <dt className="text-xs font-semibold uppercase tracking-wider text-ink-500">IBAN</dt>
               <dd className="flex flex-wrap items-center gap-3">
-                <span className="font-mono text-base font-bold text-ink-900">{site.bank.iban}</span>
+                <span className="font-mono text-base font-bold text-ink-900">{bank.iban}</span>
                 <button
                   type="button"
                   onClick={copyIban}
@@ -195,7 +196,7 @@ export function OrderSuccess() {
         </Link>
       </div>
       <p className="mt-6 text-center text-xs text-ink-500">
-        Sorularınız için {site.contact.phone} · {site.contact.email}
+        Sorularınız için {contact.phone} · {contact.email}
       </p>
     </div>
   );

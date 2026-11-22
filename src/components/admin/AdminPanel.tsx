@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState, useSyncExternalStore, type FormEvent, type ReactNode } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Lock, Loader2, Search, RefreshCw, LogOut, Truck, ExternalLink, ChevronLeft, ChevronRight, Phone, Mail, MapPin, CreditCard, AlertCircle, Save, X, ShoppingBag, Store, FileText, MessageCircle, Printer, Info } from "lucide-react";
+import { Lock, Loader2, Search, RefreshCw, LogOut, Truck, ExternalLink, ChevronLeft, ChevronRight, Phone, Mail, MapPin, CreditCard, AlertCircle, Save, ShoppingBag, Store, FileText, MessageCircle, Printer, Info, Package, LayoutTemplate, Settings } from "lucide-react";
 import {
   admin,
   apiEnabled,
@@ -28,6 +28,10 @@ import { OrderTimeline } from "@/components/order/OrderTracking";
 import { site } from "@/lib/site";
 import { LogoImage } from "@/components/ui/Logo";
 import { PushToggle } from "@/components/pwa/PushToggle";
+import { Drawer, Card } from "./Drawer";
+import { ProductsView } from "./ProductsView";
+import { HomepageView } from "./HomepageView";
+import { SettingsView } from "./SettingsView";
 
 /* ------------------------------ Oturum deposu ------------------------------ */
 const KEY = "yavuz:admin";
@@ -120,7 +124,54 @@ export function AdminPanel() {
       </section>
     );
   }
-  return token ? <Dashboard token={token} initialNo={initialNo} initialTab={initialTab} /> : <Login />;
+  const initialSection: Section = (["siparisler", "urunler", "anasayfa", "ayarlar"] as const).includes(params.get("bolum") as Section) ? (params.get("bolum") as Section) : "siparisler";
+  return token ? <Shell token={token} initialNo={initialNo} initialTab={initialTab} initialSection={initialSection} /> : <Login />;
+}
+
+type Section = "siparisler" | "urunler" | "anasayfa" | "ayarlar";
+const SECTIONS: { key: Section; label: string; icon: ReactNode; sub: string }[] = [
+  { key: "siparisler", label: "Siparişler", icon: <ShoppingBag className="size-4" />, sub: "E-ticaret ve anlaşmalı" },
+  { key: "urunler", label: "Ürünler", icon: <Package className="size-4" />, sub: "Fiyat, stok, görsel" },
+  { key: "anasayfa", label: "Ana Sayfa", icon: <LayoutTemplate className="size-4" />, sub: "Slider, kampanya, referans" },
+  { key: "ayarlar", label: "Ayarlar", icon: <Settings className="size-4" />, sub: "İletişim, kargo, yasal" },
+];
+
+/* ---------------------------------- Kabuk --------------------------------- */
+function Shell({ token, initialNo, initialTab, initialSection }: { token: string; initialNo: string | null; initialTab: Tab; initialSection: Section }) {
+  const [section, setSection] = useState<Section>(initialSection);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const go = (s: Section) => {
+    setSection(s);
+    try {
+      const u = new URL(window.location.href);
+      u.searchParams.set("bolum", s);
+      u.searchParams.delete("no");
+      u.searchParams.delete("tab");
+      window.history.replaceState(null, "", u.toString());
+    } catch {}
+  };
+  return (
+    <section className="mx-auto max-w-[1320px] px-3 pb-10 sm:px-4 sm:pb-12">
+      <AdminBar onRefresh={() => setRefreshKey((k) => k + 1)} loading={false} />
+      <nav className="-mx-3 mt-3 flex gap-1.5 overflow-x-auto px-3 pb-1 no-scrollbar sm:mx-0 sm:mt-4 sm:px-0" aria-label="Yönetim bölümleri">
+        {SECTIONS.map((s) => (
+          <button key={s.key} type="button" onClick={() => go(s.key)} className={cn("flex shrink-0 items-center gap-2 rounded-xl border px-3 py-2 text-left transition", section === s.key ? "border-coal-900 bg-coal-900 text-white" : "border-ink-200 bg-white text-ink-800 hover:border-ink-400")}>
+            <span className={cn("grid size-8 place-items-center rounded-lg", section === s.key ? "bg-white/10 text-gold-400" : "bg-paper-100 text-ink-600")}>{s.icon}</span>
+            <span>
+              <span className="block text-sm font-bold leading-tight">{s.label}</span>
+              <span className={cn("hidden text-[0.68rem] sm:block", section === s.key ? "text-ink-300" : "text-ink-500")}>{s.sub}</span>
+            </span>
+          </button>
+        ))}
+      </nav>
+      <div key={`${section}-${refreshKey}`}>
+        {section === "siparisler" && <Dashboard token={token} initialNo={initialNo} initialTab={initialTab} />}
+        {section === "urunler" && <ProductsView token={token} />}
+        {section === "anasayfa" && <HomepageView token={token} />}
+        {section === "ayarlar" && <SettingsView token={token} />}
+      </div>
+    </section>
+  );
 }
 
 /* --------------------------------- Giriş ---------------------------------- */
@@ -222,13 +273,11 @@ function Dashboard({ token, initialNo, initialTab }: { token: string; initialNo:
   const data = tab === "shop" ? shop : panel;
 
   return (
-    <section className="mx-auto max-w-[1320px] px-3 pb-10 sm:px-4 sm:pb-12">
-      <AdminBar onRefresh={() => void load()} loading={loading} />
-
-      <div className="mt-4 flex flex-wrap items-end justify-between gap-3 sm:mt-6">
+    <div>
+      <div className="mt-4 flex flex-wrap items-end justify-between gap-3">
         <div>
-          <p className="text-[0.65rem] font-bold uppercase tracking-[0.22em] text-ink-500">Yönetim</p>
           <h1 className="text-2xl font-semibold text-ink-900 sm:text-3xl">Gelen Siparişler</h1>
+          <p className="text-xs text-ink-500">{loading ? "Yükleniyor…" : "E-ticaret siparişleri ve anlaşmalı müşteri fişleri"}</p>
         </div>
         {!DEMO_ADMIN && <PushToggle token={token} />}
       </div>
@@ -317,7 +366,7 @@ function Dashboard({ token, initialNo, initialTab }: { token: string; initialNo:
 
       {selected && <OrderDrawer token={token} orderNo={selected} onClose={() => setSelected(null)} onChanged={() => void load()} />}
       {selectedRef && <PanelDrawer token={token} orderRef={selectedRef} onClose={() => setSelectedRef(null)} onChanged={() => void load()} />}
-    </section>
+    </div>
   );
 }
 
@@ -516,49 +565,6 @@ function AdminBar({ onRefresh, loading }: { onRefresh: () => void; loading: bool
     </div>
   );
 }
-
-/* ------------------------------ Çekmece kabuğu ----------------------------- */
-function Drawer({ title, subtitle, badge, onClose, children }: { title: string; subtitle?: string; badge?: ReactNode; onClose: () => void; children: ReactNode }) {
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
-    document.addEventListener("keydown", onKey);
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = prev;
-    };
-  }, [onClose]);
-  return (
-    <div className="fixed inset-0 z-50">
-      <div className="absolute inset-0 bg-coal-950/50" onClick={onClose} />
-      <aside role="dialog" aria-modal="true" aria-label={title} className="absolute inset-y-0 right-0 flex w-full flex-col overflow-y-auto bg-white shadow-menu sm:max-w-2xl">
-        <div className="sticky top-0 z-10 flex items-center justify-between gap-2 border-b border-ink-200 bg-white/95 px-4 py-3 backdrop-blur sm:px-6 sm:py-4">
-          <div className="min-w-0">
-            <p className="truncate font-mono text-base font-bold text-ink-900 sm:text-lg">{title}</p>
-            {subtitle && <p className="truncate text-xs text-ink-500">{subtitle}</p>}
-          </div>
-          <div className="flex shrink-0 items-center gap-2">
-            {badge}
-            <button type="button" onClick={onClose} aria-label="Kapat" className="inline-flex h-10 w-10 items-center justify-center rounded-full hover:bg-paper-100">
-              <X className="h-5 w-5" />
-            </button>
-          </div>
-        </div>
-        {children}
-      </aside>
-    </div>
-  );
-}
-
-const Card = ({ title, icon, children, className }: { title: string; icon?: ReactNode; children: ReactNode; className?: string }) => (
-  <div className={cn("rounded-xl border border-ink-200 p-4 sm:p-5", className)}>
-    <p className="flex items-center gap-2 text-[0.65rem] font-bold uppercase tracking-[0.18em] text-ink-500">
-      {icon} {title}
-    </p>
-    {children}
-  </div>
-);
 
 /* ------------------------------ Sipariş detayı ----------------------------- */
 function OrderDrawer({ token, orderNo, onClose, onChanged }: { token: string; orderNo: string; onClose: () => void; onChanged: () => void }) {

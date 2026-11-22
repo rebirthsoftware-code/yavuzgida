@@ -3,11 +3,14 @@
 import Link from "next/link";
 import { useState } from "react";
 import { ChevronDown, Flame, Percent, Coffee } from "lucide-react";
-import { categories } from "@/lib/categories";
+import { categories as baseCategories } from "@/lib/categories";
+import { applyCategoryOverrides } from "@/lib/content";
+import { useSiteConfig } from "@/components/config/ConfigProvider";
 import { CategoryIcon } from "@/components/ui/CategoryIcon";
 
 /** Kategori çubuğu: üzerine gelince alt kategoriler açılır. Mobilde yatay kaydırılır. */
 export function CategoryBar({ counts }: { counts: Record<string, number> }) {
+  const categories = applyCategoryOverrides(baseCategories, useSiteConfig().categories);
   const [hover, setHover] = useState<string | null>(null);
   return (
     <div className="relative border-t border-white/5 bg-white" onMouseLeave={() => setHover(null)}>

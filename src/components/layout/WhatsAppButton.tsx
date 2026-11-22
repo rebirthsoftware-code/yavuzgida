@@ -1,10 +1,12 @@
 import { MessageCircle } from "lucide-react";
-import { site } from "@/lib/site";
+import { getSiteConfig } from "@/lib/site-config";
+import { whatsappHrefFor } from "@/lib/content";
 
-export function WhatsAppButton() {
+export async function WhatsAppButton() {
+  const { contact } = await getSiteConfig();
   return (
     <a
-      href={site.contact.whatsappHref}
+      href={whatsappHrefFor(contact.whatsapp, "Merhaba Yavuz Gıda, kafe ürünleriniz ve toptan fiyatlar hakkında bilgi almak istiyorum.")}
       target="_blank"
       rel="noopener"
       aria-label="WhatsApp ile yazın"

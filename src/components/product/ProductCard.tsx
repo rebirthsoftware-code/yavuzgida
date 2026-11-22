@@ -8,17 +8,18 @@ import { useCart } from "@/components/cart/CartProvider";
 import { formatPrice } from "@/lib/format";
 import { Stars } from "@/components/ui/Stars";
 import { ProductImage } from "./ProductImage";
-import { site } from "@/lib/site";
+import { useSiteConfig } from "@/components/config/ConfigProvider";
 
 /** Pazar yeri ürün kartı: görsel, rozetler, marka + ad, puan, fiyat, sepete ekle. */
 export function ProductCard({ p, priority, compact }: { p: ProductIndex; priority?: boolean; compact?: boolean }) {
+  const { commerce } = useSiteConfig();
   const { add, qtyOf, showPrices, base } = useCart();
   const v = p.variants.find((x) => x.inStock) ?? p.variants[0];
   const inCart = qtyOf(p.slug, v.id);
   const [fav, setFav] = useState(false);
   const [flash, setFlash] = useState(false);
   const pct = v.oldPrice ? Math.round((1 - v.price / v.oldPrice) * 100) : 0;
-  const freeShip = v.price >= site.commerce.freeShippingThreshold;
+  const freeShip = v.price >= commerce.freeShippingThreshold;
   const soldLabel = p.sold >= 1000 ? `${(p.sold / 1000).toFixed(1).replace(".0", "")}B+` : `${p.sold}`;
 
   const addToCart = () => {

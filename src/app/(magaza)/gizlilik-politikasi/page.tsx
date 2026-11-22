@@ -1,17 +1,16 @@
 import type { Metadata } from "next";
 import { PageShell } from "@/components/ui/PageShell";
-import { site } from "@/lib/site";
+import { LegalText } from "@/components/ui/LegalText";
+import { legalTitles } from "@/lib/content";
+import { getSiteConfig } from "@/lib/site-config";
 
-export const metadata: Metadata = { title: "Gizlilik ve Çerez Politikası" };
+export const metadata: Metadata = { title: legalTitles.gizlilik };
 
-export default function Page() {
+export default async function Page() {
+  const { legal } = await getSiteConfig();
   return (
-    <PageShell title="Gizlilik ve Çerez Politikası" crumb="Gizlilik ve Çerez Politikası" narrow>
-      <div className="rounded-lg border border-ink-200 bg-white p-6 sm:p-8">
-        <p className="text-sm leading-relaxed text-ink-600">
-          Bu sayfa yer tutucudur. {site.legal.companyName} için hazırlanacak “Gizlilik ve Çerez Politikası” metni hukuk danışmanı onayından sonra buraya eklenecektir.
-        </p>
-      </div>
+    <PageShell title={legalTitles.gizlilik} crumb={legalTitles.gizlilik} narrow>
+      <LegalText text={legal.texts.gizlilik} />
     </PageShell>
   );
 }

@@ -1,6 +1,8 @@
 import type { OrderRecord, PaymentMethod } from "./order";
 import { site } from "./site";
 import { demoAdmin } from "./admin-demo";
+import type { Product } from "./types";
+import type { ProductPatch, SiteConfig } from "./content";
 
 /**
  * Sipariş API'si istemcisi (api/worker.js). Adres NEXT_PUBLIC_API_URL ile verilir.
@@ -218,7 +220,30 @@ const realAdmin = {
     call<{ order: PanelApiOrder }>(`/admin/panel-orders/${encodeURIComponent(ref)}`, { method: "PATCH", body: JSON.stringify(patch) }, token),
 };
 
-export type AdminApi = typeof realAdmin;
+export type AdminProduct = Product & { hidden: boolean; custom: boolean; patched: boolean };
+export type ProductListParams = { q?: string; kategori?: string; filtre?: string; page?: number };
+
+const content = {
+  products: (token: string, params: ProductListParams) => {
+    const qs = new URLSearchParams();
+    if (params.q) qs.set("q", params.q);
+    if (params.kategori) qs.set("kategori", params.kategori);
+    if (params.filtre) qs.set("filtre", params.filtre);
+    if (params.page) qs.set("page", String(params.page));
+    return call<{ products: AdminProduct[]; total: number; page: number; pages: number }>(`/admin/products?${qs}`, {}, token);
+  },
+  product: (token: string, slug: string) => call<{ product: AdminProduct }>(`/admin/products/${encodeURIComponent(slug)}`, {}, token),
+  createProduct: (token: string, body: Partial<Product>) => call<{ product: Product }>("/admin/products", { method: "POST", body: JSON.stringify(body) }, token),
+  patchProduct: (token: string, slug: string, patch: ProductPatch & { full?: Product }) => call<{ product: AdminProduct }>(`/admin/products/${encodeURIComponent(slug)}`, { method: "PATCH", body: JSON.stringify(patch) }, token),
+  resetProduct: (token: string, slug: string) => call<object>(`/admin/products/${encodeURIComponent(slug)}`, { method: "DELETE" }, token),
+  config: (token: string) => call<{ config: SiteConfig }>("/admin/config", {}, token),
+  saveConfig: (token: string, partial: Partial<SiteConfig>) => call<{ config: SiteConfig }>("/admin/config", { method: "PUT", body: JSON.stringify(partial) }, token),
+  importCsv: (token: string, csv: string) => call<{ updated: number; created: number; errors: string[] }>("/admin/import", { method: "POST", body: JSON.stringify({ csv }) }, token),
+  exportUrl: () => `${site.api.url}/admin/export`,
+};
+
+const realAdminFull = { ...realAdmin, ...content };
+export type AdminApi = typeof realAdminFull;
 
 /** Demo modunda tarayıcı içi sahte arka uç; aksi hâlde gerçek API. */
-export const admin: AdminApi = DEMO_ADMIN ? (demoAdmin as AdminApi) : realAdmin;
+export const admin: AdminApi = DEMO_ADMIN ? (demoAdmin as unknown as AdminApi) : realAdminFull;

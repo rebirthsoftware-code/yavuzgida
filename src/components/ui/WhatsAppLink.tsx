@@ -2,7 +2,7 @@
 
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import { MessageCircle } from "lucide-react";
-import { site } from "@/lib/site";
+import { useSiteConfig } from "@/components/config/ConfigProvider";
 import { whatsappUrl, formatWhatsApp } from "@/lib/forms";
 import { cn } from "@/lib/format";
 
@@ -27,7 +27,7 @@ export function WhatsAppLink({
   menuClassName?: string;
   "aria-label"?: string;
 }) {
-  const numbers = site.contact.whatsappNumbers;
+  const numbers = useSiteConfig().contact.whatsapp.split(",").map((n) => n.replace(/\D/g, "")).filter(Boolean);
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const id = useId();

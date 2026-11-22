@@ -1,14 +1,13 @@
 import Link from "next/link";
 import { ArrowRight, ClipboardList, MessageCircle, FileDown, Coffee } from "lucide-react";
-import { categories } from "@/lib/categories";
-import { categoryCounts, bestSellers } from "@/lib/catalog";
+import { categoryCounts, bestSellers, getCategories } from "@/lib/catalog";
 import { toIndex } from "@/lib/index-of";
 import { CategoryIcon } from "@/components/ui/CategoryIcon";
 import { ProductRail } from "@/components/product/ProductRail";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 
-export default function PanelHome() {
-  const counts = categoryCounts();
+export default async function PanelHome() {
+  const [counts, best, categories] = await Promise.all([categoryCounts(), bestSellers(12), getCategories()]);
   return (
     <div className="mx-auto max-w-[1320px] space-y-10 px-4 pb-10 pt-5">
       <section className="overflow-hidden rounded-xl bg-coal-900 text-white">
@@ -74,7 +73,7 @@ export default function PanelHome() {
 
       <section>
         <SectionHeading title="Sık Sipariş Edilenler" sub="Kafelerin her hafta yenilediği ürünler" href="/panel/urunler?etiket=cok-satan&sirala=populer" />
-        <ProductRail items={bestSellers(12).map(toIndex)} />
+        <ProductRail items={best.map(toIndex)} />
       </section>
     </div>
   );

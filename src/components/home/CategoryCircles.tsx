@@ -1,8 +1,8 @@
 import Link from "next/link";
-import { categories } from "@/lib/categories";
+import type { Category } from "@/lib/types";
 import { CategoryIcon } from "@/components/ui/CategoryIcon";
 
-export function CategoryCircles() {
+export function CategoryCircles({ categories }: { categories: Category[] }) {
   return (
     <div className="-mx-4 flex gap-3 overflow-x-auto px-4 no-scrollbar sm:mx-0 sm:grid sm:grid-cols-7 sm:gap-2 sm:overflow-visible sm:px-0 lg:grid-cols-[repeat(13,minmax(0,1fr))]">
       {categories.map((c) => (

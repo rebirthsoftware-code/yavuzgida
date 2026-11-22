@@ -10,10 +10,11 @@ import type { Product } from "@/lib/types";
 import { useCart } from "@/components/cart/CartProvider";
 import { toCartItem } from "@/lib/cart";
 import { formatPrice, unitPrice, formatCompact } from "@/lib/format";
-import { site } from "@/lib/site";
+import { useSiteConfig } from "@/components/config/ConfigProvider";
 
 export function BuyBox({ product }: { product: Product }) {
   const { add, showPrices, inPanel } = useCart();
+  const { commerce } = useSiteConfig();
   const inlineRef = useRef<HTMLButtonElement>(null);
   const [inlineVisible, setInlineVisible] = useState(true);
   useEffect(() => {
@@ -30,7 +31,7 @@ export function BuyBox({ product }: { product: Product }) {
   const v = product.variants.find((x) => x.id === vid)!;
   const beforeCutoff = useBeforeCutoff();
   const pct = v.oldPrice ? Math.round((1 - v.price / v.oldPrice) * 100) : 0;
-  const freeShip = v.price * qty >= site.commerce.freeShippingThreshold;
+  const freeShip = v.price * qty >= commerce.freeShippingThreshold;
 
   const addNow = () => {
     add(toCartItem(product, v, qty));
@@ -141,7 +142,7 @@ export function BuyBox({ product }: { product: Product }) {
         {showPrices && (
         <li className="flex items-center gap-3 px-4 py-2.5">
           <Truck className="size-4 shrink-0 text-ink-400" />
-          <span>{freeShip ? <b className="text-green-600">Bu siparişte kargo bedava</b> : <>{formatCompact(site.commerce.freeShippingThreshold)} üzeri siparişlerde kargo bedava</>}</span>
+          <span>{freeShip ? <b className="text-green-600">Bu siparişte kargo bedava</b> : <>{formatCompact(commerce.freeShippingThreshold)} üzeri siparişlerde kargo bedava</>}</span>
         </li>
         )}
         <li className="flex items-center gap-3 px-4 py-2.5">

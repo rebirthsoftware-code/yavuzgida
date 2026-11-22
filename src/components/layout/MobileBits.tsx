@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, LayoutGrid, ShoppingCart, Store, Search, ClipboardList, FileText } from "lucide-react";
-import { useCart } from "@/components/cart/CartProvider";
+import { useCart, useHydrated } from "@/components/cart/CartProvider";
 
 export function MobileSearchBar({ placeholder = "Ürün, marka veya kategori ara" }: { placeholder?: string }) {
   const { setSearchOpen } = useCart();
@@ -28,7 +28,8 @@ export function MobileSearchButton() {
 
 /** Mobil alt gezinme (uygulama gibi). */
 export function MobileNav() {
-  const { count, ready, setCatsOpen, catsOpen, showPrices } = useCart();
+  const { count, ready: storeReady, setCatsOpen, catsOpen, showPrices } = useCart();
+  const ready = useHydrated() && storeReady;
   const pathname = usePathname();
   const item = "flex flex-1 flex-col items-center justify-center gap-0.5 text-[0.65rem] font-semibold";
   return (
@@ -57,7 +58,8 @@ export function MobileNav() {
 
 /** Anlaşmalı müşteri paneli alt menüsü (mobil). */
 export function PanelMobileNav() {
-  const { count, ready, setCatsOpen, catsOpen } = useCart();
+  const { count, ready: storeReady, setCatsOpen, catsOpen } = useCart();
+  const ready = useHydrated() && storeReady;
   const pathname = usePathname();
   const item = "flex flex-1 flex-col items-center justify-center gap-0.5 text-[0.65rem] font-semibold";
   const on = (p: string) => (p === "/panel" ? pathname === "/panel" : pathname.startsWith(p)) && !catsOpen;

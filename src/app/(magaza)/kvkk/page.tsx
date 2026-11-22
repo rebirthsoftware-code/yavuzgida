@@ -1,17 +1,16 @@
 import type { Metadata } from "next";
 import { PageShell } from "@/components/ui/PageShell";
-import { site } from "@/lib/site";
+import { LegalText } from "@/components/ui/LegalText";
+import { legalTitles } from "@/lib/content";
+import { getSiteConfig } from "@/lib/site-config";
 
-export const metadata: Metadata = { title: "KVKK Aydınlatma Metni" };
+export const metadata: Metadata = { title: legalTitles.kvkk };
 
-export default function Page() {
+export default async function Page() {
+  const { legal } = await getSiteConfig();
   return (
-    <PageShell title="KVKK Aydınlatma Metni" crumb="KVKK Aydınlatma Metni" narrow>
-      <div className="rounded-lg border border-ink-200 bg-white p-6 sm:p-8">
-        <p className="text-sm leading-relaxed text-ink-600">
-          Bu sayfa yer tutucudur. {site.legal.companyName} için hazırlanacak “KVKK Aydınlatma Metni” metni hukuk danışmanı onayından sonra buraya eklenecektir.
-        </p>
-      </div>
+    <PageShell title={legalTitles.kvkk} crumb={legalTitles.kvkk} narrow>
+      <LegalText text={legal.texts.kvkk} />
     </PageShell>
   );
 }

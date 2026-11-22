@@ -4,18 +4,17 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { SlidersHorizontal, X, ChevronDown, Search, Star } from "lucide-react";
-import indexJson from "@/data/catalog-index.json";
-import type { ProductIndex, ProductTag } from "@/lib/types";
+import { useCatalogIndex } from "@/lib/use-catalog-index";
+import type { ProductTag } from "@/lib/types";
 import { categories, categoryMap } from "@/lib/categories";
 import { searchProducts } from "@/lib/search";
 import { minPriceOf, inStockOf } from "@/lib/index-of";
 import { ProductCard } from "@/components/product/ProductCard";
 import { tagLabel } from "@/components/ui/Badge";
 import { formatCompact } from "@/lib/format";
-import { site } from "@/lib/site";
+import { useSiteConfig } from "@/components/config/ConfigProvider";
 import { useCart } from "@/components/cart/CartProvider";
 
-const all = indexJson as ProductIndex[];
 const PAGE = 24;
 const TAGS: ProductTag[] = ["indirim", "cok-satan", "yeni", "yerli", "organik", "glutensiz"];
 const SORTS = [
@@ -35,6 +34,8 @@ const PRICE_RANGES: [number, number][] = [
 ];
 
 export function Catalog({ fixedCategory, fixedSub }: { fixedCategory?: string; fixedSub?: string }) {
+  const { commerce } = useSiteConfig();
+  const all = useCatalogIndex();
   const sp = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -76,7 +77,7 @@ export function Catalog({ fixedCategory, fixedSub }: { fixedCategory?: string; f
     if (cat) list = list.filter((p) => p.category === cat);
     if (sub) list = list.filter((p) => p.subcategory === sub);
     return list;
-  }, [q, cat, sub]);
+  }, [all, q, cat, sub]);
 
   const brandOptions = useMemo(() => {
     const m = new Map<string, number>();
@@ -94,7 +95,7 @@ export function Catalog({ fixedCategory, fixedSub }: { fixedCategory?: string; f
     const pool = q ? searchProducts(all, q, 2000) : all;
     for (const p of pool) if (p.category === cat) m.set(p.subcategory, (m.get(p.subcategory) ?? 0) + 1);
     return (categoryMap[cat]?.subcategories ?? []).map((s) => ({ ...s, count: m.get(s.slug) ?? 0 }));
-  }, [q, cat]);
+  }, [all, q, cat]);
 
   const filtered = useMemo(() => {
     let list = base;
@@ -104,7 +105,7 @@ export function Catalog({ fixedCategory, fixedSub }: { fixedCategory?: string; f
     if (max) list = list.filter((p) => minPriceOf(p) <= max);
     if (stock) list = list.filter(inStockOf);
     if (rated) list = list.filter((p) => p.rating >= 4);
-    if (freeShip) list = list.filter((p) => minPriceOf(p) >= site.commerce.freeShippingThreshold);
+    if (freeShip) list = list.filter((p) => minPriceOf(p) >= commerce.freeShippingThreshold);
     const sorted = [...list];
     switch (sort) {
       case "fiyat-artan":
@@ -126,7 +127,7 @@ export function Catalog({ fixedCategory, fixedSub }: { fixedCategory?: string; f
         if (!q) sorted.sort((a, b) => b.popularity - a.popularity);
     }
     return sorted;
-  }, [base, brands, tags, min, max, stock, rated, freeShip, sort, q]);
+  }, [base, brands, tags, min, max, stock, rated, freeShip, sort, q, commerce.freeShippingThreshold]);
 
   const pages = Math.max(1, Math.ceil(filtered.length / PAGE));
   const current = Math.min(page, pages);

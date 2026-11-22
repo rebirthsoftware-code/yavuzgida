@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { Phone, Heart, PackageSearch, Building2, HelpCircle, Search } from "lucide-react";
-import { site } from "@/lib/site";
 import { Logo } from "@/components/ui/Logo";
 import { SearchBox } from "./SearchBox";
 import { MiniCart } from "./MiniCart";
@@ -9,9 +8,10 @@ import { MobileSearchBar } from "./MobileBits";
 import { ScrollCompact } from "./ScrollCompact";
 import { Store } from "lucide-react";
 import { categoryCounts } from "@/lib/catalog";
+import { ConfigLink } from "@/components/config/ConfigValue";
 
-export function Header() {
-  const counts = categoryCounts();
+export async function Header() {
+  const counts = await categoryCounts();
   return (
     <header className="m-header sticky top-0 z-40 bg-coal-900 shadow-[0_1px_0_rgb(255_255_255/0.06)]">
       <ScrollCompact />
@@ -33,10 +33,10 @@ export function Header() {
             </Link>
           </nav>
           <div className="flex items-center gap-5">
-            <span className="font-semibold text-gold-400">2.500 ₺ üzeri kargo bedava</span>
-            <a href={site.contact.phoneHref} className="flex items-center gap-1.5 font-semibold text-white">
-              <Phone className="size-3.5 text-gold-400" /> {site.contact.phone}
-            </a>
+            <ConfigLink kind="announcement" className="hidden font-semibold text-gold-400 hover:underline lg:inline" />
+            <span className="flex items-center gap-1.5 font-semibold text-white">
+              <Phone className="size-3.5 text-gold-400" /> <ConfigLink kind="tel" />
+            </span>
           </div>
         </div>
       </div>

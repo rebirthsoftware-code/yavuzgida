@@ -95,21 +95,24 @@ export function generateOrderNo(date = new Date()): string {
 }
 
 /** Sepet kalemlerinden ön hesap (sunucu fiyatları yeniden hesaplar). Özel harman kalemleri katalog dışıdır, dahil edilmez. */
-export function computeCartTotals(items: CartItem[]) {
+export type CommerceRules = { freeShippingThreshold: number; shippingFee: number; cardPayments?: boolean };
+export const defaultCommerce: CommerceRules = { freeShippingThreshold: site.commerce.freeShippingThreshold, shippingFee: site.commerce.shippingFee, cardPayments: site.commerce.cardPaymentsEnabled };
+
+export function computeCartTotals(items: CartItem[], commerce: CommerceRules = defaultCommerce) {
   const lines = items.filter((i) => !i.custom);
   const subtotal = Math.round(lines.reduce((s, i) => s + i.price * i.qty, 0) * 100) / 100;
-  const shipping = subtotal === 0 || subtotal >= site.commerce.freeShippingThreshold ? 0 : site.commerce.shippingFee;
+  const shipping = subtotal === 0 || subtotal >= commerce.freeShippingThreshold ? 0 : commerce.shippingFee;
   const discount = computeDiscount(subtotal).amount;
   const total = Math.round((subtotal - discount + shipping) * 100) / 100;
   return { subtotal, shipping, codFee: 0, discount, total, itemCount: lines.reduce((s, i) => s + i.qty, 0) };
 }
 
 /** Doğrulanmış form verisi + sepetten sipariş kaydı üretir (istemci tarafı taslak). */
-export function buildOrderRecord(data: CheckoutInput, items: CartItem[]): OrderRecord | { error: string } {
+export function buildOrderRecord(data: CheckoutInput, items: CartItem[], commerce: CommerceRules = defaultCommerce): OrderRecord | { error: string } {
   const lines = items.filter((i) => !i.custom);
   if (lines.length === 0) return { error: "Sepetinizde katalog ürünü yok" };
-  if (data.paymentMethod === "kart" && !site.commerce.cardPaymentsEnabled) return { error: "Kart ile ödeme şu anda kullanılamıyor. Lütfen Havale/EFT seçin." };
-  const totals = computeCartTotals(items);
+  if (data.paymentMethod === "kart" && commerce.cardPayments === false) return { error: "Kart ile ödeme şu anda kullanılamıyor. Lütfen Havale/EFT seçin." };
+  const totals = computeCartTotals(items, commerce);
   const { items: _items, acceptTerms: _t, acceptKvkk: _k, ...customer } = data;
   void _items;
   void _t;

@@ -28,7 +28,7 @@ jobs:
           enablement: true
       - run: npm ci
       # Statik demo: sunucu rotaları (API, yönetim) dışa aktarıma dahil edilmez
-      - run: rm -rf src/app/api
+      - run: rm -rf src/app/api && cp src/server/content-cache.static.ts src/server/content-cache.ts
       - run: npm run build
         env:
           GITHUB_PAGES: "1"
